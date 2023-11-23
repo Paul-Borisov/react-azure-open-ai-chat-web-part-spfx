@@ -1,0 +1,43 @@
+@import '~@fluentui/react/dist/sass/mixins/Depth.Mixins';
+@import '~@fluentui/react/dist/sass/variables/Depth.Variables';
+
+@mixin roundedcorners() {
+  border-radius: 12px;
+  background-clip: padding-box; // copied from @fluentui\react\dist\sass\mixins\_General.Mixins.scss
+  overflow: hidden;
+  // isolation: isolate; // fix for rounded corners in Safari
+}
+
+@mixin box-down {
+  @include ms-depth-4;
+}
+
+@mixin box-up {
+  @include ms-depth-16;
+}
+
+@mixin box {
+  @include box-down;
+
+  &:hover,
+  &:focus {
+    @include box-up;
+  }
+}
+
+@mixin glass {
+  background: rgba(255, 255, 255, 0.9);
+  outline: 1px solid transparent;
+  border: 1px solid white;
+  //transition: all 0.15s ease-in-out;
+}
+
+@mixin glass-hover {
+  background: rgba(255, 255, 255, 0.95);
+  //transition: all 0.15s ease-in-out;
+
+  @supports ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px))) {
+    background: rgba(255, 255, 255, 0.83);
+    backdrop-filter: blur(4px);
+  }
+}

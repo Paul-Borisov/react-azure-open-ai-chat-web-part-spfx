@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DataContext",
+      "dynamicId": null
+    },
+    "apis1": {
+      "type": "apis"
+    }
+  }
+}

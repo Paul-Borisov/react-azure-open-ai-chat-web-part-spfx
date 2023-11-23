@@ -1,0 +1,1119 @@
+import {
+  Checkbox,
+  DefaultButton,
+  Dropdown,
+  FontIcon,
+  IDropdownOption,
+  Panel,
+  PanelType,
+  ResponsiveMode,
+  TooltipHost,
+  TooltipOverflowMode,
+} from '@fluentui/react';
+import * as strings from 'AzureOpenAiChatWebPartStrings';
+import ChatHelper from 'helpers/ChatHelper';
+import useChatHistory from 'hooks/useChatHistory';
+import useStorageService from 'hooks/useStorageService';
+import { FunctionComponent } from 'react';
+import * as React from 'react';
+import { formatCode, getStylesSelector, hasMarkdown } from 'shared/components/CodeHighlighter/CodeHighlighter';
+import { getConfirmationDialog } from 'shared/components/CustomDialog';
+import { CustomShimmer } from 'shared/components/CustomShimmer/CustomShimmer';
+import LinkButton from 'shared/components/LinkButton/LinkButton';
+import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
+import { PeoplePicker } from 'shared/components/PeoplePicker';
+import HtmlHelper from 'shared/helpers/HtmlHelper';
+import { IChatHistory, IChatMessage, IUser } from 'shared/model/IChat';
+import { IItemConfig } from 'shared/model/IItemConfig';
+import LogService from 'shared/services/LogService';
+import PageContextService from 'shared/services/PageContextService';
+import styles from './Chat.module.scss';
+import { IAzureOpenAiChatProps } from './IAzureOpenAiChatProps';
+import * as Icons from './Icons';
+
+export interface IChatProps extends IAzureOpenAiChatProps {
+  config: IItemConfig;
+  isOpen: boolean;
+}
+
+const Chat: FunctionComponent<IChatProps> = (props) => {
+  const [firstLoad, setFirstLoad] = React.useState<boolean>(true);
+  const [model, setModel] = React.useState<string>(props.config.model);
+  const [isProgress, setIsProgress] = React.useState<boolean>(false);
+  const [isStreamProgress, setIsStreamProgress] = React.useState<boolean>(false);
+  const [isSubmitDisabled, setIsSubmitDisabled] = React.useState<boolean>(true);
+
+  const [chatName, setChatName] = React.useState<string>(undefined);
+
+  const [chatHistory, setChatHistory] = React.useState<IChatHistory[]>([]);
+  const [chatHistoryId, setChatHistoryId] = React.useState(undefined);
+  const [myChats, setMyChats] = React.useState<IChatMessage[]>(undefined);
+  const [sharedChats, setSharedChats] = React.useState<IChatMessage[]>(undefined);
+  const [selectedSharedChat, setSelectedSharedChat] = React.useState(undefined);
+
+  const [deleteChatName, setDeleteChatName] = React.useState<string>(undefined);
+  const [deleteChatId, setDeleteChatId] = React.useState<string>(undefined);
+
+  const [responseContentError, setResponseContentError] = React.useState<string>(undefined);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState<boolean>(false);
+
+  const [showShareDialog, setShowShareDialog] = React.useState<boolean>(false);
+  const [showUnshareDialog, setShowUnshareDialog] = React.useState<boolean>(false);
+
+  const [requestCharsCount, setRequestCharsCount] = React.useState<number>(0);
+  const [editingChatId, setEditingChatId] = React.useState<string>(undefined);
+  const [editingChatMessageId, setEditingChatMessageId] = React.useState<string>(undefined);
+  const [reloadNavigation, setReloadNavigation] = React.useState<boolean>();
+  const [collapseNavigation, setCollapseNavigation] = React.useState<boolean>();
+  const [shareWith, setShareWith] = React.useState<IUser[]>();
+  const [hideMySharedChats, setHideMySharedChats] = React.useState<boolean>();
+
+  const [selectedCodeStyle, setSelectedCodeStyle] = React.useState(props.highlightStyleDefault);
+  const [disabledHighlights, setDisabledHighlights] = React.useState<string[]>([]);
+
+  const [pageTitle] = React.useState<string>(document.querySelector('title')?.innerHTML);
+  const [isCustomPanelOpen, setIsCustomPanelOpen] = React.useState<boolean>();
+
+  const [formattedContent, setFormattedContent] = React.useState<JSX.Element[]>();
+
+  const refPrompt = React.useRef<HTMLTextAreaElement>();
+  const refPromptInCustomPanel = React.useRef<HTMLTextAreaElement>();
+  const refPanelContentPane = React.useRef<HTMLDivElement>();
+  const refPanelContentPaneInCustomPanel = React.useRef<HTMLDivElement>();
+
+  const refConversationContainer = React.useRef<HTMLDivElement>();
+  const refConversationContainerInCustomPanel = React.useRef<HTMLDivElement>();
+
+  const wpId = React.useMemo(() => props.context.webPartTag.substring(props.context.webPartTag.lastIndexOf('.') + 1), []);
+
+  const chatHistoryParams = useChatHistory(chatHistory, props.config.maxTokens, chatHistoryId, model);
+
+  const storageService = useStorageService(props);
+
+  const canOpenCustomPanel = () => {
+    // Custom panel does not work correctly in mobile UI if there is more than 1 WP on the page (1 + 1 in panel = 2 max allowed)
+    return (
+      props.fullScreen && (props.webPartWidth > 1024 || document.querySelectorAll(`.${styles.panelNavigationPane}`).length <= 2)
+    );
+  };
+
+  React.useMemo(() => {
+    if (props.isOpen && !myChats) {
+      loadChats();
+    }
+  }, [props.isOpen]);
+
+  React.useEffect(() => {
+    if (isCustomPanelOpen || props.isOpen) {
+      ChatHelper.changePageTitle(chatName ?? strings.TextNewChat);
+    } else {
+      ChatHelper.changePageTitle(pageTitle);
+    }
+  }, [props.isOpen, isCustomPanelOpen, chatName]);
+
+  React.useEffect(() => {
+    // Using additional delay to ensure refPanelContentPaneInCustomPanel.current has been set on the first load.
+    setTimeout(scrollContentToBottom, 200);
+    // Using additional delay to ensure refConversationContainerInCustomPanel.current has been set on the first load.
+    setTimeout(scrollNavigationToTop, 200);
+    setTimeout(() => {
+      const sourceTextArea = isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
+      const targetTextArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
+      if (sourceTextArea && targetTextArea && sourceTextArea.value !== targetTextArea.value) {
+        targetTextArea.value = sourceTextArea.value;
+        resizePrompt({ target: targetTextArea });
+      }
+    }, 200);
+  }, [isCustomPanelOpen]);
+
+  React.useEffect(() => {
+    const isNarrow = props.webPartWidth < 1024;
+    if (isCustomPanelOpen && !canOpenCustomPanel()) {
+      setIsCustomPanelOpen(false);
+    }
+    setCollapseNavigation(isNarrow);
+  }, [props.webPartWidth]);
+
+  React.useEffect(() => {
+    setFormattedContent([]);
+  }, [chatHistoryId, selectedCodeStyle]);
+  
+  return (
+    <>
+      {getContentPanel(refPanelContentPane, refPrompt, refConversationContainer)}
+      {getConfirmationDialog(
+        `${strings.TextDelete}?`,
+        `${strings.TextDeleteMessage} '${deleteChatName}'?`,
+        showDeleteDialog,
+        setShowDeleteDialog,
+        () => deleteChat(deleteChatId),
+        strings.TextDelete
+      )}
+      {props.sharing &&
+        getConfirmationDialog(
+          `${strings.TextShare}?`,
+          `${strings.TextShareMessage} '${chatName}'?`,
+          showShareDialog,
+          setShowShareDialog,
+          () => shareChat(chatHistoryId, true),
+          strings.TextShare,
+          undefined,
+          !props.context.pageContext.user.isExternalGuestUser
+            ? [
+                <div className={styles.shareWithHeader}>{strings.TextShareWith}</div>,
+                <PeoplePicker
+                  selectedUserIds={myChats?.find((r) => r.id === chatHistoryId)?.sharedWith?.split(';') || []}
+                  onChange={setShareWith}
+                />,
+              ]
+            : undefined,
+          !props.context.pageContext.user.isExternalGuestUser ? '50%' : undefined
+        )}
+      {props.sharing &&
+        getConfirmationDialog(
+          `${strings.TextUnshare}?`,
+          `${strings.TextUnshareMessage} '${chatName}'?`,
+          showUnshareDialog,
+          setShowUnshareDialog,
+          () => shareChat(chatHistoryId, false),
+          strings.TextUnshare
+        )}
+      {isCustomPanelOpen !== undefined && (
+        <Panel
+          className={styles.customPanel}
+          style={{ opacity: isCustomPanelOpen ? 1 : 0 }}
+          isOpen={isCustomPanelOpen}
+          hasCloseButton={false}
+          onDismiss={() => {
+            // Next line disables the standard close behavior on ESC and on clicking Close button. Custom ChromeClose buton below sets setIsCustomPanelOpen(false)}
+            return false;
+          }}
+          isLightDismiss={false}
+          isHiddenOnDismiss={true}
+          type={PanelType.custom}
+        >
+          <span className={styles.container}>
+            {getContentPanel(refPanelContentPaneInCustomPanel, refPromptInCustomPanel, refConversationContainerInCustomPanel)}
+            <TooltipHost content={strings.TextClose}>
+              <FontIcon className={styles.closepanel} iconName={'ChromeClose'} onClick={() => setIsCustomPanelOpen(false)} />
+            </TooltipHost>
+          </span>
+        </Panel>
+      )}
+    </>
+  );
+
+  function loadChats(callback: () => void = undefined) {
+    setIsProgress(true);
+    setFormattedContent([]);
+    storageService
+      .loadChatHistory((data) => (data ? setMyChats(data) : setResponseContentError(strings.TextUndeterminedError)))
+      .then(() => {
+        if (typeof callback === 'function') callback();
+        if (props.sharing) {
+          storageService
+            .loadChatHistory(
+              (data) => (data ? setSharedChats(data) : setResponseContentError(strings.TextUndeterminedError)),
+              true
+            )
+            .then(() => setIsProgress(false))
+            .catch(() => setIsProgress(false));
+        } else {
+          setIsProgress(false);
+        }
+      })
+      .catch(() => setIsProgress(false));
+  }
+
+  function clearChatMessages() {
+    setChatHistoryId(undefined);
+    setChatName(undefined);
+    setChatHistory([]);
+    setFormattedContent([]);
+    if (refPrompt.current) refPrompt.current.value = '';
+    if (refPromptInCustomPanel.current) refPromptInCustomPanel.current.value = '';
+  }
+
+  function confirmDeleteChat(id: string, name: string) {
+    setDeleteChatId(id);
+    setDeleteChatName(name);
+    setShowDeleteDialog(true);
+  }
+  function deleteChat(id: string) {
+    storageService.deleteChat(id, () => {
+      //props.apiService.loadChatHistory(setMyChats);
+      const newMyChats = [...myChats].filter((r) => r.id !== id);
+      setMyChats([...newMyChats]);
+      //setReloadNavigation(true);
+      if (id === chatHistoryId) {
+        clearChatMessages();
+      }
+      if (sharedChats?.length > 0) {
+        const newSharedChats = [...sharedChats].filter((r) => r.id !== id);
+        setSharedChats([...newSharedChats]);
+      }
+    });
+  }
+
+  function confirmShareChat(share: boolean) {
+    if (share) {
+      setShowShareDialog(true);
+    } else {
+      setShowUnshareDialog(true);
+    }
+  }
+  function shareChat(id: string, share: boolean) {
+    let newSharedWith = shareWith?.map((p) => p.username);
+    if (!newSharedWith) {
+      // The case when the user opened PeoplePicker and did not select any Persona (or just unshared the chat)
+      newSharedWith = myChats.find((r) => r.id === id).sharedWith?.split(';');
+    }
+    const modified = myChats.find((r) => r.id === id)?.modified;
+    storageService.shareChat(id, share, newSharedWith, modified, () => {
+      if (shareWith) setShareWith(undefined);
+      const newMyChats = [...myChats];
+      const chat = newMyChats.find((r) => r.id === id);
+      chat.shared = !!share;
+      //if (chat.sharedWith !== newSharedWith) {
+      chat.sharedWith = newSharedWith?.join(';');
+      //}
+      setMyChats([...newMyChats]);
+      //setReloadNavigation(true);
+      storageService.loadChatHistory(setSharedChats, true);
+    });
+  }
+
+  function editChatName(id: string) {
+    setEditingChatId(id);
+  }
+  function saveEditedChatName(id: string, newName: string) {
+    if (!newName?.trim()) return;
+    if (newName.length > 255) newName = newName.substring(0, 255);
+    if (/\n+$/.test(newName)) newName = newName.replace(/\n+$/, '');
+    if (chatName === newName) {
+      setEditingChatId(undefined);
+      return;
+    }
+    const modified = myChats.find((r) => r.id === id)?.modified;
+    storageService.updateChatName(id, newName, modified, () => {
+      setEditingChatId(undefined);
+      setChatName(newName);
+      const newMyChats = [...myChats];
+      const chat = newMyChats.find((r) => r.id === id);
+      chat.name = newName;
+      setMyChats([...newMyChats]);
+      if (sharedChats?.length > 0) {
+        const newSharedChats = [...sharedChats];
+        const shared = newSharedChats.find((r) => r.id === id);
+        if (shared) {
+          shared.name = newName;
+          setSharedChats([...newSharedChats]);
+        }
+      }
+      setReloadNavigation(true); // This line helps to reset edited long name to its line start
+      //props.apiService.loadChatHistory(setMyChats).then(() => setReloadNavigation(true));
+    });
+  }
+
+  function editChatMessage(id: string) {
+    setEditingChatMessageId(id);
+  }
+  function saveEditedChatMessage(chatMessageIndex: number, newContent: string) {
+    const newChatHistory = [...chatHistory];
+    const modified = myChats?.find((chat) => chat.id === chatHistoryId)?.modified;
+    const message: IChatHistory = newChatHistory[chatMessageIndex];
+    message.content = ChatHelper.sanitizeHtml(newContent);
+    saveChatHistory(newChatHistory, modified);
+    setEditingChatMessageId(undefined);
+    setFormattedContent([]);
+  }
+
+  function reloadChatHistory(id: string, name: string, newChatHistory: IChatHistory[]) {
+    setChatHistoryId(id);
+    setChatName(name);
+    setChatHistory(newChatHistory);
+    setDisabledHighlights([]);
+    scrollContentToBottom();
+  }
+
+  function scrollContentToBottom() {
+    ChatHelper.scrollToBottom(!isCustomPanelOpen ? refPanelContentPane.current : refPanelContentPaneInCustomPanel.current);
+  }
+
+  function scrollNavigationToTop() {
+    ChatHelper.scrollToTop(
+      !isCustomPanelOpen ? refConversationContainer?.current : refConversationContainerInCustomPanel?.current
+    );
+  }
+
+  function getContentPanel(
+    refContentPane: React.LegacyRef<HTMLDivElement>,
+    refPromptArea: React.LegacyRef<HTMLTextAreaElement>,
+    refNavigation: React.LegacyRef<HTMLDivElement>
+  ): JSX.Element {
+    const rows: JSX.Element[] = chatHistory.length > 0 ? getChatHistoryContent(chatHistory) : [];
+    const conversations: JSX.Element[] = getChatNavigation(myChats) ?? [];
+
+    const isDisabled: boolean = isProgress || isSubmitDisabled;
+    const submitButton: JSX.Element = (
+      <LinkButton
+        onClick={submitPayload}
+        className={[styles.linkButton, isDisabled ? styles.disabled : undefined].join(' ').trim()}
+        disabled={isDisabled}
+      >
+        <TooltipHost content={strings.TextSubmit}>
+          {<FontIcon iconName={'Send'} style={{ opacity: isProgress ? 0.5 : 1 }} />}
+        </TooltipHost>
+      </LinkButton>
+    );
+
+    const getChatName = (className: string = undefined) => {
+      return (
+        <div
+          className={[
+            styles.chatname,
+            className,
+            props.promptAtBottom ? styles.promptAtBottom : undefined,
+            isCustomPanelOpen && props.promptAtBottom ? styles.insidePanel : undefined,
+          ]
+            .join(' ')
+            .trim()}
+        >
+          <TooltipHost content={chatName ?? strings.TextNewChat} overflowMode={TooltipOverflowMode.Parent}>
+            {chatName ?? strings.TextNewChat}
+          </TooltipHost>
+        </div>
+      );
+    };
+
+    const getLanguageModels = (): JSX.Element => {
+      return (
+        props.languageModels?.length > 1 && (
+          <div className={[styles.topbarcontent, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+            {props.languageModels.map((languageModel, index) => {
+              languageModel = languageModel.trim();
+              const isGpt3 = /gpt-3/i.test(languageModel);
+              const isGpt4 = /gpt-4/i.test(languageModel);
+              const selectedClassName = model === languageModel || (!model && index === 0) ? styles.selectedModel : undefined;
+              return (
+                <TooltipHost content={`LLM: ${languageModel}`}>
+                  <DefaultButton
+                    className={[
+                      styles.modelSelector,
+                      styles.greenicon,
+                      selectedClassName,
+                      isCustomPanelOpen && !props.promptAtBottom ? styles.insidePanel : undefined,
+                      props.isDarkTheme ? styles.darkTheme : undefined,
+                    ]
+                      .join(' ')
+                      .trim()}
+                    onClick={() => setModel(languageModel)}
+                  >
+                    {isGpt3 ? Icons.getLighteningIcon() : isGpt4 ? Icons.getStarIcon() : Icons.getLighteningIcon()}
+                    {isGpt3 ? strings.TextGpt35 : isGpt4 ? strings.TextGpt4 : languageModel}
+                  </DefaultButton>
+                </TooltipHost>
+              );
+            })}
+          </div>
+        )
+      );
+    };
+
+    const getPanelContentPane = (): JSX.Element => {
+      const noUpperLanguageSelector = !props.promptAtBottom && !(props.languageModels?.length > 1);
+      return (
+        <div
+          ref={refContentPane}
+          className={[
+            styles.panelContentPane,
+            !chatHistory?.length ? styles.clearborder : undefined,
+            noUpperLanguageSelector ? styles.noUpperLanguageSelector : undefined,
+            isCustomPanelOpen ? styles.insidePanel : undefined,
+          ]
+            .join(' ')
+            .trim()}
+        >
+          <div className={styles.responseRowsContainer}>
+            {rows}
+            {isProgress && <CustomShimmer />}
+          </div>
+        </div>
+      );
+    };
+
+    const getPromptContainer = (): JSX.Element => {
+      const charactersLeft =
+        chatHistoryParams.maxTextLength > requestCharsCount
+          ? chatHistoryParams.maxTextLength - requestCharsCount
+          : props.unlimitedHistoryLength
+          ? chatHistoryParams.defaultTextLength > requestCharsCount
+            ? chatHistoryParams.defaultTextLength - requestCharsCount
+            : 0
+          : 0;
+
+      return (
+        <>
+          <div className={[styles.promptContainer, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+            <textarea
+              ref={refPromptArea}
+              placeholder={strings.TextSendMessage}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  submitPayload();
+                } else {
+                  resizePrompt(e);
+                }
+              }}
+              onBlur={resizePrompt}
+              onInput={resizePrompt}
+              maxLength={!props.unlimitedHistoryLength ? chatHistoryParams.maxTextLength : chatHistoryParams.defaultTextLength}
+              disabled={
+                isProgress || isStreamProgress || (chatHistoryParams.maxContentLengthExceeded && !props.unlimitedHistoryLength)
+              }
+            />
+            {(!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength) && submitButton}
+          </div>
+          <div className={styles.requestCharsCount}>
+            {!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength
+              ? `${requestCharsCount} ${
+                  requestCharsCount === 1 ? strings.TextCharacters.replace(/s$/i, '') : strings.TextCharacters
+                }, ${charactersLeft} ${strings.TextMoreCharactersAllowed}`
+              : strings.TextMaxContentLengthExceeded}
+            {props.promptAtBottom && getLanguageModels()}
+          </div>
+        </>
+      );
+    };
+
+    const getContentArea = (): JSX.Element => {
+      const messageBar = responseContentError && (
+        <MessageBar className={styles.errorMessage} type={MessageType.error} message={responseContentError} />
+      );
+      return props.promptAtBottom ? (
+        <>
+          {getPanelContentPane()}
+          <div className={styles.inputAreaWrap}>{getPromptContainer()}</div>
+          {messageBar}
+        </>
+      ) : (
+        <>
+          {getPromptContainer()}
+          {messageBar}
+          {getPanelContentPane()}
+        </>
+      );
+    };
+
+    const filteredSharedChats = sharedChats
+      ?.filter((chat) =>
+        !hideMySharedChats ? true : chat.username !== PageContextService.context.pageContext.aadInfo.userId.toString()
+      )
+      .sort((a, b) => (a.modified > b.modified ? -1 : a.modified < b.modified ? 1 : 0)); // Order by modified desc;
+
+    return (
+      chatHistory && (
+        <div className={[styles.panelContainer, !props.isFullWidthColumn ? styles.notFullWidth : undefined].join(' ').trim()}>
+          {props.isOpen && (
+            <div
+              className={[
+                styles.panelNavigationPane,
+                collapseNavigation ? styles.collapsed : undefined,
+                isCustomPanelOpen ? styles.insidePanel : undefined,
+              ]
+                .join(' ')
+                .trim()}
+            >
+              <div className={styles.navigationHeader}>
+                <div>{strings.TextRecentChats}&nbsp;</div>
+                <div className={styles.addnewchat} onClick={clearChatMessages}>
+                  <FontIcon iconName="AddTo" />
+                  &nbsp;{strings.TextNewChat}
+                </div>
+                <div className={styles.headerButtons}>
+                  <div
+                    className={styles.refresh}
+                    //onClick={() => props.apiService.loadChatHistory(setMyChats)} // Replaced with a visual effect
+                    onClick={() =>
+                      loadChats(() => {
+                        setReloadNavigation(true);
+                        setSelectedSharedChat(undefined);
+                      })
+                    }
+                  >
+                    <TooltipHost content={strings.TextRefresh}>
+                      <FontIcon iconName="Refresh" />
+                    </TooltipHost>
+                  </div>
+                  <div className={styles.collapseMenu} onClick={() => setCollapseNavigation(true)}>
+                    {props.webPartWidth > 1024 && (
+                      <TooltipHost content={collapseNavigation ? strings.TextExpand : strings.TextCollapse}>
+                        <FontIcon iconName="CollapseMenu" />
+                      </TooltipHost>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div ref={refNavigation} className={styles.conversationContainer}>
+                {conversations}
+              </div>
+              <div className={styles.navigationFooter}>
+                {sharedChats?.length > 0 && (
+                  <>
+                    <div className={styles.footerFirstRow}>
+                      <div className={styles.footerTitle}>{strings.TextSharedChats}</div>
+                      <Checkbox
+                        label={strings.TextHideMySharedChats}
+                        className={styles.checkbox}
+                        onChange={(e, checked: boolean) => setHideMySharedChats(checked)}
+                      />
+                    </div>
+                    <Dropdown
+                      className={filteredSharedChats?.length === 0 ? styles.invisible : undefined}
+                      selectedKey={selectedSharedChat?.id ?? null}
+                      options={filteredSharedChats?.map((chat) => {
+                        const option: IDropdownOption = {
+                          key: chat.id,
+                          text: `${ChatHelper.formatDate(chat.modified, props.locale)} ${chat.name}`,
+                          data: chat,
+                        };
+                        return option;
+                      })}
+                      responsiveMode={ResponsiveMode.unknown}
+                      onChange={(e, option: IDropdownOption) => {
+                        clearChatMessages();
+                        const selected = option.data;
+                        setSelectedSharedChat(selected);
+                        if (selected?.message) {
+                          const message = selected.message;
+                          setChatHistory(JSON.parse(message));
+                          setDisabledHighlights([]);
+                          scrollContentToBottom();
+                        } else {
+                          setChatHistory([]);
+                        }
+                      }}
+                    />
+                  </>
+                )}
+                {props.highlightStyles &&
+                  chatHistory?.find((r) => hasMarkdown(r.content)) &&
+                  getStylesSelector(selectedCodeStyle, (newStyle) => setSelectedCodeStyle(newStyle))}
+              </div>
+            </div>
+          )}
+          <div
+            className={[
+              styles.collapseMenu2,
+              !collapseNavigation ? styles.invisible : undefined,
+              props.isFullWidthColumn ? styles.widecontent2 : undefined,
+            ]
+              .join(' ')
+              .trim()}
+            onClick={() => setCollapseNavigation(!collapseNavigation)}
+          >
+            <TooltipHost content={collapseNavigation ? strings.TextExpand : strings.TextCollapse}>
+              <FontIcon iconName="CollapseMenu" />
+            </TooltipHost>
+          </div>
+          <div
+            className={[
+              styles.panelContentCanvas,
+              props.isFullWidthColumn ? styles.widecontent : undefined,
+              props.promptAtBottom ? styles.clearheight : undefined,
+            ]
+              .join(' ')
+              .trim()}
+          >
+            <div className={styles.topbar}>
+              {!firstLoad && getChatName()}
+              {!props.promptAtBottom && getLanguageModels()}
+              {canOpenCustomPanel() && (
+                <span
+                  className={[
+                    styles.expandToPanel,
+                    props.promptAtBottom ? styles.promptAtBottom : undefined,
+                    isCustomPanelOpen ? styles.invisible : undefined,
+                  ]
+                    .join(' ')
+                    .trim()}
+                >
+                  <TooltipHost content={!isCustomPanelOpen ? strings.TextFullScreen : undefined}>
+                    <FontIcon iconName="MiniExpand" onClick={() => setIsCustomPanelOpen(true)} />
+                  </TooltipHost>
+                </span>
+              )}
+            </div>
+            {getContentArea()}
+          </div>
+        </div>
+      )
+    );
+  }
+
+  function resizePrompt(e: any) {
+    const minHeight = 34; // px
+    const maxHeight = 100; // px
+    const padding = 15; // px
+
+    if (!e.target.value) {
+      e.target.style.height = `${minHeight}px`;
+      setIsSubmitDisabled(true);
+      setRequestCharsCount(0);
+      return;
+    }
+
+    setIsSubmitDisabled(false);
+    setRequestCharsCount(e.target.value.length);
+    e.target.style.height = 'inherit';
+    e.target.style.height = `${e.target.scrollHeight - padding}px`;
+
+    // In case you have a limitation
+    const limit = Math.min(e.target.scrollHeight - padding, maxHeight);
+    if (limit === maxHeight) {
+      e.target.style.height = `${maxHeight}px`;
+      e.target.style.overflowY = 'auto';
+    } else {
+      e.target.style.overflowY = 'hidden';
+    }
+  }
+
+  function submitPayload() {
+    setIsProgress(true);
+
+    const textArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
+    const requestText: string = ChatHelper.sanitizeHtml(textArea.value);
+    const payload = ChatHelper.getItemPayload(props.config, requestText, model);
+    payload.chatHistory = [...chatHistory];
+    if (chatHistoryParams.maxContentLengthExceeded && props.unlimitedHistoryLength) {
+      do {
+        if (payload.chatHistory.length > 1) payload.chatHistory = payload.chatHistory.slice(1);
+      } while (
+        payload.chatHistory.length > 1 &&
+        JSON.stringify(payload.chatHistory.length + requestText.length > chatHistoryParams.maxContentLength)
+      );
+    }
+
+    let newChatHistory = [...chatHistory];
+    newChatHistory.push({ role: 'user', content: payload.queryText });
+    setChatHistory(newChatHistory);
+    textArea.value = '';
+    resizePrompt({ target: textArea });
+    scrollContentToBottom();
+
+    const handleResponse = (response) => {
+      setIsProgress(false);
+      if (response) {
+        // The next line is important. It enforces the correct state change by changing array's memory address to new one.
+        newChatHistory = [...newChatHistory];
+        newChatHistory.push({
+          role: 'assistant',
+          content: ChatHelper.cleanupResponseContent(response),
+        });
+        setChatHistory(newChatHistory); // Sets the updated array with new memory address.
+        scrollContentToBottom();
+        setResponseContentError(undefined);
+        saveChatHistory(newChatHistory);
+      } else {
+        setResponseContentError(strings.TextUndeterminedError);
+        LogService.error('submitPayload', 'Empty response from Open AI');
+        LogService.error('submitPayload', response);
+      }
+    };
+
+    const handleResponseStream = (response, firstResponse: boolean) => {
+      if (response) {
+        // The next line is important. It enforces the correct state change by changing array's memory address to new one.
+        newChatHistory = [...newChatHistory];
+        if (firstResponse) {
+          newChatHistory.push({
+            role: 'assistant',
+            content: ChatHelper.cleanupResponseContent(response),
+          });
+          //const chatMessageId = `${styles.message}_${newChatHistory.length - 1}`;
+          const chatMessageId = `${styles.message}_${wpId}_${newChatHistory.length - 1}`;
+          setDisabledHighlights([...disabledHighlights, chatMessageId]);
+          setResponseContentError(undefined);
+        } else {
+          const assistantResponses = newChatHistory.filter((r) => r.role === 'assistant');
+          assistantResponses[assistantResponses.length - 1].content += ChatHelper.cleanupResponseContent(response);
+        }
+        setChatHistory(newChatHistory); // Sets the updated array with new memory address.
+        scrollContentToBottom();
+      }
+    };
+
+    if (props.apiService.isConfigured()) {
+      if (!props.streaming) {
+        props.apiService.callQueryText(payload).then((response) => handleResponse(response));
+      } else {
+        let firstResponse = true;
+        props.apiService.callQueryText(payload, true, (message: string, done?: boolean, isError?: boolean) => {
+          setIsProgress(false);
+          setIsStreamProgress(true);
+          if (isError) {
+            setResponseContentError(strings.TextUndeterminedError);
+            setIsStreamProgress(false);
+            setFormattedContent([]);
+          } else if (!done) {
+            if (message) {
+              handleResponseStream(message, firstResponse);
+              firstResponse = false;
+              setResponseContentError(undefined);
+            }
+          } else {
+            setIsStreamProgress(false);
+            setFormattedContent([]);
+            if (!firstResponse) {
+              setResponseContentError(undefined);
+              //const chatMessageId = `${styles.message}_${newChatHistory.length - 1}`;
+              const chatMessageId = `${styles.message}_${wpId}_${newChatHistory.length - 1}`;
+              setDisabledHighlights([...disabledHighlights.filter((id) => id !== chatMessageId)]);
+              saveChatHistory(newChatHistory);
+            } else {
+              // Authentication error?
+              setResponseContentError(strings.TextUndeterminedError);
+            }
+          }
+        });
+      }
+    } else {
+      setIsProgress(false);
+      setResponseContentError(strings.TextUndeterminedError);
+      LogService.error('submitPayload', 'OpenAI not configured: check values for appId, endpointBaseUrlForOpenAi');
+    }
+  }
+
+  function saveChatHistory(newChatHistory: IChatHistory[], modified?: string) {
+    if (!chatHistoryId) {
+      // New chat
+      const requestText = newChatHistory[0].content;
+      const newChatName: string = HtmlHelper.stripHtml(requestText.length > 255 ? requestText.substring(0, 255) : requestText);
+      storageService.createChat(newChatName, newChatHistory, (newChatHistoryId) => {
+        setChatHistoryId(newChatHistoryId);
+        setChatName(newChatName);
+        storageService.loadChatHistory(setMyChats);
+      });
+    } else {
+      storageService.updateChatHistory(
+        chatHistoryId,
+        newChatHistory,
+        () => {
+          const newMyChats = [...myChats];
+          const chat = newMyChats.find((r) => r.id === chatHistoryId);
+          if (chat && chat.message) {
+            // Partial UI update without requerying DB
+            chat.message = JSON.stringify(newChatHistory);
+            chat.modified = modified ?? ChatHelper.toLocalISOString(); //new Date().toISOString();
+            setMyChats(newMyChats);
+            //setReloadNavigation(true);
+            ChatHelper.scrollToTop(
+              !isCustomPanelOpen ? refConversationContainer?.current : refConversationContainerInCustomPanel?.current
+            );
+          } else {
+            storageService.loadChatHistory(setMyChats);
+          }
+        },
+        modified
+      );
+    }
+  }
+
+  function getChatHistoryContent(rows: IChatHistory[]): JSX.Element[] {
+    // Performance improvement to eliminate delays related to rendering of large chats with many code bocks.
+    const formattedRows = props.highlight
+      ? rows.map((r, index) => {
+          return getHighlightedContent(r.content, index);
+        })
+      : undefined;
+    if (!formattedContent?.length || formattedContent.length < formattedRows.length) {
+      setFormattedContent(formattedRows);
+    }
+
+    return rows.map((r, index) => {
+      const isAi = r.role !== 'user';
+      const content = r.content;
+
+      //const chatMessageId = `${styles.message}_${index}`;
+      const chatMessageId = `${styles.message}_${wpId}_${index}`;
+      const chatMessageIdSelector = isCustomPanelOpen
+        ? `.${styles.customPanel} div[id='${chatMessageId}']`
+        : `div[id='${chatMessageId}']`;
+
+      return (
+        <div className={styles.responseRowPlaceholder}>
+          <div key={index} className={styles.responseRow}>
+            <div className={isAi ? styles.logo : styles.userLogo}>
+              {isAi ? Icons.getOpenAILogo(strings.TextChat) : <FontIcon iconName={'UserFollowed'} className={styles.userIcon} />}
+            </div>
+            {isAi ? (
+              props.highlight ? (
+                <div className={[styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}>
+                  {!disabledHighlights?.find((id) => id === chatMessageId) ? formattedRows[index] : content}
+                </div>
+              ) : (
+                <div className={styles.message} dangerouslySetInnerHTML={{ __html: r.content }} />
+              )
+            ) : (
+              <div
+                id={chatMessageId}
+                className={[styles.message, editingChatMessageId === chatMessageId ? styles.outline : undefined].join(' ').trim()}
+                contentEditable={editingChatMessageId === chatMessageId ? true : false}
+                dangerouslySetInnerHTML={{ __html: r.content }}
+                onKeyDown={(e) => {
+                  if (chatMessageId === editingChatMessageId && e.key === 'Enter') {
+                    e.preventDefault();
+                    const newContent = (e.target as any)?.innerHTML;
+                    if (content !== newContent) {
+                      saveEditedChatMessage(index, newContent);
+                    }
+                  }
+                }}
+              />
+            )}
+          </div>
+          <div className={styles.actionIcons}>
+            {!isAi ? (
+              <>
+                {editingChatMessageId !== chatMessageId && (
+                  <TooltipHost content={strings.TextEdit}>
+                    <FontIcon
+                      iconName="Edit"
+                      className={styles.editIcon}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Check the line if (id !== editingChatMessageId) setEditingChatMessageId(undefined); above
+                        const messageDiv = document.querySelector(chatMessageIdSelector) as HTMLDivElement;
+                        editChatMessage(chatMessageId);
+                        setTimeout(() => messageDiv.focus(), 500);
+                      }}
+                    />
+                  </TooltipHost>
+                )}
+                {editingChatMessageId === chatMessageId && (
+                  <TooltipHost content={strings.TextSave}>
+                    <FontIcon
+                      iconName="CheckMark"
+                      className={styles.editIcon}
+                      onClick={(e) =>
+                        saveEditedChatMessage(index, (document.querySelector(chatMessageIdSelector) as any).innerHTML)
+                      }
+                    />
+                  </TooltipHost>
+                )}
+                {editingChatMessageId === chatMessageId && (
+                  <TooltipHost content={strings.TextCancel}>
+                    <FontIcon iconName="Cancel" className={styles.deleteIcon} onClick={(e) => editChatMessage(undefined)} />
+                  </TooltipHost>
+                )}
+              </>
+            ) : (
+              props.highlight &&
+              hasMarkdown(content) && (
+                <TooltipHost content={strings.TextFormat}>
+                  <FontIcon
+                    iconName="RawSource"
+                    className={styles.formatIcon}
+                    onClick={() => {
+                      if (disabledHighlights?.find((id) => id === chatMessageId)) {
+                        setDisabledHighlights([...disabledHighlights.filter((id) => id !== chatMessageId)]);
+                      } else {
+                        setDisabledHighlights([...disabledHighlights, chatMessageId]);
+                      }
+                    }}
+                  />
+                </TooltipHost>
+              )
+            )}
+          </div>
+        </div>
+      );
+    });
+  }
+
+  function getHighlightedContent(content: string, index: number): JSX.Element {
+    if (formattedContent?.length > index) {
+      if (isStreamProgress && formattedContent.length === index + 1) {
+        return formatCode(content, selectedCodeStyle);
+      } else {
+        return formattedContent[index];
+      }
+    } else {
+      return formatCode(content, selectedCodeStyle);
+    }
+  }
+
+  function getChatNavigation(rows: IChatMessage[]): JSX.Element[] {
+    if (reloadNavigation) {
+      setTimeout(() => setReloadNavigation(false), 100);
+      return null;
+    }
+
+    if (rows?.length === 0 && firstLoad) {
+      setFirstLoad(false);
+    }
+    if (!rows || rows.length === 0) return null;
+
+    try {
+      rows = rows.sort((a, b) => (a.modified > b.modified ? -1 : a.modified < b.modified ? 1 : 0)); // Order by modified desc
+    } catch (e) {}
+
+    return rows.map((r, index) => {
+      const id: string = r.id;
+      const name: string = r.name;
+      const created: string = r.created;
+      const modified: string = r.modified;
+      const message: string = r.message;
+      const shared: boolean = r.shared;
+
+      if (index === 0 && firstLoad) {
+        try {
+          reloadChatHistory(id, name, JSON.parse(r.message));
+          setFirstLoad(false);
+        } catch (e) {
+          LogService.error('getChatNavigation', e);
+          clearChatMessages();
+        }
+      }
+
+      try {
+        const strCreated = ChatHelper.formatDate(created, props.locale);
+        const strModified = ChatHelper.formatDate(modified, props.locale);
+        //const conversationId = `${btoa(id)}_${styles.conversation}`;
+        const conversationId = `${styles.conversation}_${wpId}_${id}`;
+        const conversationIdSelector = isCustomPanelOpen
+          ? `.${styles.customPanel} div[id='${conversationId}']`
+          : `div[id='${conversationId}']`;
+
+        return (
+          <div
+            //id={btoa(id)}
+            key={index}
+            className={[styles.conversationRow, id === chatHistoryId ? styles.selected : undefined].join(' ').trim()}
+            onClick={() => {
+              try {
+                if (editingChatId !== undefined && id !== editingChatId) {
+                  //if (id !== editingChatId) {
+                  setReloadNavigation(true); // This line helps to reset edited long name to its line start
+                  setEditingChatId(undefined);
+                }
+                const storedChatMessages = JSON.parse(message);
+                reloadChatHistory(id, name, storedChatMessages);
+                setSelectedSharedChat(undefined);
+              } catch (e) {
+                LogService.error('getChatNavigation', e);
+              }
+            }}
+          >
+            <div className={styles.rowTitle}>
+              <TooltipHost
+                content={
+                  <>
+                    <div>{name}</div>
+                    <div>
+                      {`${strings.TextCreated}: ${strCreated.replace(/:$/, '')}, ${strings.TextModified}: ${strModified.replace(
+                        /:$/,
+                        ''
+                      )}`}
+                      {r.shared ? `, ${strings.TextShared}` : undefined}
+                    </div>
+                  </>
+                }
+              >
+                <div className={styles.date}>{strModified}</div>
+                <div
+                  id={conversationId}
+                  className={[
+                    styles.conversation,
+                    editingChatId === id ? styles.outline : undefined,
+                    r.shared && props.sharing ? styles.shared : undefined,
+                  ]
+                    .join(' ')
+                    .trim()}
+                  contentEditable={editingChatId === id ? true : false}
+                  onKeyDown={(e) => {
+                    if (id === editingChatId && e.key === 'Enter') {
+                      e.preventDefault();
+                      const target = e.target as any;
+                      let newName = target.innerText;
+                      if (name !== newName) {
+                        newName = HtmlHelper.stripHtml(newName);
+                        target.innerHTML = newName;
+                        saveEditedChatName(id, newName);
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // Handling the case if the user copy-pasted HTML.
+                    const target = e.target as any;
+                    const newHtml = target.innerHTML;
+                    const newText = target.innerText;
+                    if (newHtml !== newText) {
+                      target.innerHTML = HtmlHelper.stripHtml(newText);
+                    }
+                  }}
+                >
+                  {name}
+                </div>
+              </TooltipHost>
+            </div>
+            {id === chatHistoryId && (
+              <div className={styles.conversationActions}>
+                {editingChatId !== id && (
+                  <TooltipHost content={strings.TextEdit}>
+                    <FontIcon
+                      iconName="Edit"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Check the line if (id !== editingChatId) setEditingChatId(undefined); above
+                        editChatName(id);
+                        setTimeout(() => (document.querySelector(conversationIdSelector) as any)?.focus(), 500);
+                      }}
+                    />
+                  </TooltipHost>
+                )}
+                {editingChatId === id && (
+                  <TooltipHost content={strings.TextSave}>
+                    <FontIcon
+                      iconName="CheckMark"
+                      onClick={(e) => saveEditedChatName(id, (document.querySelector(conversationIdSelector) as any).innerText)}
+                    />
+                  </TooltipHost>
+                )}
+                {editingChatId === id && (
+                  <TooltipHost content={strings.TextCancel}>
+                    <FontIcon
+                      iconName="Cancel"
+                      onClick={(e) => {
+                        setReloadNavigation(true); // This line helps to reset edited long name to its line start
+                        setEditingChatId(undefined);
+                      }}
+                    />
+                  </TooltipHost>
+                )}
+                {editingChatId !== id && (
+                  <TooltipHost content={strings.TextDelete}>
+                    <FontIcon iconName="Delete" onClick={(e) => confirmDeleteChat(id, name)} />
+                  </TooltipHost>
+                )}
+                {props.sharing && !shared && editingChatId !== id && (
+                  <TooltipHost content={strings.TextShare}>
+                    <FontIcon iconName="PublishContent" onClick={(e) => confirmShareChat(true)} />
+                  </TooltipHost>
+                )}
+                {props.sharing && shared && editingChatId !== id && (
+                  <TooltipHost content={strings.TextUnshare}>
+                    <FontIcon iconName="UnpublishContent" onClick={(e) => confirmShareChat(false)} />
+                  </TooltipHost>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      } catch (e) {
+        LogService.error('getChatNavigation', e);
+        return null;
+      }
+    });
+  }
+};
+export default Chat;

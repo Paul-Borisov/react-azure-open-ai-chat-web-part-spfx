@@ -1,0 +1,61 @@
+@mixin button-reset {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  //outline: inherit;
+  text-transform: none;
+  text-align: left;
+  overflow: visible;
+  line-height: 1.15;
+  margin: 0;
+
+  &:hover {
+    outline: none;
+  }
+}
+
+@mixin button-focus {
+  outline: 1px dotted;
+}
+
+@mixin fav-button {
+  @include button-reset;
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: $ms-color-white;
+  width: 38px;
+  height: 38px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  background-color: $ms-color-themePrimary;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+
+  i {
+    transform: rotate(0deg);
+    transition: all 0.2s ease-in-out;
+    width: 21px;
+    height: 21px;
+    border-radius: 50px;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  &:hover,
+  &:focus {
+    color: $ms-color-neutralLighter;
+
+    i {
+      transform: rotate(72deg);
+    }
+  }
+
+  &:focus i {
+    outline: 1px dotted;
+    outline-offset: -1px;
+  }
+}

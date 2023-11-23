@@ -1,0 +1,52 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.container {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-left: 10px;
+}
+.styleSelector {
+  min-width: 200px;
+  :global .ms-Dropdown-title {
+    border: 0px;
+  }
+}
+.highlightHeader {
+  margin-top: 5px;
+  display: flex !important;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.5em;
+  border-bottom: 1px $ms-color-gray150 solid;
+}
+.copyContainer {
+  float: right;
+}
+.copy {
+  cursor: pointer;
+  &.righthandside {
+    float: right;
+    margin-top: -20px;
+  }
+}
+.syntax {
+  margin: 0;
+}
+.progress {
+  opacity: 0.5;
+  transition: opacity 1s ease-in-out;
+}
+
+.html {
+  table {
+    width: 100%;
+  }
+  table,
+  th,
+  td {
+    text-align: left;
+    background-color: rgb(234, 238, 243) !important;
+    color: $ms-color-black !important;
+  }
+}

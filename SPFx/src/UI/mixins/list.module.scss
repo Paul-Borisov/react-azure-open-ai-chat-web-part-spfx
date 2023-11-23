@@ -1,0 +1,42 @@
+@mixin detailsList {
+  @include ms-fontSize-12;
+  line-height: 16px;
+  margin: $baseUnit 0;
+  padding: 0;
+  flex-grow: 1;
+
+  > div {
+    margin-top: 2px;
+  }
+
+  dt {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    @include ms-fontWeight-semibold;
+
+    i {
+      color: $ms-color-themeSecondary;
+      font-weight: 700;
+    }
+  }
+
+  dd {
+    display: inline;
+    margin: 0 0 0 1ex;
+    padding: 0;
+    word-break: break-all;
+
+    span {
+      white-space: nowrap;
+    }
+  }
+
+  :global(.inverted) {
+    dt {
+      i {
+        color: $ms-color-white;
+      }
+    }
+  }
+}

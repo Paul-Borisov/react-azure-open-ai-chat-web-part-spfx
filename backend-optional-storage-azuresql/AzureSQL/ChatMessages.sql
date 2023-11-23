@@ -1,0 +1,91 @@
+CREATE TABLE [dbo].[ChatMessages](
+	[id] [uniqueidentifier] NOT NULL,
+	[name] [nvarchar](255) NULL,
+	[username] [char](36) NULL,
+	[message] [nvarchar](max) NULL,
+	[created] [datetime] NULL,
+	[modified] [datetime] NULL,
+	[enabled] [bit] NULL,
+	[shared] [bit] NULL,
+	[displayname] [nvarchar](50) NULL,
+	[sharedwith] [varchar](555) NULL,
+ CONSTRAINT [PK_ChatMessages] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[vChatMessages]
+AS
+SELECT TOP 1000 *,[message_length]=LEN([message]) FROM [dbo].[ChatMessages] ORDER BY [modified] DESC
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_created] ON [dbo].[ChatMessages]
+(
+	[created] DESC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_enabled] ON [dbo].[ChatMessages]
+(
+	[enabled] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_enabled_shared] ON [dbo].[ChatMessages]
+(
+	[enabled] ASC,
+	[shared] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_modified] ON [dbo].[ChatMessages]
+(
+	[modified] DESC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_shared] ON [dbo].[ChatMessages]
+(
+	[shared] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_sharedwith] ON [dbo].[ChatMessages]
+(
+	[sharedwith] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_username] ON [dbo].[ChatMessages]
+(
+	[username] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+
+CREATE NONCLUSTERED INDEX [IX_ChatMessages_username_enabled] ON [dbo].[ChatMessages]
+(
+	[username] ASC,
+	[enabled] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, DROP_EXISTING = OFF, ONLINE = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[ChatMessages] ADD  DEFAULT (getdate()) FOR [created]
+GO
+ALTER TABLE [dbo].[ChatMessages] ADD  DEFAULT (getdate()) FOR [modified]
+GO
+ALTER TABLE [dbo].[ChatMessages] ADD  DEFAULT ((1)) FOR [enabled]
+GO
+ALTER TABLE [dbo].[ChatMessages] ADD  DEFAULT ((0)) FOR [shared]
+GO
