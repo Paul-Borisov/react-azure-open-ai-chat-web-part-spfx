@@ -1,0 +1,35 @@
+.errorMessage {
+  margin-bottom: 10px !important;
+  margin: 0 auto;
+  width: 90%;
+}
+.fileUpload {
+  display: none;
+}
+.fileUploadDialogContainer {
+  display: flex;
+  column-gap: 10px;
+  justify-content: center;
+  button {
+    width: 150px;
+    white-space: nowrap;
+  }
+}
+.fileUploadIcon {
+  cursor: pointer;
+  font-size: 150%;
+  i {
+    rotate: 100grad;
+  }
+  .fileCounter {
+    margin-left: 5px;
+    font-size: initial;
+    vertical-align: text-top;
+    &.promptAtBottom {
+      vertical-align: top;
+    }
+  }
+  &.selected {
+    margin-right: 0px;
+  }
+}

@@ -1,0 +1,70 @@
+/*
+  defines the layout for a refinable component
+  include refinableComponent in the local component CSS class name array
+  usage:
+
+  <div className={css(styles.localComponentClass, styles.refinable, this.props.refinerDisplayMode === RefinerDisplayModes.top ? styles.horizontal : styles.vertical)}>
+      <div className={[styles.refiners, this.state.isRefinerPanelOpen ? styles.panelOpen : undefined].join[' ']}>
+        <div className={styles.refinersInner}>
+          ...refiners panel goes here
+        </div>
+      </div>
+    <div className={styles.content}>
+      ...refinable content goes here
+    </div>
+  </div>
+*/
+
+@mixin refinableComponent {
+  display: flex;
+  flex-direction: column;
+
+  .refiners {
+    margin-bottom: 8px;
+    display: none;
+
+    .refinersInner {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    &.panelOpen {
+      display: block;
+
+      .refinersInner {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+:global {
+  // @media (min-width: 480) { ... }
+  .freshM {
+    :local {
+      .refinable {
+        &.vertical {
+          display: flex;
+          flex-direction: row;
+
+          .refiners {
+            flex: 1;
+            margin-right: 8px;
+            margin-bottom: 0;
+            max-width: 230px;
+          }
+
+          .content {
+            flex: 3;
+            max-width: 100%;
+          }
+        }
+
+        &.horizontal {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+  }
+}

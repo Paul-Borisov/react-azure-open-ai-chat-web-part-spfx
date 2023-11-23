@@ -1,0 +1,23 @@
+/*
+    aspect-ratio
+    maintains element aspect ratio based on supplied h/w
+    must contain chld element, supplied as selector, or defaults to .content
+*/
+@mixin aspect-ratio($width, $height, $selector: '.content') {
+  position: relative;
+
+  &:before {
+    display: block;
+    content: '';
+    width: 100%;
+    padding-top: calc($height / $width) * 100%;
+  }
+
+  & > #{$selector} {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+}

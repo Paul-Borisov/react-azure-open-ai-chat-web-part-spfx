@@ -1,0 +1,75 @@
+/*
+  fadeIn / fadeOut
+  fade in or out using opacity
+*/
+
+@mixin fadeIn {
+  animation: fade 0.3s forwards;
+}
+
+@mixin fadeOut {
+  opacity: 1;
+  animation: fade 0.3s reverse;
+}
+
+@mixin fadeInOut {
+  animation: fade 0.3s forwards, fade 0.3s reverse 3s;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/*
+  scale 
+  use transform to pop in/out an element
+*/
+@mixin scaleIn {
+  transform: scale(0);
+  animation: expand 0.3s ease forwards;
+}
+
+@mixin scaleOut {
+  transform: scale(1);
+  animation: expand 0.3s ease reverse;
+}
+
+@keyframes expand {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/*
+  glow 
+  make a text element glow/pulse for attention-grabbing
+*/
+
+@mixin glow {
+  animation: glow 0.3s ease alternate forwards;
+  animation-iteration-count: 9;
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 0 white;
+  }
+
+  100% {
+    text-shadow: 0 0 5px white;
+  }
+}
+
+@mixin pop {
+  @include fadeIn;
+}

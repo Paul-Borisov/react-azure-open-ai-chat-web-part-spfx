@@ -1,0 +1,33 @@
+@mixin item-toolbar {
+  position: relative;
+
+  div[role='toolbar'] {
+    //display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    transform: translateY(0);
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+
+    > div {
+      margin: 2px 5px;
+      box-shadow: 0 0px 6px #00000003;
+      border-radius: 2px;
+      overflow: hidden;
+
+      button {
+        padding: 8px;
+      }
+    }
+  }
+
+  &:hover {
+    div[role='toolbar'] {
+      z-index: 3;
+      transform: translateY(-100%);
+      opacity: 1;
+    }
+  }
+}

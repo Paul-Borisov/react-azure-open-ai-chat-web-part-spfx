@@ -1,0 +1,6 @@
+.checkbox {
+  padding-top: 5px;
+  &:first-of-type {
+    padding-top: 0px;
+  }
+}
