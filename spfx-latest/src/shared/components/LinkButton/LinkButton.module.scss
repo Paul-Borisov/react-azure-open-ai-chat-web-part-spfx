@@ -1,0 +1,72 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+@import '~@fluentui/react/dist/sass/ThemingSass';
+@import 'src/UI/mixins/button.module';
+
+.linkbutton {
+  &.default,
+  &.primary {
+    @include button-reset;
+    font-size: 14px;
+    font-weight: 600;
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    vertical-align: top;
+    padding-top: 0px;
+    padding-right: 16px;
+    padding-bottom: 0px;
+    padding-left: 16px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    min-width: 80px;
+    height: 32px;
+    user-select: none;
+    //outline: transparent;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    border-image: initial;
+    text-decoration: none;
+    border-radius: 0px;
+    line-height: 100%;
+    border-radius: 2px;
+  }
+
+  &.default {
+    background-color: $ms-color-neutralLighter;
+    color: $ms-color-neutralPrimary;
+
+    &:hover,
+    &:focus {
+      background-color: $ms-color-neutralLight;
+      color: $ms-color-neutralDark;
+    }
+  }
+
+  &.primary {
+    background-color: $ms-color-themePrimary;
+    color: $ms-color-white;
+
+    &:hover,
+    &:focus {
+      background-color: $ms-color-themeDarkAlt;
+      color: $ms-color-white;
+    }
+  }
+
+  &.text {
+    @include button-reset;
+    color: $ms-color-neutralPrimary;
+
+    &:hover,
+    &:focus {
+      color: $ms-color-neutralDark;
+    }
+  }
+  &:focus {
+    @include button-focus;
+  }
+}

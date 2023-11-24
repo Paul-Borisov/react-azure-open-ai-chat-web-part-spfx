@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "16.13.2",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.12.0"
+    },
+    "version": "1.18.0",
+    "libraryName": "azure-openai-chat",
+    "libraryId": "64e358ba-f88c-4fee-9a8a-6db06299d90a",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "azure-openai-chat",
+    "solutionShortDescription": "azure-openai-chat description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

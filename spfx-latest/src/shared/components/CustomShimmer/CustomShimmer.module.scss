@@ -1,0 +1,22 @@
+@import 'src/UI/mixins/UI.module.scss';
+
+.shimmerContainer {
+  :global .ms-Shimmer-container {
+    margin: 10px 0;
+  }
+  &.compact {
+    margin-left: 5px;
+    width: 80%;
+  }
+}
+.shimmer {
+  :global .ms-Shimmer-shimmerGradient {
+    background-color: #fff;
+    background-image: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      $ms-color-neutralLighter 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+}

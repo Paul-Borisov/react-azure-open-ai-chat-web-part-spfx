@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "azure-openai-chat",
+    "title": "Azure OpenAI Chat Web Part",
+    "id": "64e358ba-f88c-4fee-9a8a-6db06299d90a",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "Paul Borisov",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+    },
+    "webApiPermissionRequests": [
+      {
+        "resource": "openaiwp",
+        "scope": "user_impersonation"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "People.Read"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "User.Read.All"
+      }
+    ],
+    "metadata": {
+      "shortDescription": {
+        "default": "Azure OpenAI Chat"
+      },
+      "longDescription": {
+        "default": "Azure OpenAI Chat"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "azure-openai-chat Feature",
+        "description": "The feature that activates elements of the azure-openai-chat solution.",
+        "id": "c36a92bc-8965-4f14-b235-a0094d13096b",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/azure-openai-chat.sppkg"
+  }
+}

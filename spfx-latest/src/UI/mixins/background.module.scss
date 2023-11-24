@@ -1,0 +1,46 @@
+/*
+    background-image-placeholder
+    sets up an element to display a background image
+    use where image is set inline
+*/
+
+@mixin background-image-placeholder($color: transparent) {
+  background: center center no-repeat;
+  background-size: cover;
+
+  @if $color {
+    background-color: $color;
+  }
+}
+
+/*
+    gradient-background
+    produces gradient background based on theme colours
+    can be full colour or mono
+*/
+@mixin gradient-background {
+  background: linear-gradient(-30deg, $ms-color-themeSecondary 0%, $ms-color-themeTertiary 100%);
+}
+
+@mixin gradient-background-mono {
+  background: linear-gradient(-30deg, $ms-color-neutralQuaternary 0%, $ms-color-neutralLighter 100%);
+}
+
+@mixin gradient-animate($color-1, $color-2, $color-3, $color-4) {
+  background: linear-gradient(-45deg, $color-1, $color-2, $color-3, $color-4);
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+  backface-visibility: hidden;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

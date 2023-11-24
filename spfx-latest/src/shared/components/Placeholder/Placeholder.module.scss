@@ -1,0 +1,39 @@
+@import 'src/UI/mixins/UI.module';
+
+.placeholder {
+  padding: 40px 20px;
+  background-color: $ms-color-neutralLight;
+
+  &.rounded {
+    @include roundedcorners;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    i {
+      color: $ms-color-neutralDark;
+      font-size: 42px;
+    }
+    p {
+      color: $ms-color-neutralDark;
+      font-size: 28px;
+      margin: 6px 1ex;
+    }
+  }
+
+  div {
+    text-align: center;
+    p {
+      font-size: 17px;
+      color: $ms-color-neutralDark;
+    }
+  }
+
+  &.narrow {
+    header {
+      flex-direction: column;
+    }
+  }
+}

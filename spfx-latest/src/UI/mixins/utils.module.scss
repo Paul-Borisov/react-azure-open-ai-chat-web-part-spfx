@@ -1,0 +1,260 @@
+@import './variables.module.scss';
+
+/*
+  inlineToggle
+  puts the fabric toggle control label next to the button
+*/
+@mixin inlineToggle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1px;
+
+  & > label {
+    margin-right: 1ex;
+  }
+}
+
+/*
+  placeholderText
+  adds placeholder text to contenteditable element
+  must have attribute 'data-placeholder' with default placeholder text
+*/
+@mixin placeholderText {
+  &[contenteditable='true'] {
+    outline: none; // TODO: consider alternative to removing outline
+
+    &:empty {
+      &:before {
+        content: attr(data-placeholder);
+        opacity: 0.9;
+        font-style: italic;
+      }
+    }
+  }
+}
+
+/*
+  arrowhead: adds arrowhead with colour,
+  color - color of arrow
+  side - which edge the arrow sits on/in
+  outer - determines whether arrow sits within or outside the element (true = outside)
+  position - overrides position (50%) with a px value instead
+*/
+@mixin arrowhead($color, $side, $outer: false, $position: null) {
+  position: relative;
+
+  &:before {
+    content: '';
+    width: 0;
+    height: 0;
+    position: absolute;
+    border: 8px solid transparent;
+
+    @if $outer {
+      z-index: 5;
+    }
+
+    @if $side==left or $side==right {
+      @if $position {
+        top: $position + px;
+      } @else {
+        top: 50%;
+      }
+
+      transform: translateY(-50%);
+    }
+
+    @if $side==top or $side==bottom {
+      @if $position {
+        left: $position + px;
+      } @else {
+        left: 50%;
+      }
+
+      transform: translateX(-50%);
+    }
+
+    @if $side==top {
+      @if $outer {
+        bottom: 100%;
+        border-bottom-color: $color;
+      } @else {
+        top: 0;
+        border-top-color: $color;
+      }
+    }
+
+    @if $side==bottom {
+      @if $outer {
+        top: 100%;
+        border-top-color: $color;
+      } @else {
+        bottom: 0;
+        border-bottom-color: $color;
+      }
+    }
+
+    @if $side==right {
+      @if $outer {
+        left: 100%;
+        border-left-color: $color;
+      } @else {
+        right: 0;
+        border-right-color: $color;
+      }
+    }
+
+    @if $side==left {
+      @if $outer {
+        right: 100%;
+        border-right-color: $color;
+      } @else {
+        left: 0;
+        border-left-color: $color;
+      }
+    }
+  }
+}
+
+/*
+  line-clamp
+  adds ellipsis to text with fixed/max height
+  N.B. - do not add padding - this will cause overflow issues
+*/
+
+@mixin line-clamp($lineheight, $maxlines, $fixed: false) {
+  overflow: hidden;
+
+  @if $maxlines==1 {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    // if a span or anchor is the child element...
+    > a,
+    > span {
+      display: block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  @if $maxlines !=1 {
+    $h: $lineheight * $maxlines;
+
+    line-height: $lineheight;
+    display: -webkit-box;
+    -webkit-line-clamp: $maxlines;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+
+    @if $fixed==true {
+      height: $h;
+      max-height: $h;
+    }
+
+    @if $fixed==false {
+      height: auto;
+      max-height: $h;
+    }
+  }
+}
+
+/*
+  center-x
+  center-y
+  center
+  center an element within parent in x, y, or both
+*/
+@mixin center-x {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@mixin center-y {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@mixin center {
+  @include center-x;
+  @include center-y;
+}
+
+/*
+  placeholder
+*/
+@mixin placeholder($minheight: 200) {
+  min-height: $minheight + px;
+  height: 100%;
+  background-color: $ms-color-neutralLight;
+  background: linear-gradient(135deg, rgba(234, 234, 234, 1) 0%, rgba(248, 248, 248, 1) 100%);
+}
+
+/*
+  dash
+  Adds a dash using pseudo element
+  hpos: horizontal position (left, center, right)
+  vpos: vertical position (before, after)
+  dashcontent is a utility for this mixin only, not intended for external use
+*/
+@mixin dashcontent($hpos: 'center') {
+  content: '';
+  display: block;
+  width: 20px;
+
+  @if $hpos== 'left' {
+    margin: $baseUnit auto $baseUnit 0;
+  }
+
+  @if $hpos== 'center' {
+    margin: $baseUnit auto;
+  }
+
+  @if $hpos== 'right' {
+    margin: $baseUnit 0 $baseUnit auto;
+  }
+}
+
+@mixin dash($hpos: 'center', $vpos: 'before') {
+  color: $ms-color-black;
+
+  @if $vpos== 'after' {
+    &:after {
+      @include dashcontent($hpos);
+      border-top: 3px solid;
+    }
+  }
+
+  @if $vpos== 'before' {
+    &:before {
+      @include dashcontent($hpos);
+      border-bottom: 3px solid;
+    }
+  }
+}
+
+/*
+  screenReaderOnly
+  styles for text visible to screen readers only, hidden in screen UI
+*/
+@mixin screenReaderOnly {
+  position: absolute;
+  left: 0px;
+  clip: rect(1px, 1px, 1px, 1px);
+  clip-path: inset(50%);
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

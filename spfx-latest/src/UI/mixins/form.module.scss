@@ -1,0 +1,9 @@
+@mixin form-header {
+  @include ms-fontSize-18;
+  @include ms-fontWeight-semibold;
+  color: $ms-color-themeSecondary;
+  border-bottom: 1px dashed;
+  border-color: $ms-color-neutralSecondary;
+  padding-bottom: 2px;
+  margin-bottom: 1ex;
+}

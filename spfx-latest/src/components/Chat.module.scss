@@ -1,0 +1,605 @@
+@import 'src/UI/mixins/UI.module.scss';
+@import 'src/components/UploadFiles.module.scss';
+
+$border-radius: 4px;
+$disabled-opacity: 0.3;
+$action-color: rgb(25, 195, 125);
+$hover-color: $ms-color-green;
+$icon-rotate: 0grad;
+$dark: $ms-color-gray200;
+$selection: $ms-color-gray150;
+
+/*.customPanel {
+  :global .ms-Panel-scrollableContent,
+  :global .ms-Panel-content {
+    height: 100%;
+    margin: 0;
+    padding-right: 0;
+  }
+  :global .ms-Panel-navigation,
+  :global .ms-Panel-commands {
+    display: none;
+  }
+  :global .ms-Panel-content {
+    padding-bottom: 0;
+  }
+}*/
+.clearborder {
+  border: 0px !important;
+}
+.clearheight {
+  height: auto !important;
+}
+.openailogo {
+  background-color: $action-color;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &.userlogo {
+    background-color: $dark;
+  }
+}
+.panelHeader {
+  position: absolute;
+  left: 0;
+  padding: 10px 0 0 10px;
+  font-weight: 600;
+  font-size: 24px;
+  width: 250px;
+  background-color: $dark;
+  color: $ms-color-white;
+}
+
+.panelContainer {
+  width: 100%;
+  /*height: 100%;*/
+  margin: 0;
+  display: flex;
+}
+.panelNavigationPane {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  width: 300px;
+  height: 540px;
+  overflow: hidden;
+  /*height: 100%;*/
+  background-color: $dark;
+  color: white; //$ms-color-white;
+  transition: all 0.3s ease-in-out;
+  &.collapsed {
+    width: 0;
+    min-width: 0;
+    max-width: 0;
+  }
+  &.insidePanel {
+    /*height: auto;*/
+    height: 100vh !important;
+  }
+}
+.panelContentCanvas {
+  flex: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: fit-content;
+  .topbar {
+    height: fit-content;
+    display: flex;
+    padding-left: 2px;
+    /*padding-bottom: 4px;*/
+    align-items: center;
+    justify-content: space-between;
+    .expandToPanel {
+      align-self: baseline;
+      padding-right: 12px;
+      cursor: pointer;
+      &.promptAtBottom {
+        padding-right: 0px;
+        padding-top: 0px;
+      }
+    }
+    /*border-bottom: 1px solid #ccc;*/
+  }
+}
+.customPanel {
+  .container {
+    display: flex;
+    align-items: flex-start;
+  }
+  :global .ms-Panel-content {
+    padding: 0;
+  }
+  :global .ms-Panel-commands {
+    display: none;
+  }
+  :global .ms-Panel-scrollableContent {
+    overflow-y: hidden;
+  }
+}
+.closepanel {
+  float: right;
+  cursor: pointer;
+  padding-top: 10px;
+  padding-right: 10px;
+}
+.topbarcontent {
+  flex: auto;
+  text-align: right;
+  white-space: nowrap;
+  padding-right: 15px;
+  &.promptAtBottom {
+    margin-top: -15px;
+    padding-right: 30px;
+  }
+}
+.panelContentPane {
+  flex: auto;
+  max-height: 410px;
+  overflow-y: auto;
+  @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: auto;
+  &.noUpperLanguageSelector {
+    max-height: 425px;
+  }
+  &.insidePanel {
+    max-height: 83vh;
+  }
+}
+.responseRowsContainer {
+  flex: auto;
+  font-size: 100%;
+  margin: 0 auto;
+  width: 100%;
+}
+.responseRowPlaceholder {
+  display: 'flex';
+  align-items: 'center';
+  justify-content: 'space-between';
+  .actionIcons {
+    align-self: flex-start;
+    margin-top: 10px;
+    margin-right: 10px;
+    white-space: nowrap;
+  }
+  .editIcon,
+  .deleteIcon,
+  .formatIcon {
+    cursor: pointer;
+    padding-left: 5px;
+  }
+  .formatIcon {
+    font-size: 120%;
+  }
+}
+.responseRow {
+  display: flex;
+  flex: auto;
+  padding: 10px 0;
+  .logo {
+    margin-right: 20px;
+  }
+  .message {
+    flex: auto;
+    padding-top: 5px;
+    white-space: pre-wrap;
+    max-width: 55vw;
+    img {
+      max-width: 53vw;
+    }
+    pre {
+      @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
+      display: inline;
+      white-space: pre-wrap;
+    }
+    &.insidePanel {
+      max-width: 95vw;
+    }
+    &.insidePanel img {
+      max-width: 75vw;
+    }
+    th {
+      text-align: left;
+      white-space: nowrap;
+    }
+  }
+  .message :global .code-highlighter span {
+    word-wrap: break-word;
+  }
+}
+.modelSelector {
+  border-radius: 5px;
+  width: 100px;
+  height: 30px;
+  font-weight: 600;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  background-color: $ms-color-gray30;
+  color: black;
+  svg {
+    margin-right: 5px;
+  }
+  &.greenicon svg {
+    color: $action-color;
+  }
+  &.insidePanel {
+    margin-top: 10px;
+  }
+  &.darkTheme {
+    color: white !important;
+    background-color: $ms-color-gray120 !important;
+  }
+}
+.promptContainer {
+  display: flex;
+  align-items: baseline;
+  margin: 0 auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 100%;
+  &.promptAtBottom {
+    margin-top: 10px;
+  }
+  .textContainer {
+    border: 1px #ccc solid;
+    border-radius: 8px;
+    height: 56px;
+    margin-right: 35px;
+  }
+  textarea {
+    width: 100%;
+    resize: none;
+    outline: none;
+    border: none;
+    overflow-y: hidden;
+    border: 1px #ccc solid;
+    border-radius: 8px;
+    height: 34px;
+    padding: 15px 15px 0 15px;
+    @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
+  }
+  .linkButton {
+    flex: 0 0 35px;
+    height: 35px;
+    border-radius: $border-radius;
+    margin-left: 10px !important; // Enforce overwriting styles of default linkbutton
+    background-color: $action-color !important;
+    background-color: $action-color;
+    text-align: center !important;
+    &.disabled {
+      opacity: $disabled-opacity;
+    }
+    i {
+      color: $ms-color-white !important;
+      font-size: 120%;
+      rotate: $icon-rotate;
+    }
+    &:hover,
+    &:focus {
+      background-color: $hover-color;
+    }
+  }
+}
+.requestCharsCount {
+  font-size: 12px;
+  font-style: italic;
+  flex: auto;
+  width: 99%;
+  margin-left: 2px;
+  margin-bottom: 15px;
+}
+
+.navigationHeader {
+  padding: 10px 0 10px 10px;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  column-gap: 20px;
+  align-items: baseline;
+  justify-content: space-between;
+  white-space: nowrap;
+  .addnewchat {
+    cursor: pointer;
+    font-size: initial;
+    font-weight: initial;
+  }
+  .headerButtons {
+    display: flex;
+  }
+}
+.navigationFooter {
+  padding-top: 10px;
+  .footerFirstRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-right: 10px;
+  }
+  .footerTitle {
+    padding-left: 10px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  :global .ms-Dropdown-title {
+    background-color: $dark;
+    color: white !important;
+  }
+  :global .ms-Dropdown :global .ms-Dropdown-title,
+  :global .ms-Dropdown:hover :global .ms-Dropdown-title,
+  :global .ms-Dropdown:active :global .ms-Dropdown-title {
+    border-color: $selection;
+    border-left: 0px;
+    border-right: 0px;
+  }
+  :global .ms-Dropdown:focus::after {
+    border: 0px;
+  }
+  :global .ms-Dropdown-caretDown {
+    color: white !important;
+  }
+}
+/*
+// Could not find easy ways to override global styles safely. Kept them disabled to avoid unexpected effects in other components.
+:global .ms-Dropdown-callout > div > div {
+  border: 1px $selection solid;
+}
+:global .ms-Callout-main {
+  @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
+}
+:global .ms-Dropdown-items,
+:global .ms-Dropdown-items button {
+  background-color: $dark;
+  &:hover:focus,
+  &[aria-selected='true'] {
+    background-color: $selection;
+    color: white;
+  }
+}
+:global .ms-Dropdown-items button {
+  color: white;
+}
+*/
+:global .ms-Callout {
+  /*People Picker*/
+  :global .ms-Suggestions {
+    min-width: 400px;
+  }
+  :global .ms-Suggestions :global .ms-Persona {
+    width: auto;
+  }
+}
+.refresh,
+.collapseMenu,
+.collapseMenu2 {
+  cursor: pointer;
+  font-size: initial;
+  font-weight: initial;
+  padding: 10px 10px 10px 0px;
+}
+.collapseMenu2 {
+  padding-left: 10px;
+  padding-top: 0;
+}
+.invisible {
+  visibility: hidden;
+}
+
+.conversationContainer {
+  max-height: 90%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin-bottom: auto;
+  @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
+}
+.conversationRow {
+  display: flex;
+  padding: 10px 0 10px 10px;
+  justify-content: space-between;
+  cursor: pointer;
+  svg {
+    width: 24px;
+    padding-top: 2px;
+    padding-right: 3px;
+  }
+  &:hover {
+    background-color: $ms-color-gray180;
+  }
+  &.selected {
+    background-color: $selection;
+  }
+  .rowTitle {
+    display: flex;
+    :global .ms-TooltipHost {
+      display: inline-flex;
+    }
+  }
+  .date {
+    padding-right: 5px;
+  }
+  .conversation {
+    max-width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .shared {
+    font-weight: 600;
+  }
+  .conversationActions {
+    white-space: nowrap;
+    i {
+      cursor: pointer;
+      margin-right: 8px;
+    }
+  }
+  .promptContainer,
+  .responseRowsContainer {
+    width: 100%;
+  }
+}
+.outline {
+  outline: 1px solid #ccc;
+  text-overflow: initial !important;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+.userLogo {
+  background-color: $ms-color-black; //$dark;
+  width: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  text-align: center;
+  margin-right: 20px;
+  .userIcon {
+    color: $ms-color-white;
+    background-color: $ms-color-black;
+    font-size: 150%;
+    width: inherit;
+    height: inherit;
+    padding-top: 7px;
+  }
+}
+.selectedModel {
+  background-color: white !important;
+  color: black !important; // $ms-color-black;
+  &.darkTheme {
+    background-color: white !important;
+    color: black !important;
+  }
+}
+.chatname {
+  font-weight: 600;
+  max-width: 72% !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  &.promptAtBottom {
+    padding-bottom: 5px;
+  }
+  &.insidePanel {
+    padding-top: 5px;
+  }
+}
+.errorMessage {
+  margin-bottom: 10px !important;
+  margin: 0 auto;
+  width: 98%;
+}
+.widecontent {
+  // Full Width Column
+  margin: 0 10%;
+}
+.shareWithHeader {
+  padding: 5px;
+}
+.checkbox,
+.checkbox:focus,
+.checkbox:hover {
+  color: white;
+  :global .ms-Checkbox-checkbox {
+    background-color: white;
+    border: 0px;
+    width: 16px;
+    height: 16px;
+  }
+  i {
+    background-color: white !important;
+    color: black;
+  }
+  :global .ms-Checkbox-text {
+    color: white !important;
+  }
+}
+@media screen and (max-width: 768px) {
+  .panelNavigationPane {
+    position: absolute;
+    z-index: 65535;
+    height: 540px;
+    margin-top: 20px;
+    &.insidePanel {
+      height: 540px !important;
+    }
+  }
+  .panelContentPane {
+    margin: 0;
+    &.insidePanel {
+      max-height: 80vh;
+    }
+  }
+  .promptContainer {
+    margin-left: 0;
+  }
+  .promptContainer textarea,
+  .promptContainer,
+  .requestCharsCount,
+  .errorMessage {
+    width: 89vw;
+  }
+  .panelContentPane,
+  .chatname {
+    max-width: 95vw !important;
+  }
+  .topbarcontent {
+    display: none;
+  }
+  .requestCharsCount,
+  .errorMessage {
+    margin-left: 3px;
+  }
+  .notFullWidth {
+    margin-left: -10px;
+    .panelNavigationPane {
+      margin-top: 0px;
+      margin-left: -20px;
+    }
+  }
+  .widecontent {
+    // Full Width Column
+    margin-left: 20px;
+    padding-top: 20px;
+  }
+  .panelContainer > .collapseMenu2 {
+    padding: 0;
+    /*z-index: 65535;*/
+    position: absolute;
+    margin-top: -20px;
+    margin-left: 0px;
+    visibility: visible !important;
+    &.widecontent2 {
+      margin-top: 0;
+      margin-left: 20px;
+    }
+  }
+  .chatname {
+    margin-left: 0px;
+  }
+  .message {
+    padding-top: 0px;
+    width: 70vw;
+    max-width: 70vw !important;
+    img {
+      max-width: 70vw !important;
+    }
+  }
+  .logo,
+  .userLogo {
+    margin-right: 10px !important;
+  }
+  .customPanel :global .ms-Panel-content {
+    padding-left: 24px;
+    padding-top: 30px;
+  }
+  .customPanel :global .ms-Panel-scrollableContent {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.inputAreaWrap {
+  padding-left: 0px;
+}
