@@ -8,4 +8,4 @@ The web part supports Azure OpenAI and native OpenAI endpoints secured with Azur
 - Using native OpenAI endpoints may provide you access the newest models like gpt-4-vision-preview and gpt-4-1106-preview not yet available in Azure OpenAI (Nov 2023).
 - You can also use straight access to endpoints configured with api-key.
   - **This is less secure setup** , which is not recommended for Production, but can be used for evaluations.
-  - The stored key is encrypted in web part properties using AES. However, it will be visible in decrypted state inside Network > Request headers of the browser.
+  - The stored key is encrypted in web part properties using AES. However, it will travel in the browser and can be seen inside DEV tools > Network > Request headers.
