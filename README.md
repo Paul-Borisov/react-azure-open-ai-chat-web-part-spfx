@@ -14,7 +14,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 # Quick links
   
-  - [Key features](releases/tag/v1)
+  - [Key features](../../releases/tag/v1)
 
   - [Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-(dev))
 
