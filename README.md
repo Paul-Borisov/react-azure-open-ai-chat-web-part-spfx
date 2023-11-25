@@ -12,8 +12,6 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
 
-![User Interface](docs/full-screen-mode.png "User Interface")
-
 # Quick links
   
   - [Key features](../../releases/tag/v1)
@@ -29,6 +27,8 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
   - [Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments)
 
   - [Notes on npm install and associated warnings](#notes-on-npm-install-and-associated-warnings)
+
+![User Interface](docs/full-screen-mode.png "User Interface")
 
 # Quick Start in Visual Studio Code (DEV)
   - [back to the top](#quick-links)
