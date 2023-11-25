@@ -10,7 +10,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
   - **This is a less secure setup** and is not recommended for Production. However, it can be used for evaluations.
   - The stored key is encrypted in the web part properties. Nonetheless, it will travel in the browser and can be viewed within DEV tools > Network > Request headers.
 
-![Data access diagram](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/blob/main/docs/principal-architecture.png "Data access diagram")
+![Data access diagram](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/blob/main/docs/data-access-diagram.png "Data access diagram")
 
 # Quick links
   
