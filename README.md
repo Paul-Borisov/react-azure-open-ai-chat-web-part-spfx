@@ -26,7 +26,10 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
   - [Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments)
 
+  - [Notes on npm install and associated warnings](##notes-on-npm-install-and-associated-warnings)
+
 # Quick Start in Visual Studio Code (DEV)
+  - [back to the top](#quick-links)
 
 **Prerequisites**:
 
@@ -307,3 +310,9 @@ Please refer to the product documentation in [azure-openai-chat-web-part.pdf](do
   - For detailed instructions on configuring Backend services, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
   - For detailed instructions on deploying the web part and configuring its settings, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 2-7).
   - For detailed instructions on securing Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
+
+# Notes on npm install and associated warnings
+
+Reference: [azure-openai-chat-web-part.pdf](https://www.voitanos.io/blog/don-t-be-alarmed-by-vulnerabilities-after-running-npm-install)
+
+When working with SPFx solutions, it is important to note that npm packages are not deployed to SharePoint. Therefore, any audit warnings related to these packages can be disregarded in the context of SPFx solutions.
