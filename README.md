@@ -13,6 +13,8 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 ![Data access diagram](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/blob/main/docs/principal-architecture.png "Data access diagram")
 
 # Quick links
+  
+  - [Key features](/releases/tag/v1)
 
   - [Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-(dev))
 
@@ -181,7 +183,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 # More Advanced Setup
   - [back to the top](#quick-links)
-  
+
 **Prerequisites**:
 
 - You should be in the role of Entra Application Administrator (Application Developer) or Global Administrator to create App registrations and approve permissions.
