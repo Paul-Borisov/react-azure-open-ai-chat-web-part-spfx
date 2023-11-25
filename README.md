@@ -102,7 +102,8 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
    - Try the same with another language model (GPT-4).
    - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
-# Quick Start [back to the top](#quick-links)
+# Quick Start
+  - [back to the top](#quick-links)
 
 **Prerequisites**:
 
@@ -178,8 +179,9 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
    - Try the same with another language model (GPT-4).
    - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
-# More Advanced Setup [back to the top](#quick-links)
-
+# More Advanced Setup
+  - [back to the top](#quick-links)
+  
 **Prerequisites**:
 
 - You should be in the role of Entra Application Administrator (Application Developer) or Global Administrator to create App registrations and approve permissions.
@@ -286,7 +288,8 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
    - Try the same with another language model (GPT-4).
    - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
-# Full-Scale Setup for Large Environments [back to the top](#quick-links)
+# Full-Scale Setup for Large Environments 
+  - [back to the top](#quick-links)
 
 **Prerequisites**:
 
