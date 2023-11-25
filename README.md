@@ -47,7 +47,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
    - npm i
    - gulp build
    - gulp serve --nobrowser
-     Alternatively, you can use fast-serve
+     - Alternatively, you can use fast-serve
    - npm run serve
 
 4. Create a Site Page in SharePoint Online and open it in "debug mode" using the following format:
