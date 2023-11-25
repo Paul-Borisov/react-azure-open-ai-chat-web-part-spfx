@@ -26,7 +26,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
   - [Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments)
 
-  - [Notes on npm install and associated warnings](##notes-on-npm-install-and-associated-warnings)
+  - [Notes on npm install and associated warnings](#notes-on-npm-install-and-associated-warnings)
 
 # Quick Start in Visual Studio Code (DEV)
   - [back to the top](#quick-links)
