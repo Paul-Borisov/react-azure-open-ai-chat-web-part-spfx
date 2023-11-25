@@ -312,7 +312,8 @@ Please refer to the product documentation in [azure-openai-chat-web-part.pdf](do
   - For detailed instructions on securing Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
 
 # Notes on npm install and associated warnings
-
+  - [back to the top](#quick-links)
+  
 The reference: [Don't be alarmed by vulnerabilities after running NPM Install](https://www.voitanos.io/blog/don-t-be-alarmed-by-vulnerabilities-after-running-npm-install)
 
 When working with SPFx solutions, it is important to note that npm packages are not deployed to SharePoint. Therefore, any audit warnings related to these packages can be disregarded in the context of SPFx solutions.
