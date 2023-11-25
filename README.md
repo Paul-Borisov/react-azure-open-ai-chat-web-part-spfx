@@ -7,7 +7,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 - APIM authenticates users and injects the **api-key** into requests before forwarding them to the endpoints. The **api-key** does not travel in the browser.
 - Using native OpenAI endpoints may grant you access to the latest models like gpt-4-vision-preview and gpt-4-1106-preview, which are not yet available in Azure OpenAI (as of November 2023).
 - You can also use direct access to endpoints configured with an api-key.
-  - **This is a less secure setup** and is not recommended for Production. However, it can be used for evaluations.
+  - **Although this setup is less secure, it may provide a quicker start.** It is not recommended for Production. However, it can be used for quick evaluations.
   - The stored key is encrypted in the web part properties. Nonetheless, it will travel in the browser and can be viewed within DEV tools > Network > Request headers.
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
