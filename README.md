@@ -1,4 +1,4 @@
-# Azure OpenAI Chat Webpart
+# Azure OpenAI Chat Web Part
 
 This is an Azure OpenAI Chat Web Part for SharePoint Online. It offers a user experience that is familiar to users of ChatGPT.
 
