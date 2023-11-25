@@ -40,6 +40,10 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
 ![User Interface](docs/full-screen-mode.png "User Interface")
 
+![Image Analysis](docs/image-analysis.png "Image Analysis")
+
+![PDF Analysis](docs/pdf-analysis.png "PDF Analysis")
+
 # Quick Start in Visual Studio Code (DEV)
   - [back to the top](#quick-links)
 
