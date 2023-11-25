@@ -10,11 +10,13 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
   - **This is a less secure setup** and is not recommended for Production. However, it can be used for evaluations.
   - The stored key is encrypted in the web part properties. Nonetheless, it will travel in the browser and can be viewed within DEV tools > Network > Request headers.
 
-![Data access diagram](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/blob/main/docs/data-access-diagram.png "Data access diagram")
+![Data access diagram](docs/data-access-diagram.png "Data access diagram")
 
 # Quick links
   
   - [Key features](../../releases/tag/v1)
+  
+  - [PowerPoint Presentation](docs/azure-openai-chat-web-part-presentation.pptx)
 
   - [Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-(dev))
 
@@ -114,7 +116,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 ## Configurations
 
-1. Download the latest [release package](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
+1. Download the latest [release package](../../releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
 
 2. Create a site collection in SharePoint Online and an App Catalog for it.
 
@@ -193,7 +195,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 ## Configurations
 
-1. Download the latest [release package](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
+1. Download the latest [release package](../../releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
 
 2. Create a site collection in SharePoint Online and an App Catalog for it.
 
@@ -300,4 +302,4 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 ## Configurations
 
-Please refer to the product documentation in [azure-openai-chat-web-part.pdf](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/tree/main/docs/azure-openai-chat-web-part.pdf) and [azure-openai-chat-security.pdf](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/tree/main/docs/azure-openai-chat-security.pdf)
+Please refer to the product documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) and [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf)
