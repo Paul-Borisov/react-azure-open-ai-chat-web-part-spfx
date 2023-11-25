@@ -10,6 +10,8 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
   - **Although this setup is less secure, it may provide a quicker start.** It is not recommended for Production. However, it can be used for quick evaluations.
   - The stored key is encrypted in the web part properties. Nonetheless, it will travel in the browser and can be viewed within DEV tools > Network > Request headers.
 
+### Full-Scale Setup
+
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
 
 ### Credits
