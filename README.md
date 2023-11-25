@@ -313,6 +313,6 @@ Please refer to the product documentation in [azure-openai-chat-web-part.pdf](do
 
 # Notes on npm install and associated warnings
 
-The reference: <a href="https://www.voitanos.io/blog/don-t-be-alarmed-by-vulnerabilities-after-running-npm-install" target="_blank">Don't be alarmed by vulnerabilities after running NPM Install</a>
+The reference: <a href="https://www.voitanos.io/blog/don-t-be-alarmed-by-vulnerabilities-after-running-npm-install" target="_blank" data-interception="off">Don't be alarmed by vulnerabilities after running NPM Install</a>
 
 When working with SPFx solutions, it is important to note that npm packages are not deployed to SharePoint. Therefore, any audit warnings related to these packages can be disregarded in the context of SPFx solutions.
