@@ -194,7 +194,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 - You should be in the role of Entra Application Administrator (Application Developer) or Global Administrator to create App registrations and approve permissions.
 - You should be a site collection administrator or hold the role of SharePoint Administrator to create a new site.
 - Optionally, you should have an **api-key** for native OpenAI or Azure OpenAI with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
-  - Unless you use configured APIM endpoints. 
+  - Unless you have configured APIM endpoints.
   - For detailed instructions on configuring APIM endpoints, please refer to the product documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
 
 ## Configurations
