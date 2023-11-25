@@ -16,7 +16,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
   
   - [Key features](../../releases/tag/v1)
   
-  - [PowerPoint Presentation](docs/azure-openai-chat-web-part-presentation.pptx)
+  - [Presentation](docs/azure-openai-chat-web-part-presentation.pdf)
 
   - [Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-(dev))
 
