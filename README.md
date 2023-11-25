@@ -34,7 +34,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 **Prerequisites**:
 
 - Visual Studio Code with a development setup for building SPFx 1.16.1 - 1.18.0 components.
-- You should have an **api-key** for native OpenAI or Azure OpenAI, with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+- You should have an **api-key** for native OpenAI or Azure OpenAI with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
 
 ## Configurations
 
@@ -313,7 +313,7 @@ Please refer to the product documentation in [azure-openai-chat-web-part.pdf](do
 
 # Notes on npm install and associated warnings
   - [back to the top](#quick-links)
-  
+
 The reference: [Don't be alarmed by vulnerabilities after running NPM Install](https://www.voitanos.io/blog/don-t-be-alarmed-by-vulnerabilities-after-running-npm-install)
 
 When working with SPFx solutions, it is important to note that npm packages are not deployed to SharePoint. Therefore, any audit warnings related to these packages can be disregarded in the context of SPFx solutions.
