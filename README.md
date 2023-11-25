@@ -14,13 +14,13 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 # Quick links
 
-  - ![Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-(dev) "Quick Start in Visual Studio Code (DEV)")
+  - [Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-(dev))
 
-  - ![Quick Start](#quick-start "Quick Start")
+  - [Quick Start](#quick-start)
 
-  - ![More Advanced Setup](#more-advanced-setup "More Advanced Setup")
+  - [More Advanced Setup](#more-advanced-setup)
 
-  - ![Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments "Full-Scale Setup for Large Environments")
+  - [Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments)
 
 # Quick Start in Visual Studio Code (DEV)
 
