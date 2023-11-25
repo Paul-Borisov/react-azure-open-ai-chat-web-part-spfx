@@ -10,7 +10,97 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
   - **This is a less secure setup** and is not recommended for Production. However, it can be used for evaluations.
   - The stored key is encrypted in the web part properties. Nonetheless, it will travel in the browser and can be viewed within DEV tools > Network > Request headers.
 
-![Azure OpenAI Chat Webpart](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/blob/main/docs/principal-architecture.png "Principal architecture")
+![Data access diagram](https://github.com/Paul-Borisov/Azure-OpenAI-Chat-Webpart/blob/main/docs/principal-architecture.png "Data access diagram")
+
+# Quick links
+
+  - ![Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-(dev) "Quick Start in Visual Studio Code (DEV)")
+
+  - ![Quick Start](#quick-start "Quick Start")
+
+  - ![More Advanced Setup](#more-advanced-setup "More Advanced Setup")
+
+  - ![Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments "Full-Scale Setup for Large Environments")
+
+# Quick Start in Visual Studio Code (DEV)
+
+**Prerequisites**:
+
+- Visual Studio Code with a development setup for building SPFx 1.16.1 - 1.18.0 components.
+- You should have an **api-key** for native OpenAI or Azure OpenAI, with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+
+## Configurations
+
+1. Clone the project.
+
+2. Open the project in Visual Studio Code and navigate to View > Terminal
+
+3. Execute the following commands
+   - cd ./spfx-latest
+   - npm i
+   - gulp build
+   - gulp serve --nobrowser
+     Alternatively, you can use fast-serve
+   - npm run serve
+
+4. Create a Site Page in SharePoint Online and open it in "debug mode" using the following format:
+   - https://**yourtenant**.sharepoint.com/sites/tests/SitePages/**yourpage**.aspx?debug=true&noredir=true&debugManifestsFile=https%3A%2F%2Flocalhost%3A4321%2Ftemp%2Fmanifests.js
+
+5. Edit the page and add the Azure OpenAI Chat web part.
+
+6. Open the web part settings and configure the minimal set of required properties as follows:
+   
+   - **Client ID: create a user_impersonation app with name=openaiwp**: keep the default value or leave it empty.
+
+   - **Base URL for GPT endpoint (APIM API or full)**: you can use the following alternatives:
+
+     - Direct URL for the native OpenAI endpoint.
+
+       - For example, https://api.openai.com/v1/chat/completions
+       - You need to have an active paid OpenAI subscription and a valid **api-key** for it.
+
+     - Direct URL for the Azure OpenAI endpoint configured for GPT 3.5 deployment.
+       - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-35-turbo-16k**/chat/completions?api-version=2023-07-01-preview
+       - You need to have an **api-key** for that instance.
+
+   - **Base URL for GPT4 endpoint (APIM API or full)**: you can use the following alternatives:
+
+     - Empty value if GPT-4 will not be used.
+
+     - Direct URL for the native OpenAI endpoint, as mentioned above.
+
+       - For example, https://api.openai.com/v1/chat/completions
+
+     - Direct URL for the Azure OpenAI endpoint configured for GPT 4 deployment, as mentioned above.
+       - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-4-32k**/chat/completions?api-version=2023-07-01-preview
+
+   - **Base URL for Chat WebApi (APIM API or full)**: keep the default empty value.
+
+   - **Optional api-key for Azure OpenAI (for troubleshooting, not for Production)**: add your api-key
+
+     - The key for native OpenAI or for Azure OpenAI, depending on your choices above.
+
+     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
+
+   - **Language models**: adjust values in the text box if you have different ones.
+
+   - **Storage type for chat history**: keep the default SharePoint list or select Local storage for a quick review.
+
+   - **SharePoint list URL (leave it empty for default URL)**: leave it empty and click the Create button if you opt to use SharePoint list storage.
+
+     - This will create a custom list, dbChats, in the current site collection.
+
+       - By default, the chat sharing option is disabled.
+       - If you enable it using the corresponding checkbox below the field, click on the Update button to adjust the list's permissions.
+
+       - Note, if you use Local storage you will be able to review sharing features. However, real sharing between users will not work with Local storage because chat history is stored locally. The maximum capacity of Local storage is limited to 10 Mb.
+
+7. Save web part settings. Reload the page.
+
+8. Test the setup by entering any text into the prompt text area and clicking Enter.
+   - The AI-response should appear in the content area.
+   - Try the same with another language model (GPT-4).
+   - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
 # Quick Start
 
@@ -34,7 +124,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 4. Add a new Site Page and the web part **Azure OpenAI Chat Web Part** to it.
 
-5. Open the web part settings and configure the required properties.
+5. Open the web part settings and configure the minimal set of required properties as follows:
 
    - **Client ID: create a user_impersonation app with name=openaiwp**: keep the default value or leave it empty.
 
@@ -65,18 +155,28 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
    - **Optional api-key for Azure OpenAI (for troubleshooting, not for Production)**: add your api-key
 
      - The key for native OpenAI or for Azure OpenAI, depending on your choices above.
-     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\*).
 
-   - **Storage type for chat history**: keep the default SharePoint list or select Local storage for a quick demo.
+     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
 
-   - **SharePoint list URL (leave it empty for default URL)**: leave it empty and click the Create button if you use SharePoint list storage.
+   - **Language models**: adjust values in the text box if you have different ones.
+
+   - **Storage type for chat history**: keep the default SharePoint list or select Local storage for a quick review.
+
+   - **SharePoint list URL (leave it empty for default URL)**: leave it empty and click the Create button if you opt to use SharePoint list storage.
 
      - This will create a custom list, dbChats, in the current site collection.
 
        - By default, the chat sharing option is disabled.
        - If you enable it using the corresponding checkbox below the field, click on the Update button to adjust the list's permissions.
 
-       - Note, if you use Local storage you will be able to demonstrate sharing features. However, real sharing between users will not work with Local storage because chat history is stored locally. The maximum capacity of Local storage is limited to 10 Mb.
+       - Note, if you use Local storage you will be able to review sharing features. However, real sharing between users will not work with Local storage because chat history is stored locally. The maximum capacity of Local storage is limited to 10 Mb.
+
+6. Save web part settings. Reload the page.
+
+7. Test the setup by entering any text into the prompt text area and clicking Enter.
+   - The AI-response should appear in the content area.
+   - Try the same with another language model (GPT-4).
+   - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
 # More Advanced Setup
 
@@ -119,7 +219,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 6. Add a new Site Page and insert the web part **Azure OpenAI Chat Web Part** into it.
 
-7. Open the web part settings and configure the required properties.
+7. Open the web part settings and configure the minimal set of required properties as follows:
 
    - **Client ID: create a user_impersonation app with name=openaiwp**: use the saved App ID, refer to point 4 above.
 
@@ -165,7 +265,9 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
      - The key is for native OpenAI or for Azure OpenAI, depending on your choices above.
 
-     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\*).
+     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
+
+   - **Language models**: adjust values in the text box if you have different ones.
 
    - **Storage type for chat history**: keep the default SharePoint list.
 
@@ -177,7 +279,14 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
        - If you enable it using the corresponding checkbox below the field, click on the Update button to adjust the list's permissions.
 
-# Full-Scale Setup for Enterprise Environments
+8. Save web part settings. Reload the page.
+
+9. Test the setup by entering any text into the prompt text area and clicking Enter.
+   - The AI-response should appear in the content area.
+   - Try the same with another language model (GPT-4).
+   - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
+
+# Full-Scale Setup for Large Environments
 
 **Prerequisites**:
 
