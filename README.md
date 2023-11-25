@@ -115,7 +115,7 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 **Prerequisites**:
 
 - You should be a site collection administrator or hold the role of SharePoint Administrator to create a new site.
-- You should have an **api-key** for native OpenAI or Azure OpenAI, with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+- You should have an **api-key** for native OpenAI or Azure OpenAI with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
 
 ## Configurations
 
