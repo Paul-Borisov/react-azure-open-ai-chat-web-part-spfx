@@ -12,6 +12,12 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
 
+### Credits
+
+I would like to express my respect and admiration for Microsoft, the creators of the groundbreaking Azure OpenAI service.
+
+Additionally, I am immensely grateful to Advania Finland for providing me with the opportunity and resources to build this project.
+
 # Quick links
   
   - [Key features](../../releases/tag/v1)
