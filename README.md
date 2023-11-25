@@ -12,6 +12,8 @@ The web part supports both Azure OpenAI and native OpenAI endpoints, secured wit
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
 
+![User Interface](docs/full-screen-mode.png "User Interface")
+
 # Quick links
   
   - [Key features](../../releases/tag/v1)
