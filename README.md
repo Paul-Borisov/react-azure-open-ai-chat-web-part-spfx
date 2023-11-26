@@ -58,7 +58,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 **Prerequisites**:
 
 - Visual Studio Code with a development setup for building SPFx components, versions 1.16.1 - 1.18.0.
-- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5, and optionally, GPT 4.
+- You should have an **api-key** for Azure OpenAI instance, with configured endpoints for text models of GPT 3.5, and optionally, GPT 4.
   - Alternatively, you should have an **api-key** for Native OpenAI.
 
 ## Configurations
@@ -140,7 +140,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 **Prerequisites**:
 
 - You should be a site collection administrator or hold the role of SharePoint Administrator to create a new site.
-- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5, and optionally, GPT 4.
+- You should have an **api-key** for Azure OpenAI instance, with configured endpoints for text models of GPT 3.5, and optionally, GPT 4.
   - Alternatively, you should have an **api-key** for Native OpenAI.
   
 ## Configurations
@@ -222,7 +222,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
   - Alternatively, if you do not have access to Azure OpenAI, you can use the Native OpenAI endpoint.
 
 - Optionally, you can deploy the API Management service and publish (Azure) OpenAI endpoints there.
-  - You should have an **api-key** for Azure OpenAI, with configured endpoints for GPT 3.5 and, optionally, GPT 4 text language models. 
+  - You should have an **api-key** for Azure OpenAI instance, with configured endpoints for GPT 3.5 and, optionally, GPT 4 text language models. 
     - Alternatively, you should have an **api-key** for Native OpenAI.
   - For detailed instructions on configuring Azure OpenAI and APIM endpoints, please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
 
