@@ -1,14 +1,18 @@
 # Azure OpenAI Chat Web Part
 
-This is an Azure OpenAI Chat Web Part for SharePoint Online. It offers a user experience that is familiar to users of ChatGPT.
+This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user experience that is familiar to users of ChatGPT.
 
-The web part supports both Azure OpenAI and native OpenAI endpoints, secured with Azure API Management (APIM).
+The web part interacts with **Azure OpenAI** endpoints that are published via Azure API Management service (APIM).
+- By default, this setup ensures data privacy. In this configuration, requests to AI do not travel outside your Azure tenant.
+- APIM validates the identities of SharePoint users. If they originate from permitted domains, APIM injects the **api-key** into requests before forwarding them to AI endpoints. This ensures that the api-key does not travel in the browser.
 
-- APIM authenticates users and injects the **api-key** into requests before forwarding them to the endpoints. The **api-key** does not travel in the browser.
-- Using native OpenAI endpoints may grant you access to the latest models like gpt-4-vision-preview and gpt-4-1106-preview, which are not yet available in Azure OpenAI (as of November 2023).
-- You can also use direct access to endpoints configured with an api-key.
-  - **Although this setup is less secure, it may provide a quicker start.** It is not recommended for Production. However, it can be used for quick evaluations.
-  - The stored key is encrypted in the web part properties. Nonetheless, it will travel in the browser and can be viewed within DEV tools > Network > Request headers.
+In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (page 7).
+- CONS: Granting access to the Native Open AI requires a separate **api-key** and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
+- PROS: Using the Native OpenAI endpoint could give you access to the latest language models like gpt-4-vision-preview and gpt-4-1106-preview that are not currently available in Azure OpenAI (as of November 2023).
+
+In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
+  - **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure Open AI.
+  - The stored key is encrypted in the web part properties. However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
 
 ### Full-Scale Setup
 
