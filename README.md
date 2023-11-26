@@ -15,6 +15,15 @@ In the simplest case, you can also use direct access to (Azure) Open AI endpoint
   - The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
   However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
 
+The web part supports optional integrations with company data. These integrations are disabled by default and must be explicitly enabled in the web part settings.
+
+The integrations available in this release include:
+  - SharePoint Search
+  - Company Users
+  - Local Date and Time
+  - Analysis of an uploaded PDF and summarization of its content
+  - Analysis of uploaded images and description of them
+
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
@@ -45,7 +54,7 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
 ![User Interface](docs/full-screen-mode.png "User Interface")
 
-![PDF Analysis: upload a PDF and summarise its content](docs/pdf-analysis.png "PDF Analysis: upload a PDF and summarise its content")
+![PDF Analysis: upload a PDF and summarize its content](docs/pdf-analysis.png "PDF Analysis: upload a PDF and summarize its content")
 
 ![Image Analysis is only available with the Native OpenAI endpoint](docs/image-analysis.png "Image Analysis is only available with the Native OpenAI endpoint")
 
@@ -129,7 +138,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 8. Test the setup by adding any text into the prompt text area, then pressing Enter or clicking the Submit button.
    - The AI-response should appear in the content area below.
    - Try the same steps with another language model (GPT-4).
-   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarise the uploaded PDF.
+   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
 # Quick Start
   - [back to the top](#quick-links)
@@ -207,7 +216,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 7. Test the setup by adding any text into the prompt text area, then pressing Enter or clicking the Submit button.
    - The AI-response should appear in the content area below.
    - Try the same steps with another language model (GPT-4).
-   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarise the uploaded PDF.
+   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
 # More Advanced Setup
   - [back to the top](#quick-links)
@@ -324,7 +333,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 9. Test the setup by adding any text into the prompt text area, then pressing Enter or clicking the Submit button.
    - The AI-response should appear in the content area below.
    - Try the same steps with another language model (GPT-4).
-   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarise the uploaded PDF.
+   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
 # Full-Scale Setup for Large Environments 
   - [back to the top](#quick-links)
