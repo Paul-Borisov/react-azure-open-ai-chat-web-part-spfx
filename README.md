@@ -321,10 +321,10 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 8. Save web part settings. Reload the page.
 
-9. Test the setup by entering any text into the prompt text area and clicking Enter.
-   - The AI-response should appear in the content area.
-   - Try the same with another language model (GPT-4).
-   - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
+9. Test the setup by adding any text into the prompt text area, then pressing Enter or clicking the Submit button.
+   - The AI-response should appear in the content area below.
+   - Try the same steps with another language model (GPT-4).
+   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarise the uploaded PDF.
 
 # Full-Scale Setup for Large Environments 
   - [back to the top](#quick-links)
