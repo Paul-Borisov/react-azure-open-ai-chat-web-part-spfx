@@ -36,6 +36,16 @@ I would like to express my deep respect and admiration for Microsoft, the creato
 
 I am immensely grateful to Advania Finland for providing me with the opportunity and resources to develop this project.
 
+### Auxiliary modules
+
+In addition to the stadard set of modules employed by SPFx 1.18 with React base, the project includes references to the following additional libraries:
+  - @fluentui/react: Provided by Microsoft for building a richer UI experience.
+  - @microsoft/fetch-event-source: Used to implement Consecutive Event Streaming. It is used only when the web part setting **Event streaming** is enabled (default).
+  - crypto-js, @types/crypto-js: Used to encrypt and decrypt an api-key when the user adds it explicitly to web part settings. This is not required in default APIM setup.
+  - react-pdf: used to extract texts from uploaded PDFs. It is used only when the web part setting **Enable integrations** is enabled (disabled by default).
+  - react-syntax-highlighter: adds code highlighting capabilities. It is used only when the web part setting **Code highlighting** is enabled (default).
+  - prettier, fast-serve: these development tools are only used in the development environment.
+
 # Quick links
   
   - [Key features](../../releases/tag/v1)
