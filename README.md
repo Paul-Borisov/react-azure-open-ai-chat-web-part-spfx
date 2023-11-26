@@ -45,7 +45,7 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
 ![User Interface](docs/full-screen-mode.png "User Interface")
 
-![PDF Analysis](docs/pdf-analysis.png "PDF Analysis")
+![PDF Analysis: upload a PDF and summarise its content](docs/pdf-analysis.png "PDF Analysis: upload a PDF and summarise its content")
 
 ![Image Analysis is only available with the Native OpenAI endpoint](docs/image-analysis.png "Image Analysis is only available with the Native OpenAI endpoint")
 
