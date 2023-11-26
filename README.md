@@ -32,9 +32,9 @@ The integrations available in this release include:
 
 ### Credits
 
-I would like to express my respect and admiration for Microsoft, the creators of the groundbreaking Azure OpenAI service.
+I would like to express my deep respect and admiration for Microsoft, the creators of the groundbreaking Azure OpenAI service.
 
-Additionally, I am immensely grateful to Advania Finland for providing me with the opportunity and resources to build this project.
+I am immensely grateful to Advania Finland for providing me with the opportunity and resources to develop this project.
 
 # Quick links
   
