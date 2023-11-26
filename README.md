@@ -239,7 +239,8 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
    - Save the App ID (Client ID). You will use it in the web part settings.
 
-5. Review and approve access permissions for the uploaded SPFx package in the [API access section](https://yourtenant-admin.sharepoint.com/_layouts/15/online/AdminHome.aspx#/webApiPermissionManagement) of your SharePoint Online tenant. ### <a id="spfx-permissions"></a>
+<a id="spfx-permissions"></a>
+5. Review and approve access permissions for the uploaded SPFx package in the [API access section](https://yourtenant-admin.sharepoint.com/_layouts/15/online/AdminHome.aspx#/webApiPermissionManagement) of your SharePoint Online tenant.
 
    - **This step can be skipped if you do not plan to use the API Management service to secure access to (Azure) OpenAI endpoints.**
 
