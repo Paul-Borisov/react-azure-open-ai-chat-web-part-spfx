@@ -12,7 +12,8 @@ In addition to the default configuration, you have the option to publish the Nat
 
 In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
   - **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure Open AI.
-  - The stored key is encrypted in the web part properties. However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
+  - The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
+  However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
 
 ### Full-Scale Setup
 
@@ -57,7 +58,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 **Prerequisites**:
 
 - Visual Studio Code with a development setup for building SPFx components, versions 1.16.1 - 1.18.0.
-- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5, and optionally, GPT 4.
   - Alternatively, you should have an **api-key** for Native OpenAI.
 
 ## Configurations
@@ -108,7 +109,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
      - The key for Azure OpenAI or Native OpenAI, depending on your choices above.
 
-     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
+     - It will be encrypted and stored in the web part settings (and displayed as \*\*\* in the Property Pane).
 
    - **Language Models**: If you have different models, adjust default values in the text box accordingly.
 
@@ -139,7 +140,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 **Prerequisites**:
 
 - You should be a site collection administrator or hold the role of SharePoint Administrator to create a new site.
-- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5, and optionally, GPT 4.
   - Alternatively, you should have an **api-key** for Native OpenAI.
   
 ## Configurations
@@ -186,7 +187,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
      - The key for Azure OpenAI or Native OpenAI, depending on your choices above.
 
-     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
+     - It will be encrypted and stored in the web part settings (and displayed as \*\*\* in the Property Pane).
 
    - **Language Models**: If you have different models, adjust default values in the text box accordingly.
 
@@ -213,11 +214,17 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 **Prerequisites**:
 
-- You should be in the role of Entra Application Administrator (Application Developer) or Global Administrator to create App registrations and approve permissions.
-- You should be a site collection administrator or hold the role of SharePoint Administrator to create a new site.
-- Optionally, you should have an **api-key** for native OpenAI or Azure OpenAI with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
-  - Unless you have configured APIM endpoints.
-  - For detailed instructions on configuring APIM endpoints, please refer to the product documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
+- You should be:
+  - In the role of Entra Application Administrator (Application Developer) or Global Administrator to create App registrations and approve permissions.
+  - A site collection administrator or hold the role of SharePoint Administrator to create a new site.
+
+- You should create an instance of Azure OpenAI and configure deployments for GPT 3.5, and optionally, GPT 4 text language models.
+  - Alternatively, if you do not have access to Azure OpenAI, you can use the Native OpenAI endpoint.
+
+- Optionally, you can deploy the API Management service and publish (Azure) OpenAI endpoints there.
+  - You should have an **api-key** for Azure OpenAI, with configured endpoints for GPT 3.5 and, optionally, GPT 4 text language models. 
+    - Alternatively, you should have an **api-key** for Native OpenAI.
+  - For detailed instructions on configuring Azure OpenAI and APIM endpoints, please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
 
 ## Configurations
 
@@ -256,17 +263,11 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
    - **Client ID: create a user_impersonation app with name=openaiwp**: use the saved App ID, refer to point 4 above.
 
-     - If you do not use APIM, retain the default value or empty it.
+     - If you do not use APIM, keep the default "zero" value or empty it.
 
-   - **Base URL for GPT endpoint (APIM API or full)**: You have the following options:
+   - **Base URL for GPT endpoint (APIM API or full)**: You have the following alternative options:
 
      - Preconfigured APIM URL for GPT 3.5: https://**yourapiminstance**.azure-api.net/openai
-
-     - Direct URL for the native OpenAI endpoint.
-
-       - For example, https://api.openai.com/v1/chat/completions
-
-       - You need to have an active paid OpenAI subscription and a valid **api-key** for it.
 
      - Direct URL for Azure OpenAI endpoint configured for GPT 3.5 deployment.
 
@@ -274,31 +275,37 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
        - You need to have an **api-key** for that instance.
 
-   - **Base URL for GPT4 endpoint (APIM API or full)**: You have the following options:
+     - Direct URL for the native OpenAI endpoint.
+
+       - For example, https://api.openai.com/v1/chat/completions
+
+       - You need to have an active, paid OpenAI subscription and a valid **api-key** for it.
+
+   - **Base URL for GPT4 endpoint (APIM API or full)**: You have the following alternative options:
 
      - No value, implying GPT-4 will not be used.
 
      - Preconfigured APIM URL for GPT 3.5: https://**yourapiminstance**.azure-api.net/openai**4**
 
-     - Direct URL for the native OpenAI endpoint. Same as above.
-
-       - For example, https://api.openai.com/v1/chat/completions
-
      - Direct URL for Azure OpenAI endpoint configured for GPT 4 deployment. Same as above.
 
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-4-32k**/chat/completions?api-version=2023-07-01-preview
+
+     - Direct URL for the native OpenAI endpoint. Same as above.
+
+       - For example, https://api.openai.com/v1/chat/completions
 
    - **Base URL for Chat WebApi (APIM API or full)**: leave it empty.
 
      - It's not in use for the default SharePoint list storage.
 
-     - An empty box defaults to https://**yourapiminstance**.azure-api.net/chatwebapi in case Database storage is used.
+     - If left empty, it defaults to https://**yourapiminstance**.azure-api.net/chatwebapi when Database storage is used.
 
    - **Optional api-key for Azure OpenAI (for troubleshooting, not for Production)**: add your api-key if you don't use APIM.
 
-     - The key is for native OpenAI or for Azure OpenAI, depending on your choices above.
+     - The key is for Azure OpenAI or Native OpenAI, depending on your choices above.
 
-     - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
+     - It will be encrypted and stored in the web part settings (and displayed as \*\*\* in the Property Pane).
 
    - **Language models**: adjust values in the text box if you have different ones.
 
@@ -329,7 +336,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 ## Configurations
 
-Please refer to the product documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) and [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf)
+Please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) and [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf)
   - For detailed instructions on configuring Backend services, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
   - For detailed instructions on deploying the web part and configuring its settings, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 2-7).
   - For detailed instructions on securing Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
