@@ -51,10 +51,14 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 # Quick Start in Visual Studio Code (DEV)
   - [back to the top](#quick-links)
 
+This is the simplest and least secure setup.
+You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#more-advanced-setup).
+
 **Prerequisites**:
 
-- Visual Studio Code with a development setup for building SPFx 1.16.1 - 1.18.0 components.
-- You should have an **api-key** for native OpenAI or Azure OpenAI with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+- Visual Studio Code with a development setup for building SPFx components, versions 1.16.1 - 1.18.0.
+- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+  - Alternatively, you should have an **api-key** for Native OpenAI.
 
 ## Configurations
 
@@ -77,39 +81,36 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
 6. Open the web part settings and configure the minimal set of required properties as follows:
    
-   - **Client ID: create a user_impersonation app with name=openaiwp**: keep the default value or leave it empty.
+   - **Client ID: create a user_impersonation app with name=openaiwp**: keep the default "zero" value or leave it empty.
 
    - **Base URL for GPT endpoint (APIM API or full)**: you can use the following alternatives:
 
-     - Direct URL for the native OpenAI endpoint.
-
-       - For example, https://api.openai.com/v1/chat/completions
-       - You need to have an active paid OpenAI subscription and a valid **api-key** for it.
-
-     - Direct URL for the Azure OpenAI endpoint configured for GPT 3.5 deployment.
+     - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 3.5.
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-35-turbo-16k**/chat/completions?api-version=2023-07-01-preview
        - You need to have an **api-key** for that instance.
+
+     - Direct URL for the Native OpenAI endpoint.
+       - For example, https://api.openai.com/v1/chat/completions
+       - You must have an active, paid OpenAI subscription and a valid **api-key** for it.
 
    - **Base URL for GPT4 endpoint (APIM API or full)**: you can use the following alternatives:
 
      - Empty value if GPT-4 will not be used.
 
-     - Direct URL for the native OpenAI endpoint, as mentioned above.
-
-       - For example, https://api.openai.com/v1/chat/completions
-
-     - Direct URL for the Azure OpenAI endpoint configured for GPT 4 deployment, as mentioned above.
+     - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 4.
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-4-32k**/chat/completions?api-version=2023-07-01-preview
+
+     - Direct URL for the Native OpenAI endpoint, configured as mentioned above.
 
    - **Base URL for Chat WebApi (APIM API or full)**: keep the default empty value.
 
    - **Optional api-key for Azure OpenAI (for troubleshooting, not for Production)**: add your api-key
 
-     - The key for native OpenAI or for Azure OpenAI, depending on your choices above.
+     - The key for Azure OpenAI or Native OpenAI, depending on your choices above.
 
      - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
 
-   - **Language models**: adjust values in the text box if you have different ones.
+   - **Language Models**: If you have different models, adjust default values in the text box accordingly.
 
    - **Storage type for chat history**: keep the default SharePoint list or select Local storage for a quick review.
 
@@ -124,19 +125,23 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
 7. Save web part settings. Reload the page.
 
-8. Test the setup by entering any text into the prompt text area and clicking Enter.
-   - The AI-response should appear in the content area.
-   - Try the same with another language model (GPT-4).
-   - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
+8. Test the setup by adding any text into the prompt text area, then pressing Enter or clicking the Submit button.
+   - The AI-response should appear in the content area below.
+   - Try the same steps with another language model (GPT-4).
+   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarise the uploaded PDF.
 
 # Quick Start
   - [back to the top](#quick-links)
 
+This is the simplest and least secure standalone setup. 
+You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#more-advanced-setup).
+
 **Prerequisites**:
 
 - You should be a site collection administrator or hold the role of SharePoint Administrator to create a new site.
-- You should have an **api-key** for native OpenAI or Azure OpenAI with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
-
+- You should have an **api-key** for Azure OpenAI, with configured endpoints for text models of GPT 3.5 and, optionally, GPT 4.
+  - Alternatively, you should have an **api-key** for Native OpenAI.
+  
 ## Configurations
 
 1. Download the latest [release package](../../releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
@@ -150,43 +155,40 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
    - Add the app **Azure OpenAI Chat Web Part** to the site. Please ignore the warning about the required access permissions.
 
-4. Add a new Site Page and the web part **Azure OpenAI Chat Web Part** to it.
+4. Add a new Site Page and the web part **Azure OpenAI Chat** to it.
 
 5. Open the web part settings and configure the minimal set of required properties as follows:
 
-   - **Client ID: create a user_impersonation app with name=openaiwp**: keep the default value or leave it empty.
+   - **Client ID: create a user_impersonation app with name=openaiwp**: keep the default "zero" value or leave it empty.
 
    - **Base URL for GPT endpoint (APIM API or full)**: you can use the following alternatives:
 
-     - Direct URL for the native OpenAI endpoint.
-
-       - For example, https://api.openai.com/v1/chat/completions
-       - You need to have an active paid OpenAI subscription and a valid **api-key** for it.
-
-     - Direct URL for the Azure OpenAI endpoint configured for GPT 3.5 deployment.
+     - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 3.5.
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-35-turbo-16k**/chat/completions?api-version=2023-07-01-preview
        - You need to have an **api-key** for that instance.
+
+     - Direct URL for the Native OpenAI endpoint.
+       - For example, https://api.openai.com/v1/chat/completions
+       - You must have an active, paid OpenAI subscription and a valid **api-key** for it.
 
    - **Base URL for GPT4 endpoint (APIM API or full)**: you can use the following alternatives:
 
      - Empty value if GPT-4 will not be used.
 
-     - Direct URL for the native OpenAI endpoint, as mentioned above.
-
-       - For example, https://api.openai.com/v1/chat/completions
-
-     - Direct URL for the Azure OpenAI endpoint configured for GPT 4 deployment, as mentioned above.
+     - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 4.
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-4-32k**/chat/completions?api-version=2023-07-01-preview
+
+     - Direct URL for the Native OpenAI endpoint, configured as mentioned above.
 
    - **Base URL for Chat WebApi (APIM API or full)**: keep the default empty value.
 
    - **Optional api-key for Azure OpenAI (for troubleshooting, not for Production)**: add your api-key
 
-     - The key for native OpenAI or for Azure OpenAI, depending on your choices above.
+     - The key for Azure OpenAI or Native OpenAI, depending on your choices above.
 
      - It will be encrypted and stored locally in the web part settings (and displayed as \*\*\* in the Property Pane).
 
-   - **Language models**: adjust values in the text box if you have different ones.
+   - **Language Models**: If you have different models, adjust default values in the text box accordingly.
 
    - **Storage type for chat history**: keep the default SharePoint list or select Local storage for a quick review.
 
@@ -201,10 +203,10 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
 6. Save web part settings. Reload the page.
 
-7. Test the setup by entering any text into the prompt text area and clicking Enter.
-   - The AI-response should appear in the content area.
-   - Try the same with another language model (GPT-4).
-   - Click on the upside arrow in the right-hand corner. Select any PDF file - for example, from ./docs folder - click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
+7. Test the setup by adding any text into the prompt text area, then pressing Enter or clicking the Submit button.
+   - The AI-response should appear in the content area below.
+   - Try the same steps with another language model (GPT-4).
+   - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarise the uploaded PDF.
 
 # More Advanced Setup
   - [back to the top](#quick-links)
@@ -247,7 +249,7 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
      - These permissions are necessary only if you plan to use the feature of private chat sharing in the web part (limited to specific Azure AD accounts).
 
-6. Add a new Site Page and insert the web part **Azure OpenAI Chat Web Part** into it.
+6. Add a new Site Page and the web part **Azure OpenAI Chat** to it.
 
 7. Open the web part settings and configure the minimal set of required properties as follows:
 
