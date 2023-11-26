@@ -52,7 +52,7 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
   - [back to the top](#quick-links)
 
 This is the simplest and least secure setup.
-You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#spfx-permissions).
+You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
 
 **Prerequisites**:
 
@@ -134,7 +134,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
   - [back to the top](#quick-links)
 
 This is the simplest and least secure standalone setup. 
-You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#spfx-permissions).
+You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
 
 **Prerequisites**:
 
