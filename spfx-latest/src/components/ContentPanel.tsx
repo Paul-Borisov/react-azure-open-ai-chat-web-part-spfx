@@ -312,6 +312,22 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       ) : null;
     };
 
+    const getLanguageModelIcon = (star: boolean): JSX.Element => {
+      return star ? Icons.getStarIcon() : Icons.getLighteningIcon();
+    };
+
+    const getLanguageModelText = (languageModel: string, isGpt3: boolean, isGpt4: boolean, isGpt4Turbo: boolean): string => {
+      if (isGpt3) {
+        return strings.TextGpt35;
+      } else if (isGpt4Turbo) {
+        return strings.TextGpt4Turbo;
+      } else if (isGpt4) {
+        return strings.TextGpt4;
+      } else {
+        return languageModel;
+      }
+    };
+
     const getLanguageModels = (): JSX.Element => {
       return (
         <div className={[styles.topbarcontent, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
@@ -320,6 +336,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               languageModel = languageModel.trim();
               const isGpt3 = /gpt-3/i.test(languageModel);
               const isGpt4 = /gpt-4/i.test(languageModel);
+              const isGpt4Turbo = /gpt-4-(1106|turbo)/i.test(languageModel);
               const selectedClassName = model === languageModel || (!model && index === 0) ? styles.selectedModel : undefined;
               return (
                 <TooltipHost content={`LLM: ${languageModel}`}>
@@ -337,8 +354,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                       setModel(languageModel);
                     }}
                   >
-                    {isGpt3 ? Icons.getLighteningIcon() : isGpt4 ? Icons.getStarIcon() : Icons.getLighteningIcon()}
-                    {isGpt3 ? strings.TextGpt35 : isGpt4 ? strings.TextGpt4 : languageModel}
+                    {getLanguageModelIcon(isGpt4)}
+                    {getLanguageModelText(languageModel, isGpt3, isGpt4, isGpt4Turbo)}
                   </DefaultButton>
                 </TooltipHost>
               );

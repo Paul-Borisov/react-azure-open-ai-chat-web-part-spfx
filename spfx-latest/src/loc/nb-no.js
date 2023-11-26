@@ -53,6 +53,7 @@ define([], function () {
     TextFullScreen: 'Til fullskjerm',
     TextGpt35: 'GPT-3.5',
     TextGpt4: 'GPT-4',
+    TextGpt4Turbo: 'GPT-4 Turbo',
     TextHideMySharedChats: 'Skjul chattene mine',
     TextInvalidListUrl: 'Ugyldig liste-URL. Egendefinert liste med samme navn finnes allerede på nettstedet',
     TextListCreated: 'Egendefinert liste er opprettet',

@@ -52,6 +52,7 @@ define([], function () {
     TextFullScreen: 'To full screen',
     TextGpt35: 'GPT-3.5',
     TextGpt4: 'GPT-4',
+    TextGpt4Turbo: 'GPT-4 Turbo',
     TextHideMySharedChats: 'Hide my chats',
     TextInvalidListUrl: 'Invalid list URL. Custom list with the same name already exists at the site',
     TextListCreated: 'Custom list has been created',

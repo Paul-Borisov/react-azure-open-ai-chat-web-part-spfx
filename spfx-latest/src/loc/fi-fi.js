@@ -52,6 +52,7 @@ define([], function () {
     TextFullScreen: 'Koko näyttöön',
     TextGpt35: 'GPT-3.5',
     TextGpt4: 'GPT-4',
+    TextGpt4Turbo: 'GPT-4 Turbo',
     TextHideMySharedChats: 'Piilota chattini',
     TextInvalidListUrl: 'Virheellinen luettelon URL-osoite. Muokattu luettelo samalla nimella on jo olemassa sivustolla',
     TextListCreated: 'Muokattu luettelo on luotu',

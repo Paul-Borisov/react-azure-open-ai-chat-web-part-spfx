@@ -215,6 +215,7 @@ $selection: $ms-color-gray150;
 .modelSelector {
   border-radius: 5px;
   width: 100px;
+  min-width: max-content;
   height: 30px;
   font-weight: 600;
   margin-right: 5px;

@@ -64,7 +64,7 @@ export default class ChatHelper {
       //https://platform.openai.com/playground?mode=chat&model=gpt-4-1106-preview
       returnValue = defaultResponseTokens * 2;
     } else if (/32k/i.test(model)) {
-      returnValue = defaultResponseTokens * 3;
+      returnValue = defaultResponseTokens * 2; // * 3 and * 4 will also work, * 2 looks safer to avoid errors
     } else if (/16k|-1106/i.test(model)) {
       returnValue = defaultResponseTokens;
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
