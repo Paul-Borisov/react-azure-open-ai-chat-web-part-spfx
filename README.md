@@ -36,7 +36,7 @@ I would like to express my deep respect and admiration for Microsoft, the creato
 
 I am immensely grateful to Advania Finland for providing me with the opportunity and resources to develop this project.
 
-# Quick links
+# Table of Content
   
   - [Key features](../../releases/tag/v1)
   
