@@ -87,7 +87,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
    - npm run serve
 
 4. Create a Site Page in SharePoint Online and open it in "debug mode" using the following format:
-   - https://**yourtenant**.sharepoint.com/sites/tests/SitePages/**yourpage**.aspx?debug=true&noredir=true&debugManifestsFile=https%3A%2F%2Flocalhost%3A4321%2Ftemp%2Fmanifests.js
+   - https://**yourtenant**.sharepoint.com/sites/**yoursite**/SitePages/**yourpage**.aspx?debug=true&noredir=true&debugManifestsFile=https://localhost:4321/temp/manifests.js
 
 5. Edit the page and add the Azure OpenAI Chat web part.
 
