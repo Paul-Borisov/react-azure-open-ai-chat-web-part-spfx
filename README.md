@@ -52,7 +52,7 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
   - [back to the top](#quick-links)
 
 This is the simplest and least secure setup.
-You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#more-advanced-setup).
+You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#spfx-permissions).
 
 **Prerequisites**:
 
@@ -134,7 +134,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
   - [back to the top](#quick-links)
 
 This is the simplest and least secure standalone setup. 
-You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#more-advanced-setup).
+You will not be able to use the Private Chat sharing feature unless you approve the corresponding SPFx [permissions](#spfx-permissions).
 
 **Prerequisites**:
 
@@ -239,7 +239,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
    - Save the App ID (Client ID). You will use it in the web part settings.
 
-5. Review and approve access permissions for the uploaded SPFx package in the [API access section](https://yourtenant-admin.sharepoint.com/_layouts/15/online/AdminHome.aspx#/webApiPermissionManagement) of your SharePoint Online tenant.
+5. Review and approve access permissions for the uploaded SPFx package in the [API access section](https://yourtenant-admin.sharepoint.com/_layouts/15/online/AdminHome.aspx#/webApiPermissionManagement) of your SharePoint Online tenant. ### <a id="spfx-permissions"></a>
 
    - **This step can be skipped if you do not plan to use the API Management service to secure access to (Azure) OpenAI endpoints.**
 
