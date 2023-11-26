@@ -339,7 +339,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 Please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) and [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf)
   - For detailed instructions on configuring Backend services, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
   - For detailed instructions on deploying the web part and configuring its settings, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 2-7).
-  - For detailed instructions on securing Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
+  - For more options regarding the security of Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
 
 # Notes on npm install and associated warnings
   - [back to the top](#quick-links)
