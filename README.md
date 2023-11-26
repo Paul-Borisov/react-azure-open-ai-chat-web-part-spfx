@@ -2,27 +2,28 @@
 
 This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user experience that is familiar to users of ChatGPT.
 
-The web part interacts with **Azure OpenAI** endpoints that are published via Azure API Management service (APIM).
-- By default, this setup ensures data privacy. In this configuration, requests to AI do not travel outside your Azure tenant.
-- APIM validates the identities of SharePoint users. If they originate from permitted domains, APIM injects the **api-key** into requests before forwarding them to AI endpoints. This ensures that the api-key does not travel in the browser.
+**Data Privacy**
+The web part interacts with private **Azure OpenAI** endpoints that are published via Azure API Management service (APIM).
+- By default, this setup provides enhanced data privacy. In this configuration, requests to AI do not travel outside your Azure tenant.
+- APIM consistently validates the identities of SharePoint users for each individual request. If the request originates from authorized domains, APIM retrieves the **api-key** from the secure vault and injects it into the request before forwarding it to the AI endpoint. This process ensures that the api-key does not get exposed in the browser.
 
 In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (page 7).
 - CONS: Granting access to the Native Open AI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
-- PROS: Using the Native OpenAI endpoint could give you access to the latest language models like gpt-4-vision-preview and gpt-4-1106-preview that are not currently available in Azure OpenAI (as of November 2023).
+- PROS: Using the Native OpenAI endpoint could grant you access to the latest language models like GPT-4 Vision and GPT-4 1106 Parallel processing that are not currently available in Azure OpenAI (as of November 2023).
 
 In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
   - **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure Open AI.
   - The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
   However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
 
-The web part supports optional integrations with company data. These integrations are disabled by default and must be explicitly enabled in the web part settings.
+The web part supports optional integrations with company data. For security reasons, these integrations are disabled by default and must be explicitly enabled in the web part settings.
 
 The integrations available in this release include:
   - SharePoint Search
   - Company Users
   - Local Date and Time
   - Analysis of an uploaded PDF and summarization of its content
-  - Analysis of uploaded images and description of them
+  - Analysis of uploaded images and description of their content
 
 ### Full-Scale Setup
 
