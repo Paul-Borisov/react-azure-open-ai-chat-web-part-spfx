@@ -292,7 +292,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
         (props.apiService.isNative(props.endpointBaseUrlForOpenAi4) ||
           props.apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi4));
       const isPdfSupported = true;
-      return isVisionSupported || isPdfSupported ? (
+      return props.functions && (isVisionSupported || isPdfSupported) ? (
         <TooltipHost content={strings.TextUploadFiles}>
           {getSimpleDialog(strings.TextUpload, strings.TextUploadFiles, showUploadDialog, setShowUploadDialog, [
             <UploadFiles
