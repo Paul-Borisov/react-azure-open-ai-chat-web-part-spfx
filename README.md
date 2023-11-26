@@ -364,7 +364,7 @@ When working with SPFx solutions, it is important to note that npm packages are 
 In addition to the stadard set of modules employed by SPFx 1.18 with React base, the project includes references to the following additional libraries:
   - @fluentui/react: Provided by Microsoft for building a richer UI experience.
   - @microsoft/fetch-event-source: Used to implement Consecutive Event Streaming. It is used only when the web part setting **Event streaming** is enabled (default).
-  - crypto-js, @types/crypto-js: Used to encrypt and decrypt an api-key when the user adds it explicitly to web part settings. This is not required in default APIM setup.
+  - crypto-js, @types/crypto-js: These are used to encrypt and decrypt an api-key when the user explicitly adds it to web part settings. This is not required in the default APIM-based setup.
   - react-pdf: used to extract texts from uploaded PDFs. It is used only when the web part setting **Enable integrations** is enabled (disabled by default).
   - react-syntax-highlighter: adds code highlighting capabilities. It is used only when the web part setting **Code highlighting** is enabled (default).
   - prettier, fast-serve: these development tools are only used in the development environment.
