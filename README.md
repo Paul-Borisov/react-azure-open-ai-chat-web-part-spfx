@@ -7,7 +7,7 @@ The web part interacts with **Azure OpenAI** endpoints that are published via Az
 - APIM validates the identities of SharePoint users. If they originate from permitted domains, APIM injects the **api-key** into requests before forwarding them to AI endpoints. This ensures that the api-key does not travel in the browser.
 
 In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (page 7).
-- CONS: Granting access to the Native Open AI requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
+- CONS: Granting access to the Native Open AI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
 - PROS: Using the Native OpenAI endpoint could give you access to the latest language models like gpt-4-vision-preview and gpt-4-1106-preview that are not currently available in Azure OpenAI (as of November 2023).
 
 In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
