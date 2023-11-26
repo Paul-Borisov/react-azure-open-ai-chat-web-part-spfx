@@ -47,7 +47,7 @@ Additionally, I am immensely grateful to Advania Finland for providing me with t
 
 ![PDF Analysis](docs/pdf-analysis.png "PDF Analysis")
 
-![Image Analysis, available only for the Native OpenAI endpoint](docs/image-analysis.png "Image Analysis, available only for the Native OpenAI endpoint")
+![Image Analysis is only available with the Native OpenAI endpoint](docs/image-analysis.png "Image Analysis is only available with the Native OpenAI endpoint")
 
 # Quick Start in Visual Studio Code (DEV)
   - [back to the top](#quick-links)
