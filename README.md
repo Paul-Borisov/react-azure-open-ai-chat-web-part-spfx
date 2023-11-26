@@ -3,6 +3,7 @@
 This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user experience that is familiar to users of ChatGPT.
 
 **Data Privacy**
+
 The web part interacts with private **Azure OpenAI** endpoints that are published via Azure API Management service (APIM).
 - By default, this setup provides enhanced data privacy. In this configuration, requests to AI do not travel outside your Azure tenant.
 - APIM consistently validates the identities of SharePoint users for each individual request. If the request originates from authorized domains, APIM retrieves the **api-key** from the secure vault and injects it into the request before forwarding it to the AI endpoint. This process ensures that the api-key does not get exposed in the browser.
