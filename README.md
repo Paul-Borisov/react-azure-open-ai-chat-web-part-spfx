@@ -46,9 +46,9 @@ I am immensely grateful to Advania Finland for providing me with the opportunity
 
 - [Presentation](docs/azure-openai-chat-web-part-presentation.pdf)
 
-- [Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-dev)
+- [Get Started Quickly in Visual Studio Code (DEV)](#get-started-quickly-in-visual-studio-code-dev)
 
-- [Quick Start](#quick-start)
+- [Get Started Quickly with a prebuilt web part package](#get-started-quickly-with-a-prebuilt-web-part-package)
 
 - [More Advanced Setup](#more-advanced-setup)
 
