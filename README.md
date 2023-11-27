@@ -66,7 +66,7 @@ I am immensely grateful to Advania Finland for providing me with the opportunity
 
 # Get Started Quickly in Visual Studio Code (DEV)
 
-- [back to the top](#quick-links)
+- [back to the top](#table-of-content)
 
 This is the simplest and least secure setup.
 You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
@@ -153,7 +153,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 # Get Started Quickly with a prebuilt web part package
 
-- [back to the top](#quick-links)
+- [back to the top](#table-of-content)
 
 This is the simplest and least secure standalone setup.
 You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
@@ -234,7 +234,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 # More Advanced Setup
 
-- [back to the top](#quick-links)
+- [back to the top](#table-of-content)
 
 **Prerequisites**:
 
@@ -353,7 +353,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 # Full-Scale Setup for Large Environments
 
-- [back to the top](#quick-links)
+- [back to the top](#table-of-content)
 
 **Prerequisites**:
 
@@ -370,7 +370,7 @@ Please refer to the project documentation in [azure-openai-chat-web-part.pdf](do
 
 # Notes on npm install and associated warnings
 
-- [back to the top](#quick-links)
+- [back to the top](#table-of-content)
 
 The reference: [Don't be alarmed by vulnerabilities after running NPM Install](https://www.voitanos.io/blog/don-t-be-alarmed-by-vulnerabilities-after-running-npm-install)
 
