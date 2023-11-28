@@ -5,26 +5,30 @@ This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user exp
 **Data Privacy**
 
 The web part interacts with private **Azure OpenAI** endpoints that are published via Azure API Management service (APIM).
+
 - By default, this setup provides enhanced data privacy. In this configuration, requests to AI do not travel outside your Azure tenant.
 - APIM consistently validates the identities of SharePoint users for each individual request. If the request originates from authorized domains, APIM retrieves the **api-key** from the secure vault and injects it into the request before forwarding it to the AI endpoint. This process ensures that the api-key does not get exposed in the browser.
 
 In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (page 7).
+
 - CONS: Granting access to the Native Open AI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
 - PROS: Using the Native OpenAI endpoint could grant you access to the latest language models like GPT-4 Vision and GPT-4 1106 Parallel processing that are not currently available in Azure OpenAI (as of November 2023).
 
 In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
-  - **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure Open AI.
-  - The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
+
+- **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure Open AI.
+- The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
   However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
 
 The web part supports optional integrations with company data. For security reasons, these integrations are disabled by default and must be explicitly enabled in the web part settings.
 
 The integrations available in this release include:
-  - SharePoint Search
-  - Company Users
-  - Local Date and Time
-  - Analysis of an uploaded PDF and summarization of its content
-  - Analysis of uploaded images and description of their content
+
+- SharePoint Search
+- Company Users
+- Local Date and Time
+- Analysis of an uploaded PDF and summarization of its content
+- Analysis of uploaded images and description of their content
 
 ### Full-Scale Setup
 
@@ -36,21 +40,21 @@ I would like to express my deep respect and admiration for Microsoft, the creato
 
 I am immensely grateful to Advania Finland for providing me with the opportunity and resources to develop this project.
 
-# Quick links
-  
-  - [Key features](../../releases/tag/v1)
-  
-  - [Presentation](docs/azure-openai-chat-web-part-presentation.pdf)
+# Table of Content
 
-  - [Quick Start in Visual Studio Code (DEV)](#quick-start-in-visual-studio-code-dev)
+- [Key features](../../releases/tag/v1)
 
-  - [Quick Start](#quick-start)
+- [Presentation](docs/azure-openai-chat-web-part-presentation.pdf)
 
-  - [More Advanced Setup](#more-advanced-setup)
+- [Get Started Quickly in Visual Studio Code (DEV)](#get-started-quickly-in-visual-studio-code-dev)
 
-  - [Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments)
+- [Get Started Quickly with a prebuilt web part package](#get-started-quickly-with-a-prebuilt-web-part-package)
 
-  - [Notes on npm install and associated warnings](#notes-on-npm-install-and-associated-warnings)
+- [More Advanced Setup](#more-advanced-setup)
+
+- [Full-Scale Setup for Large Environments](#full-scale-setup-for-large-environments)
+
+- [Notes on npm install and associated warnings](#notes-on-npm-install-and-associated-warnings)
 
 ### User Interface
 
@@ -60,8 +64,9 @@ I am immensely grateful to Advania Finland for providing me with the opportunity
 
 ![Image Analysis is only available with the Native OpenAI endpoint](docs/image-analysis.png "Image Analysis is only available with the Native OpenAI endpoint")
 
-# Quick Start in Visual Studio Code (DEV)
-  - [back to the top](#quick-links)
+# Get Started Quickly in Visual Studio Code (DEV)
+
+- [back to the top](#table-of-content)
 
 This is the simplest and least secure setup.
 You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
@@ -79,6 +84,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 2. Open the project in Visual Studio Code and navigate to View > Terminal
 
 3. Execute the following commands
+
    - cd ./spfx-latest
    - npm i
    - gulp build
@@ -87,17 +93,19 @@ You will not be able to use the Private Chat sharing feature unless you approve 
    - npm run serve
 
 4. Create a Site Page in SharePoint Online and open it in "debug mode" using a format like:
-   - ```https://yourtenant.sharepoint.com/sites/yoursite/SitePages/yourpage.aspx?debug=true&noredir=true&debugManifestsFile=https://localhost:4321/temp/manifests.js```
+
+   - `https://yourtenant.sharepoint.com/sites/yoursite/SitePages/yourpage.aspx?debug=true&noredir=true&debugManifestsFile=https://localhost:4321/temp/manifests.js`
 
 5. Edit the page and add the Azure OpenAI Chat web part.
 
 6. Open the web part settings and configure the minimal set of required properties as follows:
-   
+
    - **Client ID: create a user_impersonation app with name=openaiwp**: keep the default "zero" value or leave it empty.
 
    - **Base URL for GPT endpoint (APIM API or full)**: you can use the following alternatives:
 
      - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 3.5.
+
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-35-turbo-16k**/chat/completions?api-version=2023-07-01-preview
        - You need to have an **api-key** for that instance.
 
@@ -110,6 +118,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
      - Empty value if GPT-4 will not be used.
 
      - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 4.
+
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-4-32k**/chat/completions?api-version=2023-07-01-preview
 
      - Direct URL for the Native OpenAI endpoint, configured as mentioned above.
@@ -142,10 +151,11 @@ You will not be able to use the Private Chat sharing feature unless you approve 
    - Try the same steps with another language model (GPT-4).
    - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
-# Quick Start
-  - [back to the top](#quick-links)
+# Get Started Quickly with a prebuilt web part package
 
-This is the simplest and least secure standalone setup. 
+- [back to the top](#table-of-content)
+
+This is the simplest and least secure standalone setup.
 You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
 
 **Prerequisites**:
@@ -153,7 +163,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 - You should be a site collection administrator or hold the role of SharePoint Administrator to create a new site.
 - You should have an **api-key** for Azure OpenAI instance, with configured endpoints for text models of GPT 3.5, and optionally, GPT 4.
   - Alternatively, you should have an **api-key** for Native OpenAI.
-  
+
 ## Configurations
 
 1. Download the latest [release package](../../releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
@@ -176,6 +186,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
    - **Base URL for GPT endpoint (APIM API or full)**: you can use the following alternatives:
 
      - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 3.5.
+
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-35-turbo-16k**/chat/completions?api-version=2023-07-01-preview
        - You need to have an **api-key** for that instance.
 
@@ -188,6 +199,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
      - Empty value if GPT-4 will not be used.
 
      - Direct URL for the Azure OpenAI endpoint, configured for the deployment of GPT 4.
+
        - For example, https://**instance**.openai.azure.com/openai/deployments/**gpt-4-32k**/chat/completions?api-version=2023-07-01-preview
 
      - Direct URL for the Native OpenAI endpoint, configured as mentioned above.
@@ -221,19 +233,22 @@ You will not be able to use the Private Chat sharing feature unless you approve 
    - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
 # More Advanced Setup
-  - [back to the top](#quick-links)
+
+- [back to the top](#table-of-content)
 
 **Prerequisites**:
 
 - You should be:
+
   - In the role of Entra Application Administrator (Application Developer) or Global Administrator to create App registrations and approve permissions.
   - A site collection administrator or hold the role of SharePoint Administrator to create a new site.
 
 - You should create an instance of Azure OpenAI and configure deployments for GPT 3.5, and optionally, GPT 4 text language models.
+
   - Alternatively, if you do not have access to Azure OpenAI, you can use the Native OpenAI endpoint.
 
 - Optionally, you can deploy the API Management service and publish (Azure) OpenAI endpoints there.
-  - You should have an **api-key** for Azure OpenAI instance, with configured endpoints for GPT 3.5 and, optionally, GPT 4 text language models. 
+  - You should have an **api-key** for Azure OpenAI instance, with configured endpoints for GPT 3.5 and, optionally, GPT 4 text language models.
     - Alternatively, you should have an **api-key** for Native OpenAI.
   - For detailed instructions on configuring Azure OpenAI and APIM endpoints, please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
 
@@ -257,16 +272,15 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
    - Save the App ID (Client ID). You will use it in the web part settings.
 
-<a id="spfx-permissions"></a>
-5. Review and approve access permissions for the uploaded SPFx package in the [API access section](https://yourtenant-admin.sharepoint.com/_layouts/15/online/AdminHome.aspx#/webApiPermissionManagement) of your SharePoint Online tenant.
+<a id="spfx-permissions"></a> 5. Review and approve access permissions for the uploaded SPFx package in the [API access section](https://yourtenant-admin.sharepoint.com/_layouts/15/online/AdminHome.aspx#/webApiPermissionManagement) of your SharePoint Online tenant.
 
-   - **This step can be skipped if you do not plan to use the API Management service to secure access to (Azure) OpenAI endpoints.**
+- **This step can be skipped if you do not plan to use the API Management service to secure access to (Azure) OpenAI endpoints.**
 
-   - openaiwp > Azure OpenAI Chat Web Part > user_impersonation: required to verify users in APIM.
+- openaiwp > Azure OpenAI Chat Web Part > user_impersonation: required to verify users in APIM.
 
-   - Microsoft Graph > People.Read and Microsoft Graph > User.Read.All: permissions needed to retrieve colleagues and other users from Azure AD.
+- Microsoft Graph > People.Read and Microsoft Graph > User.Read.All: permissions needed to retrieve colleagues and other users from Azure AD.
 
-     - These permissions are necessary only if you plan to use the feature of private chat sharing in the web part (limited to specific Azure AD accounts).
+  - These permissions are necessary only if you plan to use the feature of private chat sharing in the web part (limited to specific Azure AD accounts).
 
 6. Add a new Site Page and the web part **Azure OpenAI Chat** to it.
 
@@ -337,8 +351,9 @@ You will not be able to use the Private Chat sharing feature unless you approve 
    - Try the same steps with another language model (GPT-4).
    - Click on the upward arrow in the right-hand corner. Select any PDF file - for instance, from ./docs folder - and click OK to upload it. Click on the Submit button to summarize the uploaded PDF.
 
-# Full-Scale Setup for Large Environments 
-  - [back to the top](#quick-links)
+# Full-Scale Setup for Large Environments
+
+- [back to the top](#table-of-content)
 
 **Prerequisites**:
 
@@ -348,12 +363,14 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 ## Configurations
 
 Please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) and [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf)
-  - For detailed instructions on configuring Backend services, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
-  - For detailed instructions on deploying the web part and configuring its settings, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 2-7).
-  - For more options regarding the security of Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
+
+- For detailed instructions on configuring Backend services, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
+- For detailed instructions on deploying the web part and configuring its settings, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 2-7).
+- For more options regarding the security of Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
 
 # Notes on npm install and associated warnings
-  - [back to the top](#quick-links)
+
+- [back to the top](#table-of-content)
 
 The reference: [Don't be alarmed by vulnerabilities after running NPM Install](https://www.voitanos.io/blog/don-t-be-alarmed-by-vulnerabilities-after-running-npm-install)
 
@@ -362,9 +379,10 @@ When working with SPFx solutions, it is important to note that npm packages are 
 ### Auxiliary modules
 
 In addition to the stadard set of modules employed by SPFx 1.18 with React base, the project includes references to the following additional libraries:
-  - @fluentui/react: Provided by Microsoft for building a richer UI experience.
-  - @microsoft/fetch-event-source: Used to implement Consecutive Event Streaming. It is used only when the web part setting **Event streaming** is enabled (default).
-  - crypto-js, @types/crypto-js: These are used to encrypt and decrypt an api-key when the user explicitly adds it to web part settings. This is not required in the default APIM-based setup.
-  - react-pdf: Used to extract text from uploaded PDFs. It is used only when the web part setting **Enable integrations** is enabled (disabled by default).
-  - react-syntax-highlighter: Adds code highlighting capabilities. It is used only when the web part setting **Code highlighting** is enabled (default).
-  - prettier, fast-serve: These development tools are used exclusively in the development environment.
+
+- @fluentui/react: Provided by Microsoft for building a richer UI experience.
+- @microsoft/fetch-event-source: Used to implement Consecutive Event Streaming. It is used only when the web part setting **Event streaming** is enabled (default).
+- crypto-js, @types/crypto-js: These are used to encrypt and decrypt an api-key when the user explicitly adds it to web part settings. This is not required in the default APIM-based setup.
+- react-pdf: Used to extract text from uploaded PDFs. It is used only when the web part setting **Enable integrations** is enabled (disabled by default).
+- react-syntax-highlighter: Adds code highlighting capabilities. It is used only when the web part setting **Code highlighting** is enabled (default).
+- prettier, fast-serve: These development tools are used exclusively in the development environment.
