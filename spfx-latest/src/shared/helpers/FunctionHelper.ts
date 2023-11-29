@@ -1,8 +1,13 @@
+import { AadHttpClient } from '@microsoft/sp-http';
 import GraphQueries from 'shared/constants/GraphQueries';
 import SearchResultMapper from 'shared/mappers/SearchResultMapper';
+import { IFunctionService } from 'shared/model/IFunctionService';
+import { IItemPayload } from 'shared/model/IItemPayload';
 import { IODataQuery } from 'shared/model/IODataQuery';
 import { FunctionCallingOptions } from 'shared/model/enums/FunctionCallingOptions';
+import { FunctionServices } from 'shared/model/enums/FunctionServices';
 import AadService from 'shared/services/AadApiService';
+import AzureApiService from 'shared/services/AzureApiService';
 import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import SharepointService from 'shared/services/SharepointService';
@@ -33,22 +38,24 @@ const getCsvContent = (data: any[]): string => {
 // Search in SharePoint for "Resource Management System". Format the results as an HTML table. => searchSharepoint
 // Date and time now => currentDateAndTime, currentDateOrTime
 export default class FunctionHelper {
-  private static available: { [key: string]: any } = {
+  private available: { [key: string]: any } = {
     currentDateOrTime: this.currentDateOrTime,
     currentDateAndTime: this.currentDateAndTime,
     companyUsers: this.companyUsers,
     peopleSearch: this.companyUsers,
     searchSharepoint: this.searchSharepoint,
+    searchOnInternet: this.searchOnInternet,
   };
+  private services: IFunctionService[] = [];
 
-  public static async call(allFunctions: IFunctionCalling[]): Promise<string[]> {
+  public async call(allFunctions: IFunctionCalling[], apiService: AzureApiService, payload: IItemPayload): Promise<string[]> {
     if (!allFunctions?.length) return Promise.resolve(undefined);
 
     const returnValue: string[] = [];
     for (let i = 0; i < allFunctions.length; i++) {
       const functionCalling = allFunctions[i];
       if (functionCalling?.name) {
-        const func = FunctionHelper.available[functionCalling.name];
+        const func = this.available[functionCalling.name];
         if (func) {
           let args;
           try {
@@ -56,6 +63,10 @@ export default class FunctionHelper {
               ? JSON.parse(functionCalling.arguments.substring(functionCalling.arguments.lastIndexOf('}{') + 1))
               : {};
           } catch (e) {}
+
+          if (apiService) args = { ...args, apiService: apiService };
+          if (payload) args = { ...args, payload: payload };
+
           returnValue.push(await func(args));
         }
       }
@@ -63,7 +74,7 @@ export default class FunctionHelper {
     return Promise.resolve(returnValue);
   }
 
-  public static getExtendedMessages(
+  public getExtendedMessages(
     json: any,
     messages: any[],
     functionCalling: IFunctionCalling[],
@@ -124,7 +135,7 @@ export default class FunctionHelper {
     return extendedMessages;
   }
 
-  private static async companyUsers(args: { myColleagues: boolean }): Promise<string> {
+  private async companyUsers(args: { myColleagues: boolean }): Promise<string> {
     const query: IODataQuery = args.myColleagues ? GraphQueries.myWorkingWithColleagues : GraphQueries.users;
     const orgPeople = await AadService.getData(query).then((data: any[]) => {
       data = args.myColleagues
@@ -148,7 +159,7 @@ export default class FunctionHelper {
     return Promise.resolve(results || 'Data not found');
   }
 
-  private static async currentDateAndTime(args: {}, locale: string = 'fi-FI'): Promise<string> {
+  private async currentDateAndTime(args: {}, locale: string = 'fi-FI'): Promise<string> {
     const date = new Date();
     return Promise.resolve(
       `${new Intl.DateTimeFormat(locale, {
@@ -165,7 +176,7 @@ export default class FunctionHelper {
     );
   }
 
-  private static async currentDateOrTime(args: { timeNow: boolean }, locale: string = 'fi-FI'): Promise<string> {
+  private async currentDateOrTime(args: { timeNow: boolean }, locale: string = 'fi-FI'): Promise<string> {
     const date = new Date();
     return Promise.resolve(
       args.timeNow
@@ -184,7 +195,7 @@ export default class FunctionHelper {
     );
   }
 
-  private static async searchSharepoint(args: { queryText: string }): Promise<string> {
+  private async searchSharepoint(args: { queryText: string }): Promise<string> {
     const data = await SharepointService.searchSharepoint(args.queryText, ['Title', 'Author', 'Size', 'Path']);
     const csvResults = getCsvContent(data);
 
@@ -192,7 +203,18 @@ export default class FunctionHelper {
     return Promise.resolve(csvResults);
   }
 
-  public static ensureFunctionCalling(options: FunctionCallingOptions, commonParameters: any): IFunctionCalling[] {
+  private async searchOnInternet(args: {
+    queryText: string;
+    apiService: AzureApiService;
+    payload: IItemPayload;
+  }): Promise<string> {
+    const svc = args.payload?.services?.find((s) => s.name === FunctionServices.bing);
+    const data = await args.apiService.callBing(args.queryText, svc?.key, args.payload?.model, svc?.locale);
+
+    return Promise.resolve(data);
+  }
+
+  public init(options: FunctionCallingOptions, services: IFunctionService[], commonParameters: any): IFunctionCalling[] {
     if (!options || !commonParameters) return undefined;
 
     const tools = [
@@ -277,6 +299,33 @@ export default class FunctionHelper {
         },
       },
     ];
+
+    if (services?.length) {
+      services.forEach((s) => {
+        switch (s.name) {
+          case FunctionServices.bing: {
+            tools.push({
+              type: 'function',
+              function: {
+                name: 'searchOnInternet',
+                description: 'Perform a search on the internet using the Bing API',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    queryText: {
+                      type: 'string',
+                      description: 'Text to search for',
+                    },
+                  },
+                  required: ['queryText'],
+                },
+              },
+            });
+          }
+        }
+      });
+    }
+
     if (options === FunctionCallingOptions.multiple) {
       commonParameters['tools'] = tools;
       commonParameters['tool_choice'] = 'auto';

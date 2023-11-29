@@ -5,14 +5,16 @@ import useChatHistory from 'hooks/useChatHistory';
 import useStorageService from 'hooks/useStorageService';
 import { FunctionComponent } from 'react';
 import * as React from 'react';
-import { formatCode, hasMarkdown } from 'shared/components/CodeHighlighter/CodeHighlighter';
+import { formatCode } from 'shared/components/CodeHighlighter/CodeHighlighter';
 import { getSimpleDialog } from 'shared/components/CustomDialog';
 import { CustomShimmer } from 'shared/components/CustomShimmer/CustomShimmer';
 import LinkButton from 'shared/components/LinkButton/LinkButton';
 import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
 import { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
+import MarkdownHelper from 'shared/helpers/MarkdownHelper';
 import { IChatHistory, IChatMessage } from 'shared/model/IChat';
+import { FunctionServices } from 'shared/model/enums/FunctionServices';
 import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import { IChatProps } from './Chat';
@@ -73,6 +75,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   };
 
   const wpId = React.useMemo(() => props.context.webPartTag.substring(props.context.webPartTag.lastIndexOf('.') + 1), []);
+  const stopSignal = React.useMemo(() => new AbortController(), []);
 
   const chatHistoryParams = useChatHistory(
     chatHistory,
@@ -332,7 +335,10 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       return (
         <div className={[styles.topbarcontent, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
           {props.languageModels?.length > 1 &&
-            props.languageModels.sort().map((languageModel, index) => {
+            (ChatHelper.hasDirectEndpoints(props.apiService, props, true)
+              ? props.languageModels.sort()
+              : props.languageModels
+            ).map((languageModel, index) => {
               languageModel = languageModel.trim();
               const isGpt3 = /gpt-3/i.test(languageModel);
               const isGpt4 = /gpt-4/i.test(languageModel);
@@ -521,6 +527,16 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               )}
             </div>
             {getContentArea()}
+            {isStreamProgress && (
+              <FontIcon
+                iconName="CircleStopSolid"
+                className={styles.stopSignal}
+                onClick={() => {
+                  stopSignal.abort();
+                  setIsStreamProgress(false);
+                }}
+              />
+            )}
           </div>
         </div>
       )
@@ -587,6 +603,11 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     let requestText: string = ChatHelper.sanitizeHtml(textArea.value);
     if (pdfFileContent) requestText += getPdfContent(requestText);
     const payload = ChatHelper.getItemPayload(props.config, requestText, model, props.functions);
+
+    if (props.functions && props.bing) {
+      payload.services = payload.services || [];
+      payload.services.push({ name: FunctionServices.bing, key: props.apiKeyBing, locale: props.locale });
+    }
 
     payload.chatHistory = JSON.parse(JSON.stringify(chatHistory)); // Removes possible references and allows adjusting the history.
     ChatHelper.truncateImages(payload.chatHistory); // Truncates unnecessary images from the history to reduce request costs.
@@ -671,7 +692,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
         props.apiService.callQueryText(payload).then((response) => handleResponse(response));
       } else {
         let firstResponse = true;
-        props.apiService.callQueryText(payload, true, (message: string, done?: boolean, isError?: boolean) => {
+        props.apiService.callQueryText(payload, true, stopSignal, (message: string, done?: boolean, isError?: boolean) => {
           setIsProgress(false);
           setIsStreamProgress(true);
           if (isError) {
@@ -850,7 +871,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                     />
                   </TooltipHost>
                 )}
-                {props.highlight && hasMarkdown(content) && (
+                {props.highlight && MarkdownHelper.hasMarkdownBlocks(content) && (
                   <TooltipHost content={strings.TextFormat}>
                     <FontIcon
                       iconName="RawSource"

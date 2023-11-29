@@ -138,6 +138,7 @@ $selection: $ms-color-gray150;
 }
 .panelContentPane {
   flex: auto;
+  height: 100vh;
   max-height: 410px;
   overflow-y: auto;
   @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
@@ -603,4 +604,11 @@ $selection: $ms-color-gray150;
 
 .inputAreaWrap {
   padding-left: 0px;
+}
+
+.stopSignal {
+  text-align: right;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 150%;
 }

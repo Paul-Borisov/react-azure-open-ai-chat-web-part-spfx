@@ -1,7 +1,17 @@
 export default class SearchResultMapper {
   public static delimiter = ',';
 
-  public static mapSearchResults(data: any, propertyNames: string[]): any[] {
+  public static mapSearchResultsOfBing(data: any, keys: string[]): any {
+    const returnValue = {};
+    keys.forEach((k) => {
+      const dataPart = data[k];
+      if (dataPart) returnValue[k] = dataPart;
+    });
+
+    return Object.keys(returnValue).length > 0 ? returnValue : data;
+  }
+
+  public static mapSearchResultsOfSharepoint(data: any, propertyNames: string[]): any[] {
     const results = [];
     data?.d?.postquery?.PrimaryQueryResult?.RelevantResults?.Table?.Rows?.results?.forEach((r) => {
       const row = {};

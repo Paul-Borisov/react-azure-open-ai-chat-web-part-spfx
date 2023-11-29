@@ -5,6 +5,7 @@ import FunctionHelper from 'shared/helpers/FunctionHelper';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMapper';
 import { mapResponseData } from 'shared/mappers/ChatMessageMapper';
+import SearchResultMapper from 'shared/mappers/SearchResultMapper';
 import { IAzureApiServiceConfig } from 'shared/model/IAzureApiServiceConfig';
 import { IChatHistory, IChatMessage } from 'shared/model/IChat';
 import { IItemPayload } from 'shared/model/IItemPayload';
@@ -17,6 +18,7 @@ import SessionStorageService from './SessionStorageService';
 enum Operations {
   StandardTextModel = '/chat', // gpt-3.5-turbo (URL reads as https://customer.azure-api.net/openai/chat)
   AdvancedTextModel = '/completion', // text-davinci-003
+  BingSearch = '/bing/search',
   ChatMessageLoadHistory = '/api/chatmessage/list',
   ChatMessageLoadHistoryShared = '/api/chatmessage/list/shared',
   ChatMessageCreate = '/api/chatmessage',
@@ -95,6 +97,7 @@ export default class AzureApiService {
   public async callQueryText(
     payload: IItemPayload,
     stream?: boolean,
+    stopSignal?: AbortController,
     callback?: (message: any, done?: boolean, isError?: boolean) => void,
     extendedMessages?: any[]
   ): Promise<string | undefined> {
@@ -194,7 +197,10 @@ export default class AzureApiService {
       }
     }
 
-    const functionCalling = !isVision ? FunctionHelper.ensureFunctionCalling(payload.functions, commonParameters) : undefined;
+    const functionCaller = !isVision ? new FunctionHelper() : undefined;
+    const functionCalling = functionCaller
+      ? functionCaller.init(payload.functions, payload.services, commonParameters)
+      : undefined;
 
     const body = JSON.stringify(
       isGpt
@@ -249,9 +255,9 @@ export default class AzureApiService {
           AzureServiceResponseMapper.mapToFunctionCalling(json, functionCalling, stream);
           if (functionCalling.length) {
             // If AI requested function calling.
-            const functionCallingResults = await FunctionHelper.call(functionCalling);
-            const newMessages = FunctionHelper.getExtendedMessages(json, messages, functionCalling, functionCallingResults);
-            return await this.callQueryText(payload, stream, callback, newMessages);
+            const functionCallingResults = await functionCaller.call(functionCalling, this, payload);
+            const newMessages = functionCaller.getExtendedMessages(json, messages, functionCalling, functionCallingResults);
+            return await this.callQueryText(payload, stream, stopSignal, callback, newMessages);
           } else {
             return HtmlHelper.htmlDecode(AzureServiceResponseMapper.mapResponseQueryText(json));
           }
@@ -315,14 +321,14 @@ export default class AzureApiService {
           onclose: async () => {
             LogService.debug(null, 'Connection closed');
             if (functionCalling?.length) {
-              const functionCallingResults = await FunctionHelper.call(functionCalling);
-              const newMessages = FunctionHelper.getExtendedMessages(
+              const functionCallingResults = await functionCaller.call(functionCalling, this, payload);
+              const newMessages = functionCaller.getExtendedMessages(
                 undefined,
                 messages,
                 functionCalling,
                 functionCallingResults
               );
-              this.callQueryText(payload, stream, callback, newMessages);
+              this.callQueryText(payload, stream, stopSignal, callback, newMessages);
               //if (functionCallingResults && callback) callback(functionCallingResults);
             } else if (callback) {
               callback('', true);
@@ -336,6 +342,7 @@ export default class AzureApiService {
             errorCounter++;
             if (errorCounter > maxErrors) throw 'Too many errors; disconnected.';
           },
+          signal: stopSignal.signal,
         });
       } catch (e) {
         LogService.error(e);
@@ -489,5 +496,75 @@ export default class AzureApiService {
       sharedWith: shareWith?.join(';'),
     };
     this.updateChat(id, payload, callback);
+  }
+
+  public async callBing(queryText: string, apiKey: string, model: string, market: string = 'en-US'): Promise<string> {
+    const bingServiceOrigin = 'https://api.bing.microsoft.com';
+
+    let endpointUri: string;
+    if (apiKey) {
+      endpointUri = `${bingServiceOrigin}/v7.0/search?q=${encodeURIComponent(queryText)}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl).origin}${Operations.BingSearch}?q=${encodeURIComponent(
+        queryText
+      )}&mkt=${market}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl4)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl4).origin}${Operations.BingSearch}?q=${encodeURIComponent(
+        queryText
+      )}&mkt=${market}`;
+    } else {
+      LogService.error(
+        `Preconfigured APIM URL is required to call the Bing endpoint (or an API Key for calling the endpoint at ${bingServiceOrigin})`
+      );
+      return Promise.resolve('');
+    }
+
+    let response: HttpClientResponse = undefined;
+    try {
+      let executed = false;
+      if (this.authenticate) {
+        if (!apiKey) {
+          executed = true;
+          response = await this.aadClient.get(endpointUri, AadHttpClient.configurations.v1);
+        }
+      }
+      if (!executed) {
+        const requestHeaders: Headers = new Headers();
+        if (apiKey) requestHeaders.append('Ocp-Apim-Subscription-Key', apiKey);
+
+        const options: IHttpClientOptions = {
+          headers: requestHeaders,
+        };
+        response = await PageContextService.context.httpClient.get(endpointUri, HttpClient.configurations.v1, options);
+      }
+    } catch (e) {
+      LogService.error(e);
+      return Promise.resolve('');
+    }
+
+    if (response.ok) {
+      const json = await response.json();
+      const keys = /gpt-(4|5|6)-(512k|256k|128k|64k|32k|1106|turbo)/i.test(model)
+        ? ['news', 'webPages', 'relatedSearches', 'images', 'videos']
+        : /-16k/i.test(model)
+        ? ['news', 'webPages', 'relatedSearches']
+        : ['news'];
+
+      const results = SearchResultMapper.mapSearchResultsOfBing(json, keys);
+      /*const results = SearchResultMapper.mapSearchResultsOfBing(json, [
+        'news',
+        'webPages',
+        'relatedSearches',
+        'images',
+        'videos',
+        'rankingResponse',
+      ]);*/
+      return Promise.resolve(JSON.stringify(results));
+    } else {
+      const error = await response.text();
+      LogService.error(error);
+      AzureServiceResponseMapper.saveErrorDetails(error);
+      return Promise.resolve('');
+    }
   }
 }

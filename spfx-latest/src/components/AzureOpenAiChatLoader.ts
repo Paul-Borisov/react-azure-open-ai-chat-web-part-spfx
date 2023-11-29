@@ -11,6 +11,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import AzureOpenAiChat from 'components/AzureOpenAiChat';
 import { IAzureOpenAiChatProps } from 'components/IAzureOpenAiChatProps';
+import ChatHelper from 'helpers/ChatHelper';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { getHighlightStyles } from 'shared/components/CodeHighlighter/CodeHighlighter';
@@ -91,6 +92,11 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
         streaming: this.properties.streaming,
         fullScreen: this.properties.fullScreen,
         functions: this.properties.functions,
+        bing: this.properties.functions && this.properties.bing,
+        apiKeyBing:
+          this.properties.functions && this.properties.bing && this.properties.apiKeyBing
+            ? PropertyPanePasswordField.decrypt(this.context, this.properties.apiKeyBing)
+            : undefined,
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
@@ -204,7 +210,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
       },
     ];
 
-    const hasDirectEndpoints = (): boolean => {
+    /*const hasDirectEndpoints = (): boolean => {
       return (
         this.apiService.isOpenAiServiceUrl(this.properties.endpointBaseUrlForOpenAi) ||
         this.apiService.isOpenAiServiceUrl(this.properties.endpointBaseUrlForOpenAi4) ||
@@ -213,7 +219,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
         this.apiService.isNative(this.properties.endpointBaseUrlForOpenAi) ||
         this.apiService.isNative(this.properties.endpointBaseUrlForOpenAi4)
       );
-    };
+    };*/
 
     return {
       pages: [
@@ -241,11 +247,13 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   label: strings.FieldLabelApiKey,
                 }),*/
                 new PropertyPanePasswordField('apiKey', {
+                  disabled: !ChatHelper.hasDirectEndpoints(this.apiService, this.properties),
                   label: strings.FieldLabelApiKey,
-                  wpContext: this.context,
+                  placeholder: strings.FieldLabelApiKeyPlaceholder,
                   properties: this.properties,
+                  wpContext: this.context,
                 }),
-                hasDirectEndpoints()
+                ChatHelper.hasDirectEndpoints(this.apiService, this.properties, true)
                   ? // Show language models in textbox with comma-separated values
                     PropertyPaneTextField('languageModels', {
                       // Provides options to modify LM values
@@ -258,7 +266,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                       options: [
                         { key: 'gpt-35-turbo-16k', text: strings.TextGpt35 },
                         { key: 'gpt-4-32k', text: strings.TextGpt4 },
-                        { key: 'gpt-4-1106-preview', text: strings.TextGpt4Turbo },
+                        { key: 'gpt-4-1106-preview', text: `${strings.TextGpt4Turbo} (${strings.TextPreview})` },
                       ],
                       properties: this.properties,
                     }),
@@ -287,6 +295,17 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                 }),
                 PropertyPaneCheckbox('functions', {
                   text: strings.FieldLabelFunctions,
+                }),
+                this.properties.functions &&
+                  PropertyPaneCheckbox('bing', {
+                    text: strings.FieldLabelBing,
+                  }),
+                new PropertyPanePasswordField('apiKeyBing', {
+                  disabled: !(this.properties.functions && this.properties.bing),
+                  label: strings.FieldLabelBingApiKey,
+                  placeholder: 'Add if APIM endpoint is not configured',
+                  properties: this.properties,
+                  wpContext: this.context,
                 }),
                 PropertyPaneCheckbox('highlight', {
                   text: strings.FieldLabelHighlight,

@@ -1,10 +1,14 @@
 declare interface IAzureOpenAiChatWebPartStrings {
   BasicGroupName: string;
   FieldLabelApiKey: string;
+  FieldLabelApiKeyPlaceholder: string;
   FieldLabelAppId: string;
   FieldLabelEndpointBaseUrlForChatHistory: string;
   FieldLabelEndpointBaseUrlForOpenAi: string;
   FieldLabelEndpointBaseUrlForOpenAi4: string;
+  FieldLabelBing: string;
+  FieldLabelBingApiKey: string;
+  FieldLabelBingApiKeyPlaceholder: string;
   FieldLabelLanguageModels: string;
   FieldLabelLocale: string;
   FieldLabelSharing: string;
@@ -68,6 +72,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextPeoplePickerSuggestedContacts: string;
   TextPeoplePickerSuggestedPeople: string;
   TextPeoplePickerSuggestionsAvailable: string;
+  TextPreview: string;
   TextRecentChats: string;
   TextRefresh: string;
   TextRemove: string;

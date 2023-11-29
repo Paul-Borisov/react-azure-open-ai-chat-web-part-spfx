@@ -34,6 +34,10 @@ export interface IAzureOpenAiChatProps {
   fullScreen: boolean;
   // Option to enable (external) function calling
   functions: boolean;
+  // Option to enable Bing (functions must be enabled)
+  bing: boolean;
+  // Option to add api-key for Bing service if APIM endpoint is not configured
+  apiKeyBing: string;
   // Option to enable code highlighting
   highlight: boolean;
   // Option to show code highlighting styles (requires highlight == true)

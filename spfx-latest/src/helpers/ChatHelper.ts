@@ -1,8 +1,10 @@
+import { IAzureOpenAiChatProps } from 'components/IAzureOpenAiChatProps';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import { IChatHistory } from 'shared/model/IChat';
 import { IItemConfig } from 'shared/model/IItemConfig';
 import { IItemPayload } from 'shared/model/IItemPayload';
 import { FunctionCallingOptions } from 'shared/model/enums/FunctionCallingOptions';
+import AzureApiService from 'shared/services/AzureApiService';
 
 const defaultResponseTokens = 2048; // Using 800 may produce incomplete output.
 
@@ -193,5 +195,20 @@ export default class ChatHelper {
     link.setAttribute('download', fileName);
     document.body.appendChild(link);
     link.click();
+  }
+
+  public static hasDirectEndpoints(
+    apiService: AzureApiService,
+    props: IAzureOpenAiChatProps,
+    checkForNativeApimEndpoint?: boolean
+  ): boolean {
+    return (
+      apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi) ||
+      apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi4) ||
+      apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi) ||
+      apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi4) ||
+      (checkForNativeApimEndpoint &&
+        (apiService.isNative(props.endpointBaseUrlForOpenAi) || apiService.isNative(props.endpointBaseUrlForOpenAi4)))
+    );
   }
 }

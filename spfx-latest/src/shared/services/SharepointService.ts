@@ -580,7 +580,7 @@ export default class SharepointService {
       .post(endpoint, SPHttpClient.configurations.v1, options)
       .then((r) => r.json());
 
-    const results = SearchResultMapper.mapSearchResults(json, propertyNames);
+    const results = SearchResultMapper.mapSearchResultsOfSharepoint(json, propertyNames);
     return Promise.resolve(results);
   }
 }

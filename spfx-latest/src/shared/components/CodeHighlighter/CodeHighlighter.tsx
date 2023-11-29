@@ -6,6 +6,7 @@ import * as React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import * as syntaxStyles from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
+import MarkdownHelper from 'shared/helpers/MarkdownHelper';
 import styles from './CodeHighlighter.module.scss';
 
 const defaultSelectedStyle = 'stackoverflowDark';
@@ -14,10 +15,6 @@ const languageMap: { [key: string]: string } = {
   cpp: 'c++',
   csharp: 'c#',
 };
-
-export function hasMarkdown(text: string): boolean {
-  return text?.indexOf('```') > -1;
-}
 
 export function getHighlightStyles(): string[] {
   return Object.keys(syntaxStyles);
@@ -46,11 +43,12 @@ export function getStylesSelector(selectedKey: string, onChange: (newKey: any) =
 }
 
 export function formatCode(text: string, styleKey: string = defaultSelectedStyle): JSX.Element {
-  if (!/```/.test(text)) {
-    if (HtmlHelper.hasHtmlTags(text)) {
-      return <span dangerouslySetInnerHTML={{ __html: HtmlHelper.stripScripts(HtmlHelper.stripStyles(text)) }} />;
+  if (!MarkdownHelper.hasMarkdownBlocks(text)) {
+    const adjustedText = MarkdownHelper.replaceMarkdownElements(text);
+    if (HtmlHelper.hasHtmlTags(adjustedText)) {
+      return <span dangerouslySetInnerHTML={{ __html: HtmlHelper.stripScripts(HtmlHelper.stripStyles(adjustedText)) }} />;
     } else {
-      return <>{text}</>;
+      return <>{adjustedText}</>;
     }
   }
 

@@ -2,21 +2,23 @@ import { Label, TextField } from '@fluentui/react';
 import { update, get } from '@microsoft/sp-lodash-subset';
 import { IPropertyPaneCustomFieldProps, IPropertyPaneField, PropertyPaneFieldType } from '@microsoft/sp-property-pane';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import * as strings from 'AzureOpenAiChatWebPartStrings';
 import * as cryptoJS from 'crypto-js';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 interface IPropertyPanePasswordFieldProps {
+  disabled?: boolean;
   label?: string;
-  wpContext: WebPartContext;
+  placeholder?: string;
   properties: any;
+  wpContext: WebPartContext;
 }
 
 interface IPropertyPanePasswordFieldInternalProps extends IPropertyPanePasswordFieldProps, IPropertyPaneCustomFieldProps {}
 
 interface IPasswordFieldProps {
   label: string;
+  placeholder?: string;
   value: string;
   onChange: (newValue: string) => void;
 }
@@ -27,6 +29,7 @@ const PropertyPanePasswordField: React.FunctionComponent<IPasswordFieldProps> = 
       onChange: (e, newValue: string) => props.onChange(newValue),
       value: props.value,
       type: 'password',
+      placeholder: props.placeholder,
     }),
   ]);
 };
@@ -85,11 +88,14 @@ export default class PropertyPaneFieldPasswordField implements IPropertyPaneFiel
 
     const value = get(this.properties.properties, this.targetProperty);
 
-    const element: React.ReactElement<IPasswordFieldProps> = React.createElement(PropertyPanePasswordField, {
-      label: this.properties.label,
-      value: value,
-      onChange: this.onChange.bind(this),
-    });
+    const element: React.ReactElement<IPasswordFieldProps> = !this.properties.disabled
+      ? React.createElement(PropertyPanePasswordField, {
+          label: this.properties.label,
+          placeholder: this.properties.placeholder,
+          value: value,
+          onChange: this.onChange.bind(this),
+        })
+      : null;
     ReactDOM.render(element, elem);
   }
 

@@ -1,3 +1,4 @@
+import { IFunctionService } from './IFunctionService';
 import { FunctionCallingOptions } from './enums/FunctionCallingOptions';
 
 export interface IItemPayload {
@@ -10,5 +11,7 @@ export interface IItemPayload {
   siteUrl?: string;
   size?: string;
   functions?: FunctionCallingOptions;
+  services?: IFunctionService[];
   images?: string[];
+  signal?: AbortController;
 }

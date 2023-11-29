@@ -3,10 +3,11 @@ import * as strings from 'AzureOpenAiChatWebPartStrings';
 import ChatHelper from 'helpers/ChatHelper';
 import { FunctionComponent } from 'react';
 import * as React from 'react';
-import { getStylesSelector, hasMarkdown } from 'shared/components/CodeHighlighter/CodeHighlighter';
+import { getStylesSelector } from 'shared/components/CodeHighlighter/CodeHighlighter';
 import { getConfirmationDialog } from 'shared/components/CustomDialog';
 import { PeoplePicker } from 'shared/components/PeoplePicker';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
+import MarkdownHelper from 'shared/helpers/MarkdownHelper';
 import { IChatHistory, IChatMessage, IUser } from 'shared/model/IChat';
 import LogService from 'shared/services/LogService';
 import PageContextService from 'shared/services/PageContextService';
@@ -223,7 +224,7 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
               </>
             )}
             {props.highlightStyles &&
-              chatHistory?.find((r) => hasMarkdown(r.content)) &&
+              chatHistory?.find((r) => MarkdownHelper.hasMarkdownBlocks(r.content)) &&
               getStylesSelector(selectedCodeStyle, (newStyle) => setSelectedCodeStyle(newStyle))}
           </div>
         </div>
