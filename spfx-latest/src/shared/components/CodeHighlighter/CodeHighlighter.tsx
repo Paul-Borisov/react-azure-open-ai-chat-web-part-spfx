@@ -128,7 +128,13 @@ export function formatCode(text: string, styleKey: string = defaultSelectedStyle
 
 function copyToClipboard(text: string, elementId: string) {
   navigator.clipboard.writeText(text);
-  const el = document.getElementById(`${elementId}`);
+  let el = null;
+  try {
+    el = document.querySelector(`.ms-Panel--custom.is-open #${elementId}`);
+  } catch (e) {}
+  if (!el) {
+    el = document.getElementById(elementId);
+  }
   const className = el.className;
   el.className = `${el.className} ${styles.progress}`;
   setTimeout(() => (el.className = className), 1000);

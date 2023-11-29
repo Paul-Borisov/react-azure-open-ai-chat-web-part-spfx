@@ -150,6 +150,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     }
   }, [model]);
 
+  console.log('1');
   return (
     <>
       {getContentPanel(refPanelContentPane, refPrompt, refConversationContainer)}
@@ -678,11 +679,19 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
           const chatMessageId = `${styles.message}_${wpId}_${newChatHistory.length - 1}`;
           setDisabledHighlights([...disabledHighlights, chatMessageId]);
           setResponseContentError(undefined);
+          setChatHistory(newChatHistory); // Sets the updated array with new memory address.
         } else {
           const assistantResponses = newChatHistory.filter((r) => r.role === 'assistant');
           assistantResponses[assistantResponses.length - 1].content += ChatHelper.cleanupResponseContent(response);
+          const messageSelector = isCustomPanelOpen
+            ? `.${styles.customPanel} .${styles.message}`
+            : `div[id="${wpId}"] .${styles.message}`;
+          const allMessages = document.querySelectorAll(messageSelector);
+          const lastMessage = allMessages[allMessages.length - 1];
+          lastMessage.innerHTML += response;
         }
-        setChatHistory(newChatHistory); // Sets the updated array with new memory address.
+        // Bug fix: the following line caused to heavy rerendering. Replaced with a lighter code above.
+        //setChatHistory(newChatHistory); // Sets the updated array with new memory address.
         scrollContentToBottom();
       }
     };
