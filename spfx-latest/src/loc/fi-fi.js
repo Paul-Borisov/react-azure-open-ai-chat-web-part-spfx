@@ -84,6 +84,7 @@ define([], function () {
     TextShareMessage: 'Haluatko jakaa',
     TextSharedChats: 'Jaetut chatit',
     TextShareWith: 'Tietyt ihmiset, joiden kanssa jakaa (jos haluat rajoittaa pääsyä tähän keskusteluun, enintään 15 henkilöä)',
+    TextStop: 'Lopeta',
     TextSubmit: 'Lähetä',
     TextSummarizePdf: 'Tee yhteenveto PDF-sisällöstä',
     TextUndeterminedError: 'Määrittämätön virhe',

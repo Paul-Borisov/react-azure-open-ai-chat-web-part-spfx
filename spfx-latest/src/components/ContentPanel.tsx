@@ -32,6 +32,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   const [model, setModel] = React.useState<string>(props.config.model);
   const [isProgress, setIsProgress] = React.useState<boolean>(false);
   const [isStreamProgress, setIsStreamProgress] = React.useState<boolean>(false);
+  const [signalReload, setSignalReload] = React.useState<boolean>(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = React.useState<boolean>(true);
 
   const [chatName, setChatName] = React.useState<string>(undefined);
@@ -75,7 +76,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   };
 
   const wpId = React.useMemo(() => props.context.webPartTag.substring(props.context.webPartTag.lastIndexOf('.') + 1), []);
-  const stopSignal = React.useMemo(() => new AbortController(), []);
+  const stopSignal = React.useMemo(() => new AbortController(), [signalReload]);
 
   const chatHistoryParams = useChatHistory(
     chatHistory,
@@ -150,7 +151,6 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     }
   }, [model]);
 
-  console.log('1');
   return (
     <>
       {getContentPanel(refPanelContentPane, refPrompt, refConversationContainer)}
@@ -316,6 +316,22 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       ) : null;
     };
 
+    const getStopButton = (): JSX.Element => {
+      return (
+        <TooltipHost content={strings.TextStop}>
+          <FontIcon
+            iconName="CircleStopSolid"
+            className={styles.stopSignal}
+            onClick={() => {
+              stopSignal.abort();
+              setIsStreamProgress(false);
+              setSignalReload(!signalReload);
+            }}
+          />
+        </TooltipHost>
+      );
+    };
+
     const getLanguageModelIcon = (star: boolean): JSX.Element => {
       return star ? Icons.getStarIcon() : Icons.getLighteningIcon();
     };
@@ -335,6 +351,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     const getLanguageModels = (): JSX.Element => {
       return (
         <div className={[styles.topbarcontent, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+          {isStreamProgress ? getStopButton() : null}
           {props.languageModels?.length > 1 &&
             (ChatHelper.hasDirectEndpoints(props.apiService, props, true)
               ? props.languageModels.sort()
@@ -433,7 +450,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                   requestCharsCount === 1 ? strings.TextCharacters.replace(/s$/i, '') : strings.TextCharacters
                 }, ${charactersLeft} ${strings.TextMoreCharactersAllowed}`
               : strings.TextMaxContentLengthExceeded}
-            {props.promptAtBottom && getLanguageModels()}
+            {props.promptAtBottom ? getLanguageModels() : null}
           </div>
         </>
       );
@@ -528,16 +545,6 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               )}
             </div>
             {getContentArea()}
-            {isStreamProgress && (
-              <FontIcon
-                iconName="CircleStopSolid"
-                className={styles.stopSignal}
-                onClick={() => {
-                  stopSignal.abort();
-                  setIsStreamProgress(false);
-                }}
-              />
-            )}
           </div>
         </div>
       )

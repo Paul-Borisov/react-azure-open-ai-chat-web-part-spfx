@@ -83,6 +83,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextShareMessage: string;
   TextSharedChats: string;
   TextShareWith: string;
+  TextStop: string;
   TextSubmit: string;
   TextSummarizePdf: string;
   TextUndeterminedError: string;

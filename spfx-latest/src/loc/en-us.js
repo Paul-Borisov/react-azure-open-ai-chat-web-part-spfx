@@ -84,6 +84,7 @@ define([], function () {
     TextShareMessage: 'Do you want to share',
     TextSharedChats: 'Shared chats',
     TextShareWith: 'Specific people to share with (if you want to limit access to this chat, max 15 persons)',
+    TextStop: 'Stop',
     TextSubmit: 'Submit',
     TextSummarizePdf: 'Summarise PDF content',
     TextUndeterminedError: 'Undetermined error',

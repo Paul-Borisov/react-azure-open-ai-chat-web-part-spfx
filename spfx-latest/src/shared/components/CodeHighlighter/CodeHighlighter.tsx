@@ -128,7 +128,7 @@ export function formatCode(text: string, styleKey: string = defaultSelectedStyle
 
 function copyToClipboard(text: string, elementId: string) {
   navigator.clipboard.writeText(text);
-  let el = null;
+  let el;
   try {
     el = document.querySelector(`.ms-Panel--custom.is-open #${elementId}`);
   } catch (e) {}

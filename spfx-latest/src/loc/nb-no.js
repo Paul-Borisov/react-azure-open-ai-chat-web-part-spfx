@@ -85,6 +85,7 @@ define([], function () {
     TextShareMessage: 'Vil du dele',
     TextSharedChats: 'Delte chatter',
     TextShareWith: 'Spesifikke personer å dele med (hvis du vil begrense tilgangen til denne chatten, maks 15 personer)',
+    TextStop: 'Stopp',
     TextSubmit: 'Send',
     TextSummarizePdf: 'Oppsummer PDF-innhold',
     TextUdeterminedError: 'Ubestemt feil',
