@@ -29,6 +29,7 @@ The integrations available in this release include:
 - Local Date and Time
 - Analysis of an uploaded PDF and summarization of its content
 - Analysis of uploaded images and description of their content
+- Beta 1.1: Search on the Internet (Bing Search). Added on Nov 29, 2023.
 
 ### Full-Scale Setup
 
@@ -63,6 +64,8 @@ I am immensely grateful to Advania Finland for providing me with the opportunity
 ![PDF Analysis: upload a PDF and summarize its content](docs/pdf-analysis.png "PDF Analysis: upload a PDF and summarize its content")
 
 ![Image Analysis is only available with the Native OpenAI endpoint](docs/image-analysis.png "Image Analysis is only available with the Native OpenAI endpoint")
+
+![Integration with Internet (available in Beta 1.1)](docs/internet-integration.png "Integration with Internet (available in Beta 1.1)")
 
 # Get Started Quickly in Visual Studio Code (DEV)
 
