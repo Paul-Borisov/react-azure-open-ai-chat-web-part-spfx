@@ -29,6 +29,7 @@ The integrations available in this release include:
 - Local Date and Time
 - Analysis of an uploaded PDF and summarization of its content
 - Analysis of uploaded images and description of their content
+- Beta 1.1: Search on the Internet (Bing Search). Added on Nov 29, 2023.
 
 ### Full-Scale Setup
 
