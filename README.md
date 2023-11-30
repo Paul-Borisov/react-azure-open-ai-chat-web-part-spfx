@@ -65,6 +65,8 @@ I am immensely grateful to Advania Finland for providing me with the opportunity
 
 ![Image Analysis is only available with the Native OpenAI endpoint](docs/image-analysis.png "Image Analysis is only available with the Native OpenAI endpoint")
 
+![Integration with Internet (available in Beta 1.1)](docs/internet-integration.png "Integration with Internet (available in Beta 1.1)")
+
 # Get Started Quickly in Visual Studio Code (DEV)
 
 - [back to the top](#table-of-content)
