@@ -8,7 +8,9 @@ The web part interacts with private **Azure OpenAI** endpoints that are publishe
 
 - By default, this setup provides enhanced data privacy. In this configuration, requests to AI do not travel outside your Azure tenant.
 - APIM consistently validates the identities of SharePoint users for each individual request. If the request originates from authorized domains, APIM retrieves the **api-key** from the secure vault and injects it into the request before forwarding it to the AI endpoint. This process ensures that the api-key does not get exposed in the browser.
-
+- Chats are private and visible only to their creators. Creators have the option to share their chats when this feature is enabled in the web part settings (disabled by default).
+- The web part incorporates tampering prevention logic to guard against unauthorized access to another user's data by their GUID.
+  
 In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (page 7).
 
 - CONS: Granting access to the Native Open AI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
