@@ -383,7 +383,7 @@ When working with SPFx solutions, it is important to note that npm packages are 
 
 ### Auxiliary modules
 
-In addition to the stadard set of modules employed by SPFx 1.18 with React base, the project includes references to the following additional libraries:
+In addition to the standard set of modules employed by SPFx 1.18 with React base, the project includes references to the following additional libraries:
 
 - @fluentui/react: Provided by Microsoft for building a richer UI experience.
 - @microsoft/fetch-event-source: Used to implement Consecutive Event Streaming. It is used only when the web part setting **Event streaming** is enabled (default).
