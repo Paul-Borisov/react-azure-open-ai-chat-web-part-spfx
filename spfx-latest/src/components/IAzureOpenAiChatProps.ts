@@ -38,6 +38,10 @@ export interface IAzureOpenAiChatProps {
   bing: boolean;
   // Option to add api-key for Bing service if APIM endpoint is not configured
   apiKeyBing: string;
+  // Option to enable Bing (functions must be enabled)
+  google: boolean;
+  // Option to add api-key for Bing service if APIM endpoint is not configured
+  apiKeyGoogle: string;
   // Option to enable code highlighting
   highlight: boolean;
   // Option to show code highlighting styles (requires highlight == true)

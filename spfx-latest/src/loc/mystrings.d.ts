@@ -9,6 +9,8 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelBing: string;
   FieldLabelBingApiKey: string;
   FieldLabelBingApiKeyPlaceholder: string;
+  FieldLabelGoogle: string;
+  FieldLabelGoogleApiKey: string;
   FieldLabelLanguageModels: string;
   FieldLabelLocale: string;
   FieldLabelSharing: string;

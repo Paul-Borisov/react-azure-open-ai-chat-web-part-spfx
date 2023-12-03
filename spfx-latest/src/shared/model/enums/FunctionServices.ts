@@ -1,4 +1,4 @@
 export enum FunctionServices {
   bing,
-  translate,
+  google,
 }

@@ -10,6 +10,8 @@ define([], function () {
     FieldLabelBing: 'Bing-haku',
     FieldLabelBingApiKey: 'Valinnainen api-avain Bingille',
     FieldLabelBingApiKeyPlaceholder: 'Lisää, jos APIM-päätepistettä ei ole määritetty',
+    FieldLabelGoogle: 'Google-haku',
+    FieldLabelGoogleApiKey: 'Valinnainen avain Googlelle: key=API_AVAIN&cx=HAKUKONEEN_ID',
     FieldLabelLanguageModels: 'Kielimallit',
     FieldLabelLocale: 'Päivämäärien kielikieli (oletus on fi-FI)',
     FieldLabelSharing: 'Ota jakaminen käyttöön',

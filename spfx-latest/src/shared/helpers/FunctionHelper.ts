@@ -45,6 +45,7 @@ export default class FunctionHelper {
     peopleSearch: this.companyUsers,
     searchSharepoint: this.searchSharepoint,
     searchOnInternet: this.searchOnInternet,
+    searchOnGoogle: this.searchOnGoogle,
   };
   private services: IFunctionService[] = [];
 
@@ -214,6 +215,13 @@ export default class FunctionHelper {
     return Promise.resolve(data);
   }
 
+  private async searchOnGoogle(args: { queryText: string; apiService: AzureApiService; payload: IItemPayload }): Promise<string> {
+    const svc = args.payload?.services?.find((s) => s.name === FunctionServices.google);
+    const data = await args.apiService.callGoogle(args.queryText, svc?.key, args.payload?.model, svc?.locale);
+
+    return Promise.resolve(data);
+  }
+
   public init(options: FunctionCallingOptions, services: IFunctionService[], commonParameters: any): IFunctionCalling[] {
     if (!options || !commonParameters) return undefined;
 
@@ -321,6 +329,27 @@ export default class FunctionHelper {
                 },
               },
             });
+            break;
+          }
+          case FunctionServices.google: {
+            tools.push({
+              type: 'function',
+              function: {
+                name: 'searchOnGoogle',
+                description: 'Perform a Google search using the Google API',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    queryText: {
+                      type: 'string',
+                      description: 'Text to search for',
+                    },
+                  },
+                  required: ['queryText'],
+                },
+              },
+            });
+            break;
           }
         }
       });

@@ -10,6 +10,8 @@ define([], function () {
     FieldLabelBing: 'Bing search',
     FieldLabelBingApiKey: 'Optional api-key for Bing',
     FieldLabelBingApiKeyPlaceholder: 'Add if APIM endpoint is not configured',
+    FieldLabelGoogle: 'Google search',
+    FieldLabelGoogleApiKey: 'Optional key for Google: key=API_KEY&cx=SEARCH_ENGINE_ID',
     FieldLabelLanguageModels: 'Language models',
     FieldLabelLocale: 'Locale for dates (default is fi-FI)',
     FieldLabelSharing: 'Enable sharing',

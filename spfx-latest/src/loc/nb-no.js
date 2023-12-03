@@ -10,6 +10,8 @@ define([], function () {
     FieldLabelBing: 'Bing-søk',
     FieldLabelBingApiKey: 'Valgfri api-nøkkel for Bing',
     FieldLabelBingApiKeyPlaceholder: 'Legg til hvis APIM-endepunkt ikke er konfigurert',
+    FieldLabelGoogle: 'Google-søk',
+    FieldLabelGoogleApiKey: 'Valgfri nøkkel for Google: key=API_NØKKEL&cx=SØKEMOTORID',
     FieldLabelLanguageModels: 'Språkmodeller',
     FieldLabelLocale: 'Lokal for datoer (standard er fi-FI)',
     FieldLabelSharing: 'Aktiver deling',

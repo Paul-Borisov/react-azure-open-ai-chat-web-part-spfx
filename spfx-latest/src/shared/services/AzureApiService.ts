@@ -19,6 +19,7 @@ enum Operations {
   StandardTextModel = '/chat', // gpt-3.5-turbo (URL reads as https://customer.azure-api.net/openai/chat)
   AdvancedTextModel = '/completion', // text-davinci-003
   BingSearch = '/bing/search',
+  GoogleSearch = '/google/search',
   ChatMessageLoadHistory = '/api/chatmessage/list',
   ChatMessageLoadHistoryShared = '/api/chatmessage/list/shared',
   ChatMessageCreate = '/api/chatmessage',
@@ -499,11 +500,11 @@ export default class AzureApiService {
   }
 
   public async callBing(queryText: string, apiKey: string, model: string, market: string = 'en-US'): Promise<string> {
-    const bingServiceOrigin = 'https://api.bing.microsoft.com';
+    const serviceUri = 'https://api.bing.microsoft.com';
 
     let endpointUri: string;
     if (apiKey) {
-      endpointUri = `${bingServiceOrigin}/v7.0/search?q=${encodeURIComponent(queryText)}`;
+      endpointUri = `${serviceUri}/v7.0/search?q=${encodeURIComponent(queryText)}&mkt=${market}`;
     } else if (this.isApiManagementUrl(this.config.endpointBaseUrl)) {
       endpointUri = `${new URL(this.config.endpointBaseUrl).origin}${Operations.BingSearch}?q=${encodeURIComponent(
         queryText
@@ -514,7 +515,7 @@ export default class AzureApiService {
       )}&mkt=${market}`;
     } else {
       LogService.error(
-        `Preconfigured APIM URL is required to call the Bing endpoint (or an API Key for calling the endpoint at ${bingServiceOrigin})`
+        `Preconfigured APIM URL is required to call the Bing endpoint (or an API Key for calling the endpoint at ${serviceUri})`
       );
       return Promise.resolve('');
     }
@@ -551,14 +552,61 @@ export default class AzureApiService {
         : ['news'];
 
       const results = SearchResultMapper.mapSearchResultsOfBing(json, keys);
-      /*const results = SearchResultMapper.mapSearchResultsOfBing(json, [
-        'news',
-        'webPages',
-        'relatedSearches',
-        'images',
-        'videos',
-        'rankingResponse',
-      ]);*/
+      return Promise.resolve(JSON.stringify(results));
+    } else {
+      const error = await response.text();
+      LogService.error(error);
+      AzureServiceResponseMapper.saveErrorDetails(error);
+      return Promise.resolve('');
+    }
+  }
+
+  public async callGoogle(queryText: string, apiKey: string, model: string, market: string = 'en-US'): Promise<string> {
+    const serviceUri = 'https://www.googleapis.com';
+
+    let endpointUri: string;
+    if (apiKey) {
+      endpointUri = `${serviceUri}/customsearch/v1?${apiKey + '&'}q=${encodeURIComponent(queryText)}&lr=${market}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl).origin}${Operations.GoogleSearch}?q=${encodeURIComponent(
+        queryText
+      )}&lr=${market}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl4)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl4).origin}${Operations.GoogleSearch}?q=${encodeURIComponent(
+        queryText
+      )}&lr=${market}`;
+    } else {
+      LogService.error(
+        `Preconfigured APIM URL is required to call the Google endpoint (or an API Key in the format key=...&cx=... for calling the endpoint at ${serviceUri})`
+      );
+      return Promise.resolve('');
+    }
+
+    let response: HttpClientResponse = undefined;
+    try {
+      let executed = false;
+      if (this.authenticate) {
+        if (!apiKey) {
+          executed = true;
+          response = await this.aadClient.get(endpointUri, AadHttpClient.configurations.v1);
+        }
+      }
+      if (!executed) {
+        response = await PageContextService.context.httpClient.get(endpointUri, HttpClient.configurations.v1);
+      }
+    } catch (e) {
+      LogService.error(e);
+      return Promise.resolve('');
+    }
+
+    if (response.ok) {
+      const json = await response.json();
+      const keys = /gpt-(4|5|6)-(512k|256k|128k|64k|32k|1106|turbo)/i.test(model)
+        ? ['title', 'link', 'displayLink', 'snippet', 'pagemap.metatags', 'pagemap.cse_image']
+        : /-16k/i.test(model)
+        ? ['title', 'link', 'displayLink']
+        : ['title', 'link'];
+      const results = SearchResultMapper.mapCustomSearchResultsOfGoogle(json, keys);
       return Promise.resolve(JSON.stringify(results));
     } else {
       const error = await response.text();

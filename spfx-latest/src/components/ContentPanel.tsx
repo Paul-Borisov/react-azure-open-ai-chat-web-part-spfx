@@ -616,6 +616,10 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       payload.services = payload.services || [];
       payload.services.push({ name: FunctionServices.bing, key: props.apiKeyBing, locale: props.locale });
     }
+    if (props.functions && props.google) {
+      payload.services = payload.services || [];
+      payload.services.push({ name: FunctionServices.google, key: props.apiKeyGoogle, locale: props.locale });
+    }
 
     payload.chatHistory = JSON.parse(JSON.stringify(chatHistory)); // Removes possible references and allows adjusting the history.
     ChatHelper.truncateImages(payload.chatHistory); // Truncates unnecessary images from the history to reduce request costs.

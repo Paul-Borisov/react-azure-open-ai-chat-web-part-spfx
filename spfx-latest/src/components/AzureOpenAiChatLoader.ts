@@ -97,6 +97,11 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
           this.properties.functions && this.properties.bing && this.properties.apiKeyBing
             ? PropertyPanePasswordField.decrypt(this.context, this.properties.apiKeyBing)
             : undefined,
+        google: this.properties.functions && this.properties.google,
+        apiKeyGoogle:
+          this.properties.functions && this.properties.google && this.properties.apiKeyGoogle
+            ? PropertyPanePasswordField.decrypt(this.context, this.properties.apiKeyGoogle)
+            : undefined,
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
@@ -303,7 +308,18 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                 new PropertyPanePasswordField('apiKeyBing', {
                   disabled: !(this.properties.functions && this.properties.bing),
                   label: strings.FieldLabelBingApiKey,
-                  placeholder: 'Add if APIM endpoint is not configured',
+                  placeholder: strings.FieldLabelBingApiKeyPlaceholder,
+                  properties: this.properties,
+                  wpContext: this.context,
+                }),
+                this.properties.functions &&
+                  PropertyPaneCheckbox('google', {
+                    text: strings.FieldLabelGoogle,
+                  }),
+                new PropertyPanePasswordField('apiKeyGoogle', {
+                  disabled: !(this.properties.functions && this.properties.google),
+                  label: `${strings.FieldLabelGoogleApiKey}`,
+                  placeholder: strings.FieldLabelBingApiKeyPlaceholder,
                   properties: this.properties,
                   wpContext: this.context,
                 }),
