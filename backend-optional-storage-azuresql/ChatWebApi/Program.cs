@@ -28,6 +28,6 @@ app.UseCors(builder => builder
 
 app.UseHttpsRedirection();
 
-app.MapChatMessageEndpoints();
+app.MapChatMessageEndpoints(builder.Configuration.GetValue<bool>("CheckUserPermissions"));
 
 app.Run();
