@@ -8,6 +8,7 @@ import { FunctionCallingOptions } from 'shared/model/enums/FunctionCallingOption
 import { FunctionServices } from 'shared/model/enums/FunctionServices';
 import AadService from 'shared/services/AadApiService';
 import AzureApiService from 'shared/services/AzureApiService';
+import ImageService from 'shared/services/ImageService';
 import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import SharepointService from 'shared/services/SharepointService';
@@ -46,8 +47,8 @@ export default class FunctionHelper {
     searchSharepoint: this.searchSharepoint,
     searchOnInternet: this.searchOnInternet,
     searchOnGoogle: this.searchOnGoogle,
+    generateImage: this.generateImage,
   };
-  private services: IFunctionService[] = [];
 
   public async call(allFunctions: IFunctionCalling[], apiService: AzureApiService, payload: IItemPayload): Promise<string[]> {
     if (!allFunctions?.length) return Promise.resolve(undefined);
@@ -222,6 +223,14 @@ export default class FunctionHelper {
     return Promise.resolve(data);
   }
 
+  private async generateImage(args: { queryText: string; apiService: AzureApiService; payload: IItemPayload }): Promise<string> {
+    const svc = args.payload?.services?.find((s) => s.name === FunctionServices.image);
+    const service = new ImageService(args.apiService, svc.storageUrl);
+    const data = await service.callQueryImage(args.queryText);
+
+    return Promise.resolve(data);
+  }
+
   public init(options: FunctionCallingOptions, services: IFunctionService[], commonParameters: any): IFunctionCalling[] {
     if (!options || !commonParameters) return undefined;
 
@@ -343,6 +352,26 @@ export default class FunctionHelper {
                     queryText: {
                       type: 'string',
                       description: 'Text to search for',
+                    },
+                  },
+                  required: ['queryText'],
+                },
+              },
+            });
+            break;
+          }
+          case FunctionServices.image: {
+            tools.push({
+              type: 'function',
+              function: {
+                name: 'generateImage',
+                description: 'Generate image using Dalle API',
+                parameters: {
+                  type: 'object',
+                  properties: {
+                    queryText: {
+                      type: 'string',
+                      description: 'The prompt to generate image for',
                     },
                   },
                   required: ['queryText'],

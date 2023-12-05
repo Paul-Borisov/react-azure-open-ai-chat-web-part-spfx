@@ -4,6 +4,7 @@ import { IChatHistory } from 'shared/model/IChat';
 import { IItemConfig } from 'shared/model/IItemConfig';
 import { IItemPayload } from 'shared/model/IItemPayload';
 import { FunctionCallingOptions } from 'shared/model/enums/FunctionCallingOptions';
+import { FunctionServices } from 'shared/model/enums/FunctionServices';
 import AzureApiService from 'shared/services/AzureApiService';
 
 const defaultResponseTokens = 2048; // Using 800 may produce incomplete output.
@@ -112,6 +113,28 @@ export default class ChatHelper {
     return payload;
   }
 
+  public static addFunctionServices(payload: IItemPayload, props: IAzureOpenAiChatProps) {
+    if (!payload || !props) return;
+
+    if (props.functions && props.bing) {
+      payload.services = payload.services || [];
+      payload.services.push({ name: FunctionServices.bing, key: props.apiKeyBing, locale: props.locale });
+    }
+    if (props.functions && props.google) {
+      payload.services = payload.services || [];
+      payload.services.push({ name: FunctionServices.google, key: props.apiKeyGoogle, locale: props.locale });
+    }
+    if (props.functions && props.images) {
+      payload.services = payload.services || [];
+      payload.services.push({
+        name: FunctionServices.image,
+        key: undefined,
+        locale: props.locale,
+        storageUrl: props.spImageLibraryUrl,
+      });
+    }
+  }
+
   public static formatDate(date: string | Date, locale: string): string {
     if (typeof date === 'string') date = new Date(date);
     return new Date().getFullYear() !== date.getFullYear()
@@ -195,6 +218,25 @@ export default class ChatHelper {
     link.setAttribute('download', fileName);
     document.body.appendChild(link);
     link.click();
+    try {
+      document.body.removeChild(link);
+    } catch (e) {}
+  }
+
+  public static downloadImage(imageUrl: string, fileName: string = 'download.png') {
+    // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+    fetch(imageUrl).then((res) =>
+      res.blob().then((url) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(url);
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        try {
+          document.body.removeChild(link);
+        } catch (e) {}
+      })
+    );
   }
 
   public static hasDirectEndpoints(

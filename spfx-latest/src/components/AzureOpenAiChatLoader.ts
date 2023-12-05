@@ -20,7 +20,7 @@ import Application, { StorageType } from 'shared/constants/Application';
 import SearchResultMapper from 'shared/mappers/SearchResultMapper';
 import { IAzureApiServiceConfig } from 'shared/model/IAzureApiServiceConfig';
 import PropertyPaneFieldCheckboxGroup from 'shared/propertyPaneFields/PropertyPaneFieldCheckboxGroup';
-import PropertyPaneFieldCustomListUrl from 'shared/propertyPaneFields/PropertyPaneFieldCustomListUrl';
+import PropertyPaneFieldCustomListUrl, { ListType } from 'shared/propertyPaneFields/PropertyPaneFieldCustomListUrl';
 import PropertyPanePasswordField from 'shared/propertyPaneFields/PropertyPanePasswordField';
 import AzureApiService from 'shared/services/AzureApiService';
 import LogService from 'shared/services/LogService';
@@ -85,6 +85,8 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
             ? (this.properties.languageModels as any).split(',') // TODO: Replace with multi-select dropdown UI.
             : this.properties.languageModels,
         endpointBaseUrlForChatHistory: this.properties.endpointBaseUrlForChatHistory,
+        spImageLibraryUrl:
+          this.properties.spImageLibraryUrl || `${PageContextService.context.pageContext.web.absoluteUrl}/ChatImages`,
         spListUrl: this.properties.spListUrl || `${PageContextService.context.pageContext.web.absoluteUrl}/Lists/dbChats`,
         //apiKey: this.properties.apiKey,
         apiKey: PropertyPanePasswordField.decrypt(this.context, this.properties.apiKey),
@@ -102,6 +104,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
           this.properties.functions && this.properties.google && this.properties.apiKeyGoogle
             ? PropertyPanePasswordField.decrypt(this.context, this.properties.apiKeyGoogle)
             : undefined,
+        images: this.properties.functions && this.properties.images,
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
@@ -215,16 +218,8 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
       },
     ];
 
-    /*const hasDirectEndpoints = (): boolean => {
-      return (
-        this.apiService.isOpenAiServiceUrl(this.properties.endpointBaseUrlForOpenAi) ||
-        this.apiService.isOpenAiServiceUrl(this.properties.endpointBaseUrlForOpenAi4) ||
-        this.apiService.isOpenAiNativeUrl(this.properties.endpointBaseUrlForOpenAi) ||
-        this.apiService.isOpenAiNativeUrl(this.properties.endpointBaseUrlForOpenAi4) ||
-        this.apiService.isNative(this.properties.endpointBaseUrlForOpenAi) ||
-        this.apiService.isNative(this.properties.endpointBaseUrlForOpenAi4)
-      );
-    };*/
+    // To suppress the bug with empty aadInfo when the user refreshes the page in the Edit mode
+    PageContextService.init(this.context as any);
 
     return {
       pages: [
@@ -286,6 +281,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   spService: this.spService,
                   disabled: this.properties.storageType !== StorageType.SharePoint,
                   sharing: this.properties.sharing,
+                  listType: ListType.CustomList,
                 }),
                 PropertyPaneCheckbox('sharing', {
                   text: `${strings.FieldLabelSharing}${
@@ -322,6 +318,18 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   placeholder: strings.FieldLabelBingApiKeyPlaceholder,
                   properties: this.properties,
                   wpContext: this.context,
+                }),
+                this.properties.functions &&
+                  PropertyPaneCheckbox('images', {
+                    text: strings.FieldLabelImages,
+                  }),
+                new PropertyPaneFieldCustomListUrl('spImageLibraryUrl', {
+                  label: strings.FieldLabelSharePointImageLibraryUrl,
+                  properties: this.properties,
+                  spService: this.spService,
+                  disabled: !(this.properties.functions && this.properties.images),
+                  sharing: this.properties.sharing,
+                  listType: ListType.ImageLibrary,
                 }),
                 PropertyPaneCheckbox('highlight', {
                   text: strings.FieldLabelHighlight,

@@ -9,12 +9,18 @@ import { CustomShimmer } from 'shared/components/CustomShimmer/CustomShimmer';
 import SharepointService from 'shared/services/SharepointService';
 import styles from './PropertyPaneFieldCustomListUrl.module.scss';
 
+export enum ListType {
+  CustomList,
+  ImageLibrary,
+}
+
 interface IPropertyPaneCustomListUrlProps {
   disabled: boolean;
   sharing: boolean;
   label?: string;
   properties: any;
   spService: SharepointService;
+  listType: ListType;
 }
 
 interface IPropertyPaneCustomListUrlInternalProps extends IPropertyPaneCustomListUrlProps, IPropertyPaneCustomFieldProps {}
@@ -24,6 +30,7 @@ interface ICustomListUrlProps {
   sharing: boolean;
   label: string;
   listExists: boolean;
+  listType: ListType;
   listUrl: string;
   onChange: (newValue: string) => void;
   spService: SharepointService;
@@ -35,10 +42,20 @@ const CustomListUrl: React.FunctionComponent<ICustomListUrlProps> = (props) => {
   const [isProgress, setIsProgress] = React.useState<boolean>();
   const [listExists, setListExists] = React.useState<boolean>();
 
-  React.useMemo(
-    () => props.spService.doesListExist(props.listUrl ? props.listUrl : undefined).then((result) => setListExists(result)),
-    [props.listUrl, listExists]
-  );
+  let listUrl = props.listUrl ? props.listUrl : undefined;
+  if (!listUrl) {
+    switch (props.listType) {
+      case ListType.ImageLibrary: {
+        listUrl = props.spService.imageLibraryUrl;
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  React.useMemo(() => props.spService.doesListExist(listUrl).then((result) => setListExists(result)), [listUrl, listExists]);
 
   const createList = async () => {
     if (listExists) {
@@ -48,35 +65,77 @@ const CustomListUrl: React.FunctionComponent<ICustomListUrlProps> = (props) => {
       return;
     }
     setIsProgress(true);
-    await props.spService.createListForChats(props.listUrl ? props.listUrl : undefined, props.sharing, (errorMessage: string) => {
-      setIsProgress(false);
-      if (errorMessage) {
-        setDialogHeader(strings.TextError);
-        setDialogText(errorMessage);
-        setIsDialogOpen(true);
-      } else {
-        setListExists(true);
-        setDialogHeader(strings.TextCreated);
-        setDialogText(strings.TextListCreated);
-        setIsDialogOpen(true);
+    switch (props.listType) {
+      case ListType.ImageLibrary: {
+        await props.spService.createImageLibrary(listUrl, (errorMessage: string) => {
+          setIsProgress(false);
+          if (errorMessage) {
+            setDialogHeader(strings.TextError);
+            setDialogText(errorMessage);
+            setIsDialogOpen(true);
+          } else {
+            setListExists(true);
+            setDialogHeader(strings.TextCreated);
+            setDialogText(strings.TextListCreated);
+            setIsDialogOpen(true);
+          }
+        });
+        break;
       }
-    });
+      default: {
+        // ListType.CustomList
+        await props.spService.createListForChats(listUrl, props.sharing, (errorMessage: string) => {
+          setIsProgress(false);
+          if (errorMessage) {
+            setDialogHeader(strings.TextError);
+            setDialogText(errorMessage);
+            setIsDialogOpen(true);
+          } else {
+            setListExists(true);
+            setDialogHeader(strings.TextCreated);
+            setDialogText(strings.TextListCreated);
+            setIsDialogOpen(true);
+          }
+        });
+        break;
+      }
+    }
   };
 
   const updateList = async () => {
     setIsProgress(true);
-    await props.spService.updateListForChats(props.listUrl ? props.listUrl : undefined, props.sharing, (errorMessage: string) => {
-      setIsProgress(false);
-      if (errorMessage) {
-        setDialogHeader(strings.TextError);
-        setDialogText(errorMessage);
-        setIsDialogOpen(true);
-      } else {
-        setDialogHeader(strings.TextUpdated);
-        setDialogText(strings.TextListUpdated);
-        setIsDialogOpen(true);
+    switch (props.listType) {
+      case ListType.ImageLibrary: {
+        await props.spService.updateImageLibrary(listUrl, (errorMessage: string) => {
+          setIsProgress(false);
+          if (errorMessage) {
+            setDialogHeader(strings.TextError);
+            setDialogText(errorMessage);
+            setIsDialogOpen(true);
+          } else {
+            setDialogHeader(strings.TextUpdated);
+            setDialogText(strings.TextListUpdated);
+            setIsDialogOpen(true);
+          }
+        });
+        break;
       }
-    });
+      default: {
+        await props.spService.updateListForChats(listUrl, props.sharing, (errorMessage: string) => {
+          setIsProgress(false);
+          if (errorMessage) {
+            setDialogHeader(strings.TextError);
+            setDialogText(errorMessage);
+            setIsDialogOpen(true);
+          } else {
+            setDialogHeader(strings.TextUpdated);
+            setDialogText(strings.TextListUpdated);
+            setIsDialogOpen(true);
+          }
+        });
+        break;
+      }
+    }
   };
 
   return !props.disabled && listExists !== undefined
@@ -143,6 +202,7 @@ export default class PropertyPaneFieldCustomListUrl implements IPropertyPaneFiel
       sharing: this.properties.sharing,
       label: this.properties.label,
       listExists: config?.listExists,
+      listType: this.properties.listType,
       listUrl: listUrl,
       onChange: this.onChange.bind(this),
       spService: this.properties.spService,

@@ -4,4 +4,5 @@ export interface IFunctionService {
   name: FunctionServices;
   key: string;
   locale: string;
+  storageUrl?: string;
 }

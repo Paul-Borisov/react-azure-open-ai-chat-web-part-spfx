@@ -8,6 +8,11 @@ export enum GptModels {
   Vision = 'gpt-4-vision-preview',
 }
 
+export const GptImageModelTextLimits: { [key: string]: number } = {
+  ['']: 975,
+  ['4']: 975,
+};
+
 export const GptModelTokenLimits: { [key: string]: number } = {
   [GptModels.Vision]: 4096,
 };

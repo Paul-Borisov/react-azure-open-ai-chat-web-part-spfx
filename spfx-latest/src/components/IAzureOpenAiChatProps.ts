@@ -19,6 +19,8 @@ export interface IAzureOpenAiChatProps {
   // Optional base endpoint URL of ChatWebApi sevice in case you do not want to use more secure APIM-config
   // In such case you can additionally protect ChatWebApi using as same appId as above in Microsoft Authentication Provider for App Service
   endpointBaseUrlForChatHistory: string;
+  // Optional SharePoint image library URL if image generation selected. Default is <currentsiteurl>/ChatImages
+  spImageLibraryUrl: string;
   // Optional SharePoint list URL if StorageType === spList selected. Default is <currentsiteurl>/Lists/dbChats
   spListUrl: string;
   // Default language model used to submit requests (gpt-35-turbo-16k / gpt-4-32k)
@@ -42,6 +44,8 @@ export interface IAzureOpenAiChatProps {
   google: boolean;
   // Option to add api-key for Bing service if APIM endpoint is not configured
   apiKeyGoogle: string;
+  // Option to enable image generation
+  images: boolean;
   // Option to enable code highlighting
   highlight: boolean;
   // Option to show code highlighting styles (requires highlight == true)

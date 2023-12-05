@@ -1,4 +1,4 @@
-import { ISPHttpClientOptions, SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { HttpClient, ISPHttpClientOptions, SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import CamlHelper from 'shared/helpers/CamlHelper';
 import UrlHelper from 'shared/helpers/UrlHelper';
@@ -21,7 +21,8 @@ interface IChatsList {
 }
 
 export default class SharepointService {
-  private listUrl: string = `${PageContextService.context.pageContext.web.absoluteUrl}/Lists/dbChats`;
+  public listUrl: string = `${PageContextService.context.pageContext.web.absoluteUrl}/Lists/dbChats`;
+  public imageLibraryUrl: string = `${PageContextService.context.pageContext.web.absoluteUrl}/ChatImages`;
   private webUrl: string;
   private listTitle: string;
 
@@ -346,6 +347,106 @@ export default class SharepointService {
     return this.systemUpdate(id, formValues, modified, callback);
   }
 
+  public async createImageLibrary(
+    listUrl: string = this.imageLibraryUrl,
+    callback: (errorMessage: string) => void,
+    force?: boolean
+  ) {
+    const config = await this.getListTitleByUrl(listUrl);
+    if (!config) return;
+
+    const listTitle = config.listTitle;
+    const webUrl = config.webUrl;
+
+    const endpoint = `${webUrl}/_api/web/lists?$filter=Title eq '${listTitle}'`;
+    const lists = await PageContextService.context.spHttpClient
+      .get(endpoint, SPHttpClient.configurations.v1)
+      .then((r) => (r.ok ? r.json() : undefined));
+    if (!lists) return;
+
+    if (lists.value.length > 0 && !config.listExists) {
+      const errorMessage = `${strings.TextInvalidListUrl} ${webUrl}`;
+      LogService.error(null, errorMessage);
+      if (callback) callback(errorMessage);
+      return;
+    }
+
+    const query: IODataQuery = {
+      isSiteRelative: false,
+      endpoint: `${webUrl}/_api/web/lists`,
+    };
+    if (lists.value.length === 0) {
+      const payload = {
+        BaseTemplate: 101,
+        Description: 'Chat images',
+        Title: listTitle,
+        NoCrawl: true,
+      };
+      await this.postData(query, payload, 'POST', '*');
+
+      /*try {
+        const serverRelativeUrl = UrlHelper.getServerRelativeUrl(listUrl);
+        if (!/\/lists\//i.test(serverRelativeUrl)) {
+          // Custom list was created under /Lists/... but listUrl looks different in settings. Correcting the mismatch.
+          query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/RootFolder/MoveTo('${serverRelativeUrl}')`;
+          await this.postData(query, {}, 'POST', '*');
+        }
+      } catch (e) {}*/
+
+      // Break role imheritance and set Contribute permissions for "Everyone except external users"
+      await this.ensureListPermissionsForEveryone(webUrl, listTitle);
+    } else if (!force) {
+      if (callback) callback(strings.TextListExists);
+      return;
+    }
+
+    const removeViewField = async (name: string) => {
+      const query: IODataQuery = {
+        isSiteRelative: false,
+        endpoint: `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/defaultview/viewfields/removeviewfield('${name}')`,
+      };
+      try {
+        await this.postData(query, {}, 'POST', '*', true);
+      } catch (e) {}
+    };
+
+    const addViewField = async (name: string) => {
+      await removeViewField(name);
+      const query: IODataQuery = {
+        isSiteRelative: false,
+        endpoint: `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/defaultview/viewfields/addviewfield('${name}')`,
+      };
+      await this.postData(query, {}, 'POST', '*');
+    };
+
+    await removeViewField('Modified');
+    await removeViewField('Editor');
+    await addViewField('Created');
+    await addViewField('FileSizeDisplay');
+    try {
+      const updateDateFields = [
+        {
+          Id: FieldGuids.created,
+          FriendlyDisplayFormat: 1, // 1 - Standard, 2 - Friendly, 0 - undefined (default is Friendly)
+        },
+        {
+          Id: FieldGuids.modified,
+          FriendlyDisplayFormat: 1,
+        },
+      ];
+
+      for (const props of updateDateFields) {
+        query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/fields/getbyid('${props.Id}')`;
+        await this.postData(query, { FriendlyDisplayFormat: props.FriendlyDisplayFormat }, 'MERGE', '*');
+      }
+    } catch (e) {}
+
+    query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/defaultview`;
+    await this.postData(query, { ViewQuery: '<OrderBy><FieldRef Name="ID" Ascending="FALSE" /></OrderBy>' }, 'PATCH', '*');
+
+    if (callback) callback('');
+  }
+
   public async createListForChats(
     listUrl: string = this.listUrl,
     sharing: boolean,
@@ -458,7 +559,7 @@ export default class SharepointService {
       await this.postData(query, { MaxLength: props.MaxLength }, 'MERGE', '*');
     }
 
-    const addViewField = async (name: string) => {
+    const removeViewField = async (name: string) => {
       const query: IODataQuery = {
         isSiteRelative: false,
         endpoint: `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/defaultview/viewfields/removeviewfield('${name}')`,
@@ -466,7 +567,14 @@ export default class SharepointService {
       try {
         await this.postData(query, {}, 'POST', '*', true);
       } catch (e) {}
-      query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/defaultview/viewfields/addviewfield('${name}')`;
+    };
+
+    const addViewField = async (name: string) => {
+      await removeViewField(name);
+      const query: IODataQuery = {
+        isSiteRelative: false,
+        endpoint: `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/defaultview/viewfields/addviewfield('${name}')`,
+      };
       await this.postData(query, {}, 'POST', '*');
     };
 
@@ -506,11 +614,44 @@ export default class SharepointService {
     return Promise.resolve(config?.listExists ? true : false);
   }
 
+  public async ensureListPermissionsForEveryone(webUrl: string, listTitle: string) {
+    const endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/BreakRoleInheritance(CopyRoleAssignments=false,ClearSubscopes=true)`;
+    const query: IODataQuery = {
+      isSiteRelative: false,
+      endpoint: endpoint,
+    };
+    // Remove permission inheritance and grant special permissions to Everyone except external users
+    try {
+      await this.postData(query, {}, 'POST', '*');
+      const everyone = `c:0-.f|rolemanager|spo-grid-all-users/${PageContextService.context.pageContext.aadInfo.tenantId.toString()}`;
+      query.endpoint = `${webUrl}/_api/web/ensureuser('${everyone}')`;
+      const json = await this.postData(query, {}, 'POST', '*').then((r) => r.json());
+      // https://sharepointcass.com/2021/04/22/sharepoint-online-rest-apis-part-vi-permissions/
+      query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/RoleAssignments/AddRoleAssignment(PrincipalId=${json.Id},RoleDefId=1073741827)`;
+      await this.postData(query, {}, 'POST', '*');
+    } catch (e) {
+      LogService.error(e);
+    }
+  }
+
+  public async updateImageLibrary(listUrl: string = this.imageLibraryUrl, callback: (errorMessage: string) => void) {
+    const config = await this.getListTitleByUrl(listUrl);
+    if (!config) return;
+    if (!config.listExists) {
+      if (callback) callback(strings.TextListDoesNotExist);
+      return;
+    }
+
+    await this.ensureListPermissionsForEveryone(config.webUrl, config.listTitle);
+    if (callback) callback('');
+  }
+
   public async updateListForChats(listUrl: string = this.listUrl, sharing: boolean, callback: (errorMessage: string) => void) {
     const config = await this.getListTitleByUrl(listUrl);
     if (!config) return;
     if (!config.listExists) {
       if (callback) callback(strings.TextListDoesNotExist);
+      return;
     }
 
     const listTitle = config.listTitle;
@@ -582,5 +723,56 @@ export default class SharepointService {
 
     const results = SearchResultMapper.mapSearchResultsOfSharepoint(json, propertyNames);
     return Promise.resolve(results);
+  }
+
+  public async saveImage(imageUrl: string, storageUrl: string, fileExtension: string = 'png'): Promise<string> {
+    const arrayBuffer = await PageContextService.context.httpClient
+      .get(imageUrl, HttpClient.configurations.v1, {})
+      .then((response) => response.arrayBuffer().then((buffer) => buffer));
+
+    const fileName = `${(crypto as any).randomUUID()}.${fileExtension}`;
+
+    let webUrl: string;
+    let serverRelativeFolderUrl: string;
+    if (storageUrl) {
+      const rootFolderUrl: string = storageUrl.replace(/\/(lists)|(forms)\/.+/i, '').replace(/\/+$/, '');
+      webUrl = rootFolderUrl.substring(0, rootFolderUrl.lastIndexOf('/'));
+      serverRelativeFolderUrl = new URL(rootFolderUrl).pathname;
+    } else {
+      webUrl = PageContextService.context.pageContext.web.absoluteUrl;
+      serverRelativeFolderUrl = new URL(this.imageLibraryUrl).pathname;
+    }
+
+    const query: IODataQuery = {
+      isSiteRelative: false,
+      endpoint: `${webUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeFolderUrl}')/files/add(url='${fileName}',overwrite=true)`,
+    };
+
+    const response = await this.postData(query, arrayBuffer, 'POST', undefined, undefined, undefined, true);
+    if (response.ok) {
+      return Promise.resolve(`${serverRelativeFolderUrl}/${fileName}`);
+    } else {
+      return Promise.resolve(null);
+    }
+    /*
+    const request: XMLHttpRequest = new XMLHttpRequest();
+    request.onreadystatechange = async () => {
+      if (request.readyState === 4 && request.status === 200) {
+        const arrayBuffer = request.response;
+        const fileName = `${(crypto as any).randomUUID()}.${extension}`;
+        const webUrl: string = PageContextService.context.pageContext.web.absoluteUrl;
+        const serverRelativeWebUrl = PageContextService.context.pageContext.web.serverRelativeUrl;
+        const serverRelativeFolderUrl: string = `${serverRelativeWebUrl.replace(/\/+$/, '')}/ChatImages`;
+        const query: IODataQuery = {
+          isSiteRelative: false,
+          endpoint: `${webUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeFolderUrl}')/files/add(url='${fileName}',overwrite=true)`,
+        };
+        await this.postData(query, arrayBuffer, 'POST', undefined, undefined, undefined, true);
+      }
+    };
+    request.responseType = 'arraybuffer';
+    request.open('GET', imageUrl, true); // true for asynchronous xmlHttp.send(null);
+    request.send(null);
+    */
   }
 }

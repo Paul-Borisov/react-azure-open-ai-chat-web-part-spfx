@@ -11,6 +11,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelBingApiKeyPlaceholder: string;
   FieldLabelGoogle: string;
   FieldLabelGoogleApiKey: string;
+  FieldLabelImages: string;
   FieldLabelLanguageModels: string;
   FieldLabelLocale: string;
   FieldLabelSharing: string;
@@ -20,6 +21,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelHighlight: string;
   FieldLabelHighlightStyles: string;
   FieldLabelDefaultStyle: string;
+  FieldLabelSharePointImageLibraryUrl: string;
   FieldLabelSharePointListUrl: string;
   FieldLabelStorageType: string;
   FieldLabelStorageTypeDatabase: string;

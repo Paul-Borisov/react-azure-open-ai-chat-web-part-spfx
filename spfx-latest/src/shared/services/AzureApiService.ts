@@ -58,6 +58,14 @@ export default class AzureApiService {
     }
   }
 
+  public getConfig(): IAzureApiServiceConfig {
+    return this.config;
+  }
+
+  public getAadClient(): AadHttpClient {
+    return this.aadClient;
+  }
+
   public isConfigured(): boolean {
     return (this.authenticate ? this.aadClient !== undefined : true) && this.config?.endpointBaseUrl !== undefined;
   }
@@ -323,6 +331,13 @@ export default class AzureApiService {
             LogService.debug(null, 'Connection closed');
             if (functionCalling?.length) {
               const functionCallingResults = await functionCaller.call(functionCalling, this, payload);
+              //console.log(functionCallingResults);
+              if (functionCallingResults.length > 0 && /^<img /i.test(functionCallingResults[0])) {
+                // The response starts with a generated image
+                callback(functionCallingResults[0]);
+                callback('', true);
+                return;
+              }
               const newMessages = functionCaller.getExtendedMessages(
                 undefined,
                 messages,
