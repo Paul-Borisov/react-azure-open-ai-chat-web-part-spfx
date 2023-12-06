@@ -32,6 +32,10 @@ The integrations available in this release include:
 - Analysis of an uploaded PDF and summarization of its content
 - Analysis of uploaded images and description of their content
 - Beta 1.1: Search on the Internet: Bing and Google (+ Reddit). Added on Dec 2, 2023.
+  - The configuration is supported in two alternatives: 1. Using the additional APIM-endpoints https://**tenant**.azure-api.net/**bing** and/or https://**tenant**.azure-api.net/**google** 2. Using the direct Bing and Google endpoints with own **api-key** values stored in the web part settings (less secure).
+
+- Beta 1.1: Image generation from the prompt text. This option supports Dalle 3. Added on Dec 5, 2023.
+  - The configuration is supported in two alternatives: 1. Using the additional APIM-endpoint https://**tenant**.azure-api.net/openai/**dalle** 2. Using the Native OpenAI endpoint https://api.openai.com/v1/images/generations with **api-key** stored in the web part settings (less secure).
 
 ### Full-Scale Setup
 
