@@ -14,13 +14,13 @@ import { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
 import { IChatHistory, IChatMessage } from 'shared/model/IChat';
-import { FunctionServices } from 'shared/model/enums/FunctionServices';
 import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import { IChatProps } from './Chat';
 import styles from './Chat.module.scss';
 import * as Icons from './Icons';
 import NavigationPanel, { canOpenCustomPanel } from './NavigationPanel';
+import Prompts from './Prompts';
 import UploadFiles from './UploadFiles';
 
 export interface IContentPanelProps {
@@ -56,8 +56,9 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   const [isCustomPanelOpen, setIsCustomPanelOpen] = React.useState<boolean>();
 
   const [formattedContent, setFormattedContent] = React.useState<JSX.Element[]>();
+  const [prompt, setPrompt] = React.useState<string>();
 
-  const refPrompt = React.useRef<HTMLTextAreaElement>();
+  const refPrompt = React.createRef<HTMLTextAreaElement>();
   const refPromptInCustomPanel = React.useRef<HTMLTextAreaElement>();
   const refPanelContentPane = React.useRef<HTMLDivElement>();
   const refPanelContentPaneInCustomPanel = React.useRef<HTMLDivElement>();
@@ -141,6 +142,14 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   }, [pdfFileContent]);
 
   React.useEffect(() => {
+    setTimeout(() => {
+      const targetTextArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
+      targetTextArea.value = prompt;
+      resizePrompt({ target: targetTextArea });
+    }, 200);
+  }, [prompt]);
+
+  React.useEffect(() => {
     setFormattedContent([]);
   }, [chatHistoryId, selectedCodeStyle]);
 
@@ -212,6 +221,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     SessionStorageService.clearRawResults();
     clearImages();
     setResponseContentError(undefined);
+    setRequestCharsCount(0);
+    resizePrompt({ target: isCustomPanelOpen ? refPromptInCustomPanel.current : refPrompt.current });
   }
 
   function editChatMessage(id: string) {
@@ -424,6 +435,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       return (
         <>
           <div className={[styles.promptContainer, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+            {props.examples ? <Prompts settings={props} setPrompt={(text: string) => setPrompt(text)} /> : null}
             <textarea
               ref={refPromptArea}
               placeholder={strings.TextSendMessage}
@@ -605,6 +617,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   }
 
   function submitPayload() {
+    setPrompt('');
     setIsProgress(true);
 
     const textArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
@@ -807,11 +820,11 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
             </div>
             {isAi ? (
               props.highlight ? (
-                <div className={[styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}>
+                <div className={['ai', styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}>
                   {!disabledHighlights?.find((id) => id === chatMessageId) ? formattedRows[index] : content}
                 </div>
               ) : (
-                <div className={styles.message} dangerouslySetInnerHTML={{ __html: r.content }} />
+                <div className={['ai', styles.message].join(' ')} dangerouslySetInnerHTML={{ __html: r.content }} />
               )
             ) : (
               <div

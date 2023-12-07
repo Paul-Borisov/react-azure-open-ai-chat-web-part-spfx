@@ -105,6 +105,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
             ? PropertyPanePasswordField.decrypt(this.context, this.properties.apiKeyGoogle)
             : undefined,
         images: this.properties.functions && this.properties.images,
+        examples: this.properties.functions && this.properties.examples,
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
@@ -331,6 +332,10 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   sharing: this.properties.sharing,
                   listType: ListType.ImageLibrary,
                 }),
+                this.properties.functions &&
+                  PropertyPaneCheckbox('examples', {
+                    text: strings.FieldLabelExamples,
+                  }),
                 PropertyPaneCheckbox('highlight', {
                   text: strings.FieldLabelHighlight,
                 }),

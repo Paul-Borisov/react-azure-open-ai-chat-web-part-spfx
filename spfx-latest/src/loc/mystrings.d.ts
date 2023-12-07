@@ -9,6 +9,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelBing: string;
   FieldLabelBingApiKey: string;
   FieldLabelBingApiKeyPlaceholder: string;
+  FieldLabelExamples: string;
   FieldLabelGoogle: string;
   FieldLabelGoogleApiKey: string;
   FieldLabelImages: string;
@@ -53,6 +54,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextDescribeImages: string;
   TextEdit: string;
   TextError: string;
+  TextExamples: string;
   TextExists: string;
   TextExpand: string;
   TextFormat: string;

@@ -46,6 +46,8 @@ export interface IAzureOpenAiChatProps {
   apiKeyGoogle: string;
   // Option to enable image generation
   images: boolean;
+  // Option to enable examples for the pronpt text
+  examples: boolean;
   // Option to enable code highlighting
   highlight: boolean;
   // Option to show code highlighting styles (requires highlight == true)

@@ -264,6 +264,7 @@ $selection: $ms-color-gray150;
     height: 34px;
     padding: 15px 15px 0 15px;
     @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
+    z-index: 10;
   }
   .linkButton {
     flex: 0 0 35px;
