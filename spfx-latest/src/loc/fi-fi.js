@@ -32,6 +32,7 @@ define([], function () {
     FieldLabelDemoOnly: '(vain demo)',
     FieldLabelPromptAtBottom: 'Näytä kehotealue alareunassa',
     FieldLabelUnlimitedHistoryLength: 'Rajoittamaton chatin historian pituus (AI-vastaukset pitkissä keskusteluissa voivat olla vähemmän tarkkoja)',
+    FieldLabelVoiceInput: 'Ota äänisyöttö käyttöön',
 
     PlaceholderDescription: 'Määritä tämä verkko-osa.',
     PlaceholderText: 'Määritä verkko-osa',
@@ -65,6 +66,7 @@ define([], function () {
     TextGpt4Turbo: 'GPT-4 Turbo',
     TextHideMySharedChats: 'Piilota chattini',
     TextInvalidListUrl: 'Virheellinen luettelon URL-osoite. Luettelo samalla nimella on jo olemassa sivustolla',
+    TextLanguage: 'Kieli',
     TextListCreated: 'Luettelo on luotu',
     TextListDoesNotExist: 'Mukautettua luetteloa ei ole olemassa',
     TextListExists: 'Luettelo on jo olemassa',
@@ -102,5 +104,6 @@ define([], function () {
     TextUploadFiles: 'Lataa tiedostoja',
     TextUploadImage: 'Lataa kuvia',
     TextUpload: 'Lataa PDF',
+    TextVoiceInput: 'Äänisyöttö',
   };
 });

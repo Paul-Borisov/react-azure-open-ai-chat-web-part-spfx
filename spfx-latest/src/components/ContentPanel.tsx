@@ -10,6 +10,7 @@ import { getSimpleDialog } from 'shared/components/CustomDialog';
 import { CustomShimmer } from 'shared/components/CustomShimmer/CustomShimmer';
 import LinkButton from 'shared/components/LinkButton/LinkButton';
 import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
+import VoiceInput from 'shared/components/VoiceInput/VoiceInput';
 import { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
@@ -456,6 +457,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               }
             />
             {(!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength) && submitButton}
+            {props.voiceInput ? <VoiceInput setText={setPrompt} /> : null}
           </div>
           <div className={styles.requestCharsCount}>
             {!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength

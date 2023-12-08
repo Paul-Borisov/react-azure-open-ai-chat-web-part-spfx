@@ -31,6 +31,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelDemoOnly: string;
   FieldLabelPromptAtBottom: string;
   FieldLabelUnlimitedHistoryLength: string;
+  FieldLabelVoiceInput: string;
 
   PlaceholderDescription: string;
   PlaceholderText: string;
@@ -64,6 +65,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextGpt4Turbo: string;
   TextHideMySharedChats: string;
   TextInvalidListUrl: string;
+  TextLanguage: string;
   TextListCreated: string;
   TextListDoesNotExist: string;
   TextListExists: string;
@@ -101,6 +103,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextUploadFiles: string;
   TextUploadImage: string;
   TextUploadPdf: string;
+  TextVoiceInput: string;
 }
 
 declare module 'AzureOpenAiChatWebPartStrings' {

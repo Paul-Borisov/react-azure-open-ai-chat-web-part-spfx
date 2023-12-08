@@ -32,6 +32,7 @@ define([], function () {
     FieldLabelDemoOnly: '(kun demo)',
     FieldLabelPromptAtBottom: 'Vis ledetekstområdet nederst',
     FieldLabelUnlimitedHistoryLength: 'Ubegrenset lengde på chatteloggen (AI-svar i lange chatter kan være mindre nøyaktige)',
+    FieldLabelVoiceInput: 'Aktiver stemmeinndata',
 
     PlaceholderDescription: 'Konfigurer denne webdelen.',
     PlaceholderText: 'Konfigurer webdelen din',
@@ -66,6 +67,7 @@ define([], function () {
     TextGpt4Turbo: 'GPT-4 Turbo',
     TextHideMySharedChats: 'Skjul chattene mine',
     TextInvalidListUrl: 'Ugyldig liste-URL. Liste med samme navn finnes allerede på nettstedet',
+    TextLanguage: 'Språk',
     TextListCreated: 'Liste er opprettet',
     TextListDoesNotExist: 'Liste finnes ikke',
     TextListExists: 'Liste eksisterer allerede',
@@ -103,5 +105,6 @@ define([], function () {
     TextUploadFiles: 'Last opp filer',
     TextUploadImage: 'Last opp bilder',
     TextUploadImage: 'Last opp PDF',
+    TextVoiceInput: 'Stemmeinndata',
   };
 });

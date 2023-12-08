@@ -48,6 +48,8 @@ export interface IAzureOpenAiChatProps {
   images: boolean;
   // Option to enable examples for the pronpt text
   examples: boolean;
+  // Option to enable voice input to the pronpt text
+  voiceInput: boolean;
   // Option to enable code highlighting
   highlight: boolean;
   // Option to show code highlighting styles (requires highlight == true)

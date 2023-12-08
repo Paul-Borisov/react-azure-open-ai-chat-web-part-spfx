@@ -32,6 +32,7 @@ define([], function () {
     FieldLabelDemoOnly: '(demo only)',
     FieldLabelPromptAtBottom: 'Show prompt area at bottom',
     FieldLabelUnlimitedHistoryLength: 'Unlimited chat history length (AI-responses in long chats may be less accurate)',
+    FieldLabelVoiceInput: 'Enable voice input',
 
     PlaceholderDescription: 'Please configure this web part.',
     PlaceholderText: 'Configure your web part',
@@ -65,6 +66,7 @@ define([], function () {
     TextGpt4Turbo: 'GPT-4 Turbo',
     TextHideMySharedChats: 'Hide my chats',
     TextInvalidListUrl: 'Invalid list URL. List with the same name already exists at the site',
+    TextLanguage: 'Language',
     TextListCreated: 'List has been created',
     TextListDoesNotExist: 'List does not exist',
     TextListExists: 'List already exists',
@@ -102,5 +104,6 @@ define([], function () {
     TextUploadFiles: 'Upload files',
     TextUploadImage: 'Upload images',
     TextUploadPdf: 'Upload PDF',
+    TextVoiceInput: 'Voice input',
   };
 });
