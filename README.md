@@ -37,6 +37,8 @@ The integrations available in this release include:
 - Beta 1.1: Image generation from the prompt text. This option supports Dalle 3. Added on Dec 5, 2023.
   - The configuration is supported in two alternatives: 1. Using the additional APIM-endpoint https://**tenant**.azure-api.net/openai/**dalle** 2. Using the Native OpenAI endpoint https://api.openai.com/v1/images/generations with **api-key** stored in the web part settings (less secure).
 
+- Beta 1.1: The option to use voice input to prompt text is available. Added on Dec 8, 2023.
+  
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
