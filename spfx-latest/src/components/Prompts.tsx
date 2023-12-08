@@ -44,6 +44,14 @@ const Prompts: React.FunctionComponent<IPrompts> = (props) => {
       active: props.settings.functions,
     },
     { text: 'The current date and time', active: props.settings.functions },
+    {
+      text:
+        'Generate CSV-table for all weeks of ' +
+        new Date().getFullYear() +
+        '. Columns: WeekNumber, StartDate;, EndDate. Use semicolon as column delimiter and ISO-date format. Start day is Monday. End day is Friday. Wrap into ```',
+      active: true,
+    },
+    { text: 'Powershell code to connect to Azure SQL database', active: true },
   ];
 
   const emptyOption = { key: 0, text: strings.TextExamples };

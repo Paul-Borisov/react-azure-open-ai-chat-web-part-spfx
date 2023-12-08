@@ -85,9 +85,8 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
             ? (this.properties.languageModels as any).split(',') // TODO: Replace with multi-select dropdown UI.
             : this.properties.languageModels,
         endpointBaseUrlForChatHistory: this.properties.endpointBaseUrlForChatHistory,
-        spImageLibraryUrl:
-          this.properties.spImageLibraryUrl || `${PageContextService.context.pageContext.web.absoluteUrl}/ChatImages`,
-        spListUrl: this.properties.spListUrl || `${PageContextService.context.pageContext.web.absoluteUrl}/Lists/dbChats`,
+        spImageLibraryUrl: this.properties.spImageLibraryUrl || this.spService.imageLibraryUrl,
+        spListUrl: this.properties.spListUrl || this.spService.listUrl,
         //apiKey: this.properties.apiKey,
         apiKey: PropertyPanePasswordField.decrypt(this.context, this.properties.apiKey),
         sharing: this.properties.sharing,
@@ -105,7 +104,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
             ? PropertyPanePasswordField.decrypt(this.context, this.properties.apiKeyGoogle)
             : undefined,
         images: this.properties.functions && this.properties.images,
-        examples: this.properties.functions && this.properties.examples,
+        examples: this.properties.examples,
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
@@ -332,10 +331,9 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   sharing: this.properties.sharing,
                   listType: ListType.ImageLibrary,
                 }),
-                this.properties.functions &&
-                  PropertyPaneCheckbox('examples', {
-                    text: strings.FieldLabelExamples,
-                  }),
+                PropertyPaneCheckbox('examples', {
+                  text: strings.FieldLabelExamples,
+                }),
                 PropertyPaneCheckbox('highlight', {
                   text: strings.FieldLabelHighlight,
                 }),
