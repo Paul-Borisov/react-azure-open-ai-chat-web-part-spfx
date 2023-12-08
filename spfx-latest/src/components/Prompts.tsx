@@ -31,7 +31,7 @@ const Prompts: React.FunctionComponent<IPrompts> = (props) => {
       active: props.settings.google,
     },
     {
-      text: 'Search on Bing and Google: Open AI vs Gemini',
+      text: 'Search on Bing and Google: Open AI vs Gemini. Show 5 most recent results from each.',
       active: props.settings.bing && props.settings.google,
     },
     {

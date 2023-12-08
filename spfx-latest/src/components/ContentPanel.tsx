@@ -56,7 +56,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   const [isCustomPanelOpen, setIsCustomPanelOpen] = React.useState<boolean>();
 
   const [formattedContent, setFormattedContent] = React.useState<JSX.Element[]>();
-  const [prompt, setPrompt] = React.useState<string>();
+  const [prompt, setPrompt] = React.useState<string>('');
 
   const refPrompt = React.useRef<HTMLTextAreaElement>();
   const refPromptInCustomPanel = React.useRef<HTMLTextAreaElement>();
@@ -216,12 +216,13 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     setChatName(undefined);
     setChatHistory([]);
     setFormattedContent([]);
-    if (refPrompt.current) refPrompt.current.value = '';
-    if (refPromptInCustomPanel.current) refPromptInCustomPanel.current.value = '';
     SessionStorageService.clearRawResults();
     clearImages();
     setResponseContentError(undefined);
     setRequestCharsCount(0);
+    setPrompt('');
+    if (refPrompt.current?.value) refPrompt.current.value = '';
+    if (refPromptInCustomPanel.current?.value) refPromptInCustomPanel.current.value = '';
     resizePrompt({ target: isCustomPanelOpen ? refPromptInCustomPanel.current : refPrompt.current });
   }
 
