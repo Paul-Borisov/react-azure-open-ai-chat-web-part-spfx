@@ -58,7 +58,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   const [formattedContent, setFormattedContent] = React.useState<JSX.Element[]>();
   const [prompt, setPrompt] = React.useState<string>();
 
-  const refPrompt = React.createRef<HTMLTextAreaElement>();
+  const refPrompt = React.useRef<HTMLTextAreaElement>();
   const refPromptInCustomPanel = React.useRef<HTMLTextAreaElement>();
   const refPanelContentPane = React.useRef<HTMLDivElement>();
   const refPanelContentPaneInCustomPanel = React.useRef<HTMLDivElement>();
