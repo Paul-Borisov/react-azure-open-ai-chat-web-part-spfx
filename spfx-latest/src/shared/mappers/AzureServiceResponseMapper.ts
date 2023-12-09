@@ -48,6 +48,10 @@ export default class AzureServiceResponseMapper {
     }
   }
 
+  public static clearErrorDetails() {
+    SessionStorageService.clearData(SessionStorageService.keys.errorDetails);
+  }
+
   public static saveErrorDetails(errorDetails: string) {
     if (!errorDetails) return;
 

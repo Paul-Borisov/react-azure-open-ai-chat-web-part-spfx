@@ -748,31 +748,16 @@ export default class SharepointService {
       endpoint: `${webUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeFolderUrl}')/files/add(url='${fileName}',overwrite=true)`,
     };
 
-    const response = await this.postData(query, arrayBuffer, 'POST', undefined, undefined, undefined, true);
-    if (response.ok) {
-      return Promise.resolve(`${serverRelativeFolderUrl}/${fileName}`);
-    } else {
-      return Promise.resolve(null);
-    }
-    /*
-    const request: XMLHttpRequest = new XMLHttpRequest();
-    request.onreadystatechange = async () => {
-      if (request.readyState === 4 && request.status === 200) {
-        const arrayBuffer = request.response;
-        const fileName = `${(crypto as any).randomUUID()}.${extension}`;
-        const webUrl: string = PageContextService.context.pageContext.web.absoluteUrl;
-        const serverRelativeWebUrl = PageContextService.context.pageContext.web.serverRelativeUrl;
-        const serverRelativeFolderUrl: string = `${serverRelativeWebUrl.replace(/\/+$/, '')}/ChatImages`;
-        const query: IODataQuery = {
-          isSiteRelative: false,
-          endpoint: `${webUrl}/_api/web/GetFolderByServerRelativeUrl('${serverRelativeFolderUrl}')/files/add(url='${fileName}',overwrite=true)`,
-        };
-        await this.postData(query, arrayBuffer, 'POST', undefined, undefined, undefined, true);
+    try {
+      const response = await this.postData(query, arrayBuffer, 'POST', undefined, undefined, undefined, true);
+      if (response.ok) {
+        return Promise.resolve(`${serverRelativeFolderUrl}/${fileName}`);
+      } else {
+        return Promise.resolve(undefined);
       }
-    };
-    request.responseType = 'arraybuffer';
-    request.open('GET', imageUrl, true); // true for asynchronous xmlHttp.send(null);
-    request.send(null);
-    */
+    } catch (e) {
+      LogService.error(e);
+      return Promise.resolve(undefined);
+    }
   }
 }

@@ -226,6 +226,7 @@ export default class AzureApiService {
     );
 
     if (!extendedMessages) SessionStorageService.clearRawResults();
+    if (!extendedMessages) AzureServiceResponseMapper.clearErrorDetails();
 
     if (!stream) {
       const requestHeaders: Headers = new Headers();
@@ -332,11 +333,17 @@ export default class AzureApiService {
             if (functionCalling?.length) {
               const functionCallingResults = await functionCaller.call(functionCalling, this, payload);
               //console.log(functionCallingResults);
-              if (functionCallingResults.length > 0 && /^<img /i.test(functionCallingResults[0])) {
-                // The response starts with a generated image
-                callback(functionCallingResults[0]);
-                callback('', true);
-                return;
+              if (functionCallingResults.length > 0) {
+                if (/^<img /i.test(functionCallingResults[0])) {
+                  // The response starts with a generated image
+                  callback(functionCallingResults[0]);
+                  callback('', true);
+                  return;
+                } else if (functionCallingResults[0] === undefined) {
+                  // Error occured (with details saved and available)
+                  callback('', true);
+                  return;
+                }
               }
               const newMessages = functionCaller.getExtendedMessages(
                 undefined,
@@ -368,14 +375,10 @@ export default class AzureApiService {
   }
 
   public async loadChatHistory(callback: (data: IChatMessage[]) => void, shared?: boolean) {
-    const oid = window.location.search
-      .split('&')
-      .find((p) => p.startsWith('oid='))
-      ?.replace('oid=', '');
     const endpointUri: string = !shared
       ? `${this.config.endpointBaseUrlForWebApi}${Operations.ChatMessageLoadHistory}/${
           //PageContextService.context.pageContext.user.loginName
-          oid ?? PageContextService.context.pageContext.aadInfo.userId.toString() // ObjectID is more secure
+          PageContextService.context.pageContext.aadInfo.userId.toString() // ObjectID is more secure
         }`
       : `${this.config.endpointBaseUrlForWebApi}${Operations.ChatMessageLoadHistoryShared}`;
 

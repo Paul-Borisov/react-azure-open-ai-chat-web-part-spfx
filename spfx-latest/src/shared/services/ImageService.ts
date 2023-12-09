@@ -1,4 +1,4 @@
-import { AadHttpClient, AadTokenProvider, HttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
+import { AadHttpClient, HttpClient, HttpClientResponse, IHttpClientOptions } from '@microsoft/sp-http';
 import { GptImageModelTextLimits } from 'shared/constants/Application';
 import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMapper';
 import LogService from 'shared/services/LogService';
@@ -109,15 +109,19 @@ export default class ImageService {
             output.push(img.outerHTML);
             if (data.revised_prompt) output.push(data.revised_prompt);
           } else {
-            LogService.error('Unable to save image');
+            const message = 'Unable to save the generated image';
+            LogService.error(message);
+            AzureServiceResponseMapper.saveErrorDetails(message);
             continue;
           }
         } else {
-          LogService.error('Empty image response');
+          const message = 'Image response is empty';
+          LogService.error(message);
+          AzureServiceResponseMapper.saveErrorDetails(message);
           continue;
         }
       }
-      return Promise.resolve(output.join('\n\n'));
+      return Promise.resolve(output.length > 0 ? output.join('\n\n') : undefined);
     } else {
       return handleError(response);
     }
