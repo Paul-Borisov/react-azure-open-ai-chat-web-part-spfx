@@ -1,4 +1,4 @@
-import { Dropdown, FontIcon, IDropdown, IDropdownOption, TooltipHost } from '@fluentui/react';
+import { Dropdown, DropdownMenuItemType, FontIcon, IDropdown, IDropdownOption, TooltipHost } from '@fluentui/react';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import * as React from 'react';
 import 'regenerator-runtime/runtime';
@@ -45,9 +45,9 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
     }
   };
 
-  const emptyOption = { key: '', text: strings.TextLanguage };
+  const emptyOption = { key: '', text: strings.TextLanguage, itemType: DropdownMenuItemType.Header };
   const options: IDropdownOption[] = [{ ...emptyOption }];
-  options.push(...LocalesPopular.map((l) => ({ key: l.code, text: l.label })));
+  options.push(...LocalesPopular.map((l) => ({ key: l.code, text: l.label, title: l.title ?? l.label })));
   const languages = (
     <Dropdown
       className={styles.languages}

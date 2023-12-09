@@ -1,4 +1,4 @@
-import { Dropdown, IDropdownOption, ResponsiveMode } from '@fluentui/react';
+import { Dropdown, DropdownMenuItemType, IDropdownOption } from '@fluentui/react';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import * as React from 'react';
 import { IAzureOpenAiChatProps } from './IAzureOpenAiChatProps';
@@ -54,7 +54,7 @@ const Prompts: React.FunctionComponent<IPrompts> = (props) => {
     { text: 'Powershell code to connect to Azure SQL database', active: true },
   ];
 
-  const emptyOption = { key: 0, text: strings.TextExamples };
+  const emptyOption = { key: 0, text: strings.TextExamples, itemType: DropdownMenuItemType.Header };
   const options: IDropdownOption[] = [{ ...emptyOption, data: emptyOption }];
   options.push(
     ...samples.filter((r) => r.active).map((r, index) => ({ key: index + 1, text: r.text, data: r } as IDropdownOption))
