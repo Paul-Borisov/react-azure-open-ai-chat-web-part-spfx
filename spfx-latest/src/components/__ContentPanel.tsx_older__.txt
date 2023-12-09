@@ -1,10 +1,16 @@
-import { FontIcon, Panel, PanelType, TooltipHost } from '@fluentui/react';
+import { DefaultButton, FontIcon, Panel, PanelType, TooltipHost, TooltipOverflowMode } from '@fluentui/react';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import ChatHelper from 'helpers/ChatHelper';
 import useChatHistory from 'hooks/useChatHistory';
 import useStorageService from 'hooks/useStorageService';
 import { FunctionComponent } from 'react';
 import * as React from 'react';
+import { formatCode } from 'shared/components/CodeHighlighter/CodeHighlighter';
+import { getSimpleDialog } from 'shared/components/CustomDialog';
+import { CustomShimmer } from 'shared/components/CustomShimmer/CustomShimmer';
+import LinkButton from 'shared/components/LinkButton/LinkButton';
+import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
+import VoiceInput from 'shared/components/VoiceInput/VoiceInput';
 import { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
@@ -13,9 +19,10 @@ import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import { IChatProps } from './Chat';
 import styles from './Chat.module.scss';
-import ContentPanelElements from './ContentPanelElements';
 import * as Icons from './Icons';
 import NavigationPanel, { canOpenCustomPanel } from './NavigationPanel';
+import Prompts from './Prompts';
+import UploadFiles from './UploadFiles';
 
 export interface IContentPanelProps {
   props: IChatProps;
@@ -156,8 +163,6 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     }
   }, [model]);
 
-  const elements: ContentPanelElements = React.useMemo(() => new ContentPanelElements(props), []);
-
   return (
     <>
       {getContentPanel(refPanelContentPane, refPrompt, refConversationContainer)}
@@ -263,46 +268,237 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     refPromptArea: React.LegacyRef<HTMLTextAreaElement>,
     refNavigation: React.LegacyRef<HTMLDivElement>
   ): JSX.Element {
-    const rows = chatHistory.length > 0 ? getChatHistoryContent(chatHistory.filter((r) => typeof r.content === 'string')) : [];
+    const rows: JSX.Element[] =
+      //chatHistory.length > 0 ? getChatHistoryContent(chatHistory) : [];
+      // Additional protection against incorrectly saved data
+      chatHistory.length > 0 ? getChatHistoryContent(chatHistory.filter((r) => typeof r.content === 'string')) : [];
 
-    const fileUpload = elements.getFileUpload(
-      model,
-      showUploadDialog,
-      imageUrls,
-      pdfFileContent,
-      setShowUploadDialog,
-      setImageUrls,
-      setPdfFileContent
+    const isDisabled: boolean = isProgress || isSubmitDisabled;
+    const submitButton: JSX.Element = (
+      <LinkButton
+        onClick={submitPayload}
+        className={[styles.linkButton, isDisabled ? styles.disabled : undefined].join(' ').trim()}
+        disabled={isDisabled}
+      >
+        <TooltipHost content={strings.TextSubmit}>
+          {<FontIcon iconName={'Send'} style={{ opacity: isProgress ? 0.5 : 1 }} />}
+        </TooltipHost>
+      </LinkButton>
     );
 
-    const panelLanguageModels = elements.getLanguageModels(
-      model,
-      stopSignal,
-      signalReload,
-      isCustomPanelOpen,
-      isStreamProgress,
-      fileUpload,
-      setIsStreamProgress,
-      setSignalReload,
-      setModel
-    );
+    const getChatName = (className: string = undefined) => {
+      return (
+        <div
+          className={[
+            styles.chatname,
+            className,
+            props.promptAtBottom ? styles.promptAtBottom : undefined,
+            isCustomPanelOpen && props.promptAtBottom ? styles.insidePanel : undefined,
+          ]
+            .join(' ')
+            .trim()}
+        >
+          <TooltipHost content={chatName ?? strings.TextNewChat} overflowMode={TooltipOverflowMode.Parent}>
+            {chatName ?? strings.TextNewChat}
+          </TooltipHost>
+        </div>
+      );
+    };
 
-    const panelContentPane = elements.getPanelContentPane(refContentPane, chatHistory, isCustomPanelOpen, rows, isProgress);
+    const getFileUpload = (): JSX.Element => {
+      const isVisionSupported =
+        /gpt-4/i.test(model) &&
+        (props.apiService.isNative(props.endpointBaseUrlForOpenAi4) ||
+          props.apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi4));
+      const isPdfSupported = true;
+      // Upload button should be visible only if Enable integrations is turned on in web part settings.
+      return props.functions && (isVisionSupported || isPdfSupported) ? (
+        <TooltipHost content={strings.TextUploadFiles}>
+          {getSimpleDialog(strings.TextUpload, strings.TextUploadFiles, showUploadDialog, setShowUploadDialog, [
+            <UploadFiles
+              setImageUrls={isVisionSupported ? setImageUrls : undefined}
+              setPdfFileContent={isPdfSupported ? setPdfFileContent : undefined}
+              setIsOpen={setShowUploadDialog}
+            />,
+          ])}
+          <span className={[styles.fileUploadIcon, imageUrls?.length > 0 ? styles.selected : undefined].join(' ').trim()}>
+            <FontIcon iconName="SkypeCircleArrow" onClick={() => setShowUploadDialog(true)} />
+            <span className={[styles.fileCounter, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+              {imageUrls?.length ? `(${imageUrls?.length})` : pdfFileContent ? `(${Object.keys(pdfFileContent).length})` : ''}
+            </span>
+          </span>
+        </TooltipHost>
+      ) : null;
+    };
 
-    const promptContainer = elements.getPromptContainer(
-      refPromptArea,
-      isProgress,
-      isStreamProgress,
-      isSubmitDisabled,
-      chatHistoryParams,
-      requestCharsCount,
-      resizePrompt,
-      setPrompt,
-      submitPayload,
-      panelLanguageModels
-    );
+    const getStopButton = (): JSX.Element => {
+      return (
+        <TooltipHost content={strings.TextStop}>
+          <FontIcon
+            iconName="CircleStopSolid"
+            className={styles.stopSignal}
+            onClick={() => {
+              stopSignal.abort();
+              setIsStreamProgress(false);
+              setSignalReload(!signalReload);
+            }}
+          />
+        </TooltipHost>
+      );
+    };
 
-    const contentArea = elements.getContentArea(responseContentError, panelContentPane, promptContainer);
+    const getLanguageModelIcon = (star: boolean): JSX.Element => {
+      return star ? Icons.getStarIcon() : Icons.getLighteningIcon();
+    };
+
+    const getLanguageModelText = (languageModel: string, isGpt3: boolean, isGpt4: boolean, isGpt4Turbo: boolean): string => {
+      if (isGpt3) {
+        return strings.TextGpt35;
+      } else if (isGpt4Turbo) {
+        return strings.TextGpt4Turbo;
+      } else if (isGpt4) {
+        return strings.TextGpt4;
+      } else {
+        return languageModel;
+      }
+    };
+
+    const getLanguageModels = (): JSX.Element => {
+      return (
+        <div className={[styles.topbarcontent, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+          {isStreamProgress ? getStopButton() : null}
+          {props.languageModels?.length > 1 &&
+            (ChatHelper.hasDirectEndpoints(props.apiService, props, true)
+              ? props.languageModels.sort()
+              : props.languageModels
+            ).map((languageModel, index) => {
+              languageModel = languageModel.trim();
+              const isGpt3 = /gpt-3/i.test(languageModel);
+              const isGpt4 = /gpt-4/i.test(languageModel);
+              const isGpt4Turbo = /gpt-4-(1106|turbo)/i.test(languageModel);
+              const selectedClassName = model === languageModel || (!model && index === 0) ? styles.selectedModel : undefined;
+              return (
+                <TooltipHost content={`LLM: ${languageModel}`}>
+                  <DefaultButton
+                    className={[
+                      styles.modelSelector,
+                      styles.greenicon,
+                      selectedClassName,
+                      isCustomPanelOpen && !props.promptAtBottom ? styles.insidePanel : undefined,
+                      props.isDarkTheme ? styles.darkTheme : undefined,
+                    ]
+                      .join(' ')
+                      .trim()}
+                    onClick={() => {
+                      setModel(languageModel);
+                    }}
+                  >
+                    {getLanguageModelIcon(isGpt4)}
+                    {getLanguageModelText(languageModel, isGpt3, isGpt4, isGpt4Turbo)}
+                  </DefaultButton>
+                </TooltipHost>
+              );
+            })}
+          {getFileUpload()}
+        </div>
+      );
+    };
+
+    const getPanelContentPane = (): JSX.Element => {
+      const noUpperLanguageSelector = !props.promptAtBottom && !(props.languageModels?.length > 1);
+      return (
+        <div
+          ref={refContentPane}
+          className={[
+            styles.panelContentPane,
+            !chatHistory?.length ? styles.clearborder : undefined,
+            noUpperLanguageSelector ? styles.noUpperLanguageSelector : undefined,
+            isCustomPanelOpen ? styles.insidePanel : undefined,
+          ]
+            .join(' ')
+            .trim()}
+        >
+          <div className={styles.responseRowsContainer}>
+            {rows}
+            {isProgress && <CustomShimmer />}
+          </div>
+        </div>
+      );
+    };
+
+    const getPromptContainer = (): JSX.Element => {
+      const charactersLeft =
+        chatHistoryParams.maxTextLength > requestCharsCount
+          ? chatHistoryParams.maxTextLength - requestCharsCount
+          : props.unlimitedHistoryLength
+          ? chatHistoryParams.defaultTextLength > requestCharsCount
+            ? chatHistoryParams.defaultTextLength - requestCharsCount
+            : 0
+          : 0;
+
+      return (
+        <>
+          <div className={[styles.promptContainer, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+            {props.examples ? <Prompts settings={props} setPrompt={(text: string) => setPrompt(text)} /> : null}
+            <textarea
+              ref={refPromptArea}
+              placeholder={strings.TextSendMessage}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  submitPayload();
+                } else {
+                  resizePrompt(e);
+                }
+              }}
+              onBlur={resizePrompt}
+              onInput={resizePrompt}
+              maxLength={!props.unlimitedHistoryLength ? chatHistoryParams.maxTextLength : chatHistoryParams.defaultTextLength}
+              disabled={
+                isProgress || isStreamProgress || (chatHistoryParams.maxContentLengthExceeded && !props.unlimitedHistoryLength)
+              }
+            />
+            {(!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength) && submitButton}
+            {props.voiceInput ? <VoiceInput setText={setPrompt} /> : null}
+          </div>
+          <div className={styles.requestCharsCount}>
+            {!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength
+              ? `${requestCharsCount} ${
+                  requestCharsCount === 1 ? strings.TextCharacters.replace(/s$/i, '') : strings.TextCharacters
+                }, ${charactersLeft} ${strings.TextMoreCharactersAllowed}`
+              : strings.TextMaxContentLengthExceeded}
+            {props.promptAtBottom ? getLanguageModels() : null}
+          </div>
+        </>
+      );
+    };
+
+    const getContentArea = (): JSX.Element => {
+      const errorDetails = SessionStorageService.getData(SessionStorageService.keys.errorDetails);
+      //if (errorDetails) setTimeout(() => SessionStorageService.clearErrorDetails(), 1);
+      const messageBar =
+        responseContentError &&
+        (errorDetails ? (
+          <TooltipHost content={errorDetails}>
+            <MessageBar className={styles.errorMessage} type={MessageType.error} message={responseContentError} />
+          </TooltipHost>
+        ) : (
+          <MessageBar className={styles.errorMessage} type={MessageType.error} message={responseContentError} />
+        ));
+      return props.promptAtBottom ? (
+        <>
+          {getPanelContentPane()}
+          <div className={styles.inputAreaWrap}>{getPromptContainer()}</div>
+          {messageBar}
+        </>
+      ) : (
+        <>
+          {getPromptContainer()}
+          {messageBar}
+          {getPanelContentPane()}
+        </>
+      );
+    };
 
     return (
       chatHistory && (
@@ -347,8 +543,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               .trim()}
           >
             <div className={styles.topbar}>
-              {!firstLoad && elements.getChatName(chatName, isCustomPanelOpen)}
-              {!props.promptAtBottom && panelLanguageModels}
+              {!firstLoad && getChatName()}
+              {!props.promptAtBottom && getLanguageModels()}
               {canOpenCustomPanel(props) && (
                 <span
                   className={[
@@ -365,7 +561,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                 </span>
               )}
             </div>
-            {contentArea}
+            {getContentArea()}
           </div>
         </div>
       )
@@ -602,7 +798,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     // Performance improvement to eliminate delays related to rendering of large chats with many code bocks.
     const formattedRows = props.highlight
       ? rows.map((r, index) => {
-          return elements.getHighlightedContent(r.content, index, isStreamProgress, selectedCodeStyle, formattedContent);
+          return getHighlightedContent(r.content, index);
         })
       : undefined;
     if (!formattedContent?.length || formattedContent.length < formattedRows.length) {
@@ -727,6 +923,18 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
         </div>
       );
     });
+  }
+
+  function getHighlightedContent(content: string, index: number): JSX.Element {
+    if (formattedContent?.length > index) {
+      if (isStreamProgress && formattedContent.length === index + 1) {
+        return formatCode(content, selectedCodeStyle);
+      } else {
+        return formattedContent[index];
+      }
+    } else {
+      return formatCode(content, selectedCodeStyle);
+    }
   }
 };
 

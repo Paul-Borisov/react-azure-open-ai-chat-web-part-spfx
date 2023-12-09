@@ -2,7 +2,7 @@ import ChatHelper from 'helpers/ChatHelper';
 import * as React from 'react';
 import LogService from 'shared/services/LogService';
 
-interface IMessageLength {
+export interface IMessageLength {
   defaultTextLength: number;
   maxContentLength: number;
   maxContentLengthExceeded: boolean;
