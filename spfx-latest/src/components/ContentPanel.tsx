@@ -89,6 +89,16 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
 
   const storageService = useStorageService(props);
 
+  const getTextArea = (source?: boolean) =>
+    (source ? isCustomPanelOpen : !isCustomPanelOpen) ? refPrompt.current : refPromptInCustomPanel.current;
+
+  const setTextArea = (newValue: string) =>
+    setTimeout(() => {
+      const targetTextArea = getTextArea();
+      targetTextArea.value = newValue;
+      resizePrompt({ target: targetTextArea });
+    }, 200);
+
   React.useMemo(() => {
     if (props.isOpen && !myChats) {
       loadChats();
@@ -109,8 +119,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     // Using additional delay to ensure refConversationContainerInCustomPanel.current has been set on the first load.
     setTimeout(scrollNavigationToTop, 200);
     setTimeout(() => {
-      const sourceTextArea = isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
-      const targetTextArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
+      const sourceTextArea = getTextArea(true);
+      const targetTextArea = getTextArea();
       if (sourceTextArea && targetTextArea && sourceTextArea.value !== targetTextArea.value) {
         targetTextArea.value = sourceTextArea.value;
         resizePrompt({ target: targetTextArea });
@@ -121,7 +131,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   React.useEffect(() => {
     if (!imageUrls?.length) return;
     setTimeout(() => {
-      const targetTextArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
+      const targetTextArea = getTextArea();
       if (
         !targetTextArea.value ||
         (targetTextArea.value === strings.TextDescribeImage && imageUrls?.length > 1) ||
@@ -135,19 +145,11 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
 
   React.useEffect(() => {
     if (!pdfFileContent) return;
-    setTimeout(() => {
-      const targetTextArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
-      targetTextArea.value = strings.TextSummarizePdf;
-      resizePrompt({ target: targetTextArea });
-    }, 200);
+    setTextArea(strings.TextSummarizePdf);
   }, [pdfFileContent]);
 
   React.useEffect(() => {
-    setTimeout(() => {
-      const targetTextArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
-      targetTextArea.value = prompt;
-      resizePrompt({ target: targetTextArea });
-    }, 200);
+    setTextArea(prompt);
   }, [prompt]);
 
   React.useEffect(() => {
@@ -623,7 +625,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     setPrompt('');
     setIsProgress(true);
 
-    const textArea = !isCustomPanelOpen ? refPrompt.current : refPromptInCustomPanel.current;
+    const textArea = getTextArea();
     let requestText: string = ChatHelper.sanitizeHtml(textArea.value);
     if (pdfFileContent) requestText += getPdfContent(requestText);
 
