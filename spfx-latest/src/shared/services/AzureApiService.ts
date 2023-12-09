@@ -17,6 +17,7 @@ import SessionStorageService from './SessionStorageService';
 // These operations with sub-URLs must be configured in APIM below APIM > Open AI > All operations.
 enum Operations {
   StandardTextModel = '/chat', // gpt-3.5-turbo (URL reads as https://customer.azure-api.net/openai/chat)
+  StandardTextModelPreview = '/chatpreview', // gpt-4-1106-preview (URL reads as https://customer.azure-api.net/openai/chatpreview)
   AdvancedTextModel = '/completion', // text-davinci-003
   BingSearch = '/bing/search',
   GoogleSearch = '/google/search',
@@ -149,6 +150,7 @@ export default class AzureApiService {
     const isOpenAiService: boolean = this.isOpenAiServiceUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isOpenAiNative: boolean = this.isOpenAiNativeUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isNative: boolean = this.isNative(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
+    const isApimPreview: boolean = /-preview/i.test(commonParameters.model) && !(isOpenAiService || isOpenAiNative || isNative);
 
     const isVision: boolean = (isNative || isOpenAiNative) && payload.images?.length > 0;
     if (isVision && commonParameters.max_tokens > GptModelTokenLimits[GptModels.Vision]) {
@@ -172,7 +174,11 @@ export default class AzureApiService {
         } else {
           targetUrl = baseUrl;
         }
-        targetUrl += isGpt ? Operations.StandardTextModel : Operations.AdvancedTextModel;
+        targetUrl += isGpt
+          ? !(isGpt4 && isApimPreview)
+            ? Operations.StandardTextModel
+            : Operations.StandardTextModelPreview
+          : Operations.AdvancedTextModel;
       }
       return targetUrl;
     };
