@@ -96,7 +96,7 @@ define([], function () {
     TextStop: 'Stopp',
     TextSubmit: 'Send',
     TextSummarizePdf: 'Oppsummer PDF-innhold',
-    TextUdeterminedError: 'Ubestemt feil',
+    TextUndeterminedError: 'Uventet feil',
     TextUnshare: 'Opphev deling',
     TextUnshareMessage: 'Vil du oppheve deling',
     TextUpdate: 'Oppdater',

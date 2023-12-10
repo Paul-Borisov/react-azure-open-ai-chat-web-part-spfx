@@ -95,7 +95,7 @@ define([], function () {
     TextStop: 'Lopeta',
     TextSubmit: 'Lähetä',
     TextSummarizePdf: 'Tee yhteenveto PDF-sisällöstä',
-    TextUndeterminedError: 'Määrittämätön virhe',
+    TextUndeterminedError: 'Odottamaton virhe',
     TextUnshare: 'Peruuta jakaminen',
     TextUnshareMessage: 'Haluatko peruuttaa jakamisen',
     TextUpdate: 'Päivitä',

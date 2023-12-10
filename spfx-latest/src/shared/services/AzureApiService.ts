@@ -253,7 +253,7 @@ export default class AzureApiService {
 
       let response: HttpClientResponse = undefined;
       try {
-        if (this.authenticate) {
+        if (this.authenticate && !isOpenAiNative) {
           response = await this.aadClient.post(endpointUri, AadHttpClient.configurations.v1, postOptions);
         } else {
           response = await PageContextService.context.httpClient.post(endpointUri, HttpClient.configurations.v1, postOptions);
@@ -272,6 +272,16 @@ export default class AzureApiService {
           if (functionCalling.length) {
             // If AI requested function calling.
             const functionCallingResults = await functionCaller.call(functionCalling, this, payload);
+            //console.log(functionCallingResults);
+            if (functionCallingResults.length > 0) {
+              if (/^<img /i.test(functionCallingResults[0])) {
+                // The response starts with a generated image
+                return functionCallingResults[0];
+              } else if (functionCallingResults[0] === undefined) {
+                // Error occured (with details saved and available)
+                return undefined;
+              }
+            }
             const newMessages = functionCaller.getExtendedMessages(json, messages, functionCalling, functionCallingResults);
             return await this.callQueryText(payload, stream, stopSignal, callback, newMessages);
           } else {

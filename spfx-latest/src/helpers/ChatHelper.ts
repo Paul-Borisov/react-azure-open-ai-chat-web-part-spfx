@@ -1,5 +1,6 @@
 import { IAzureOpenAiChatProps } from 'components/IAzureOpenAiChatProps';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
+import { Utils } from 'shared/helpers/Utils';
 import { IChatHistory } from 'shared/model/IChat';
 import { IItemConfig } from 'shared/model/IItemConfig';
 import { IItemPayload } from 'shared/model/IItemPayload';
@@ -252,5 +253,20 @@ export default class ChatHelper {
       (checkForNativeApimEndpoint &&
         (apiService.isNative(props.endpointBaseUrlForOpenAi) || apiService.isNative(props.endpointBaseUrlForOpenAi4)))
     );
+  }
+
+  public static async compressImages(imageUrls: string[]): Promise<string[]> {
+    const newImageUrls: string[] = [];
+    if (imageUrls?.length > 0) {
+      for (let i = 0; i < imageUrls.length; i++) {
+        const url = imageUrls[i];
+        if (url.length > 300 * 1024) {
+          newImageUrls.push(await Utils.compressImageToDataURL(url));
+        } else {
+          newImageUrls.push(url);
+        }
+      }
+    }
+    return Promise.resolve(newImageUrls);
   }
 }

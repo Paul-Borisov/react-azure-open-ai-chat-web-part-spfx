@@ -3,6 +3,17 @@ import SessionStorageService from 'shared/services/SessionStorageService';
 
 // Maps Azure Open AI service response to results
 export default class AzureServiceResponseMapper {
+  public static mapResponseQueryImage(data: any): string[] {
+    const results = data?.result?.data;
+    if (results?.length === 1) {
+      return [results[0].url];
+    } else if (results?.length > 1) {
+      return results.map((r) => r.url);
+    } else {
+      return undefined;
+    }
+  }
+
   public static mapResponseQueryText(data: any): string {
     const texts: string = data?.choices?.map(
       (choice: any) => (choice.text || choice.message?.content || choice.delta?.content) as string

@@ -31,19 +31,31 @@ export default class ImageService {
     const apiService = this.apiService;
     const config = apiService.getConfig();
     const aadClient = apiService.getAadClient();
-    const isApim = apiService.isApiManagementUrl(config.endpointBaseUrl);
+    const isApim = apiService.isApiManagementUrl(config.endpointBaseUrl); // Includes /openainative endpoint
+    const isOpenAiService = apiService.isOpenAiServiceUrl(config.endpointBaseUrl);
+    const isOpenAiNative = apiService.isOpenAiNativeUrl(config.endpointBaseUrl);
 
-    const endpointUri = isApim
-      ? config.endpointBaseUrl + Operations.ImageGeneration + (apiVersion ? apiVersion : '')
-      : 'https://api.openai.com/v1/images/generations';
+    let endpointUri;
+    if (isApim) {
+      endpointUri = config.endpointBaseUrl + Operations.ImageGeneration + (apiVersion ? apiVersion : '');
+    } else if (isOpenAiService) {
+      endpointUri = `${
+        new URL(config.endpointBaseUrl).origin
+      }/openai/deployments/dalle3/images/generations?api-version=2023-12-01-preview`;
+    } else if (isOpenAiNative) {
+      endpointUri = `${new URL(config.endpointBaseUrl).origin}/v1/images/generations`;
+    } else {
+      LogService.error('Unsupported service type');
+      Promise.resolve(undefined);
+      return;
+    }
+
     const requestHeaders: Headers = new Headers();
     requestHeaders.append('content-type', 'application/json');
-    if (!isApim && config.apiKey) {
-      if (apiService.isOpenAiServiceUrl(endpointUri)) {
-        requestHeaders.append('Api-Key', config.apiKey);
-      } else if (apiService.isOpenAiNativeUrl(endpointUri)) {
-        requestHeaders.append('Authorization', `Bearer ${config.apiKey}`);
-      }
+    if (isOpenAiService && config.apiKey) {
+      requestHeaders.append('Api-Key', config.apiKey);
+    } else if (isOpenAiNative && config.apiKey) {
+      requestHeaders.append('Authorization', `Bearer ${config.apiKey}`);
     }
 
     // https://platform.openai.com/docs/guides/images/usage?context=node
@@ -62,6 +74,7 @@ export default class ImageService {
       response_format: 'b64_json', // 'url'
       size: size ?? '1024x1024',
     };
+    //if (quality && !isOpenAiNative) requestParameters['quality'] = quality;
     if (quality) requestParameters['quality'] = quality;
 
     const postOptions: IHttpClientOptions = {
@@ -69,7 +82,7 @@ export default class ImageService {
       body: JSON.stringify(requestParameters),
     };
 
-    const handleError = async (response) => {
+    const handleError = async (response: HttpClientResponse) => {
       const error = await response.text();
       LogService.error(error);
       AzureServiceResponseMapper.saveErrorDetails(error);
@@ -78,7 +91,7 @@ export default class ImageService {
 
     let response: HttpClientResponse = undefined;
     try {
-      if (aadClient) {
+      if (aadClient && isApim) {
         response = await aadClient.post(endpointUri, AadHttpClient.configurations.v1, postOptions);
       } else {
         response = await PageContextService.context.httpClient.post(endpointUri, HttpClient.configurations.v1, postOptions);
@@ -91,6 +104,9 @@ export default class ImageService {
     if (response.ok) {
       const json = await response.json();
 
+      if (response.status === 202) {
+        return Promise.resolve(await this.olderHandlingLogic(requestHeaders, response, json));
+      }
       const generatedImages = json.data;
       const output: string[] = [];
       for (let i = 0; i < generatedImages.length; i++) {
@@ -125,5 +141,106 @@ export default class ImageService {
     } else {
       return handleError(response);
     }
+  }
+
+  // Backup of the previous image generation (POST) and image retrieval (202 > GET) logic for Dall-e-2 endpoints of APIM / Azure Open AI.
+  // Version 1:
+  //   POST https://customer.openai.azure.com/dalle/text-to-image?api-version=2022-08-03-preview
+  //   GET  https://customer.openai.azure.com/dalle/text-to-image/operations/{operationid}?api-version=2022-08-03-preview
+  // Version 2:
+  //   POST https://customer.openai.azure.com/openai/images/generations:submit?api-version=2023-06-01-preview
+  //   GET  https://customer.openai.azure.com/openai/operations/images/{operationid}?api-version=2023-06-01-preview
+  private async olderHandlingLogic(requestHeaders: Headers, response: HttpClientResponse, json: any): Promise<string> {
+    const apiService = this.apiService;
+    const config = apiService.getConfig();
+    const aadClient = apiService.getAadClient();
+    const isApim = apiService.isApiManagementUrl(config.endpointBaseUrl);
+    const isOpenAiService = apiService.isOpenAiServiceUrl(config.endpointBaseUrl);
+
+    const handleError = async (response: HttpClientResponse) => {
+      const error = await response.text();
+      LogService.error(error);
+      AzureServiceResponseMapper.saveErrorDetails(error);
+    };
+
+    const retryAfter: any = response.headers.get('retry-after') || response.headers.get('Retry-After') || 3;
+    const operationLocationUri: string = response.headers.get('operation-location') || response.headers.get('Operation-Location');
+    const operationId = json.id;
+
+    let endpointUriGetImage;
+    if (isApim) {
+      endpointUriGetImage = config.endpointBaseUrl + '/image3'; // Ininitlly the GET endpoint /image was configured
+    } else if (isOpenAiService) {
+      endpointUriGetImage = operationLocationUri
+        ? operationLocationUri
+        : `${config.endpointBaseUrl}/openai/operations/images/${operationId}?api-version=2023-06-01-preview`;
+    } else {
+      LogService.error('Unsupported service type');
+      Promise.resolve(undefined);
+      return;
+    }
+
+    const imagePromise: Promise<string> = new Promise((resolve, reject) => {
+      const id: any = setInterval(async () => {
+        let responseGetImage: HttpClientResponse = undefined;
+        try {
+          if (aadClient && isApim) {
+            responseGetImage = await aadClient.get(`${endpointUriGetImage}/${operationId}`, AadHttpClient.configurations.v1);
+          } else {
+            // isOpenAiService
+            responseGetImage = await PageContextService.context.httpClient.get(
+              `${endpointUriGetImage}/${operationId}`,
+              HttpClient.configurations.v1,
+              {
+                headers: requestHeaders,
+              }
+            );
+          }
+        } catch (e) {
+          clearInterval(id);
+          LogService.error(e);
+          resolve(undefined);
+          return;
+        }
+
+        if (responseGetImage.ok) {
+          const json = await responseGetImage.json();
+          const status: string = json.status?.toLowerCase();
+          if (['notstarted', 'running'].some((s) => s === status)) {
+            //console.log('Running');
+          } else if (status === 'succeeded') {
+            const generatedImages = AzureServiceResponseMapper.mapResponseQueryImage(json);
+            if (generatedImages?.length > 0) {
+              const output: string[] = [];
+              for (let i = 0; i < generatedImages.length; i++) {
+                const savedImageUrl = await new SharepointService().saveImage(generatedImages[i], this.storageUrl);
+                if (savedImageUrl) {
+                  const img = document.createElement('img');
+                  img.id = operationId;
+                  img.src = savedImageUrl;
+                  //console.log(img.src);
+                  output.push(img.outerHTML);
+                }
+              }
+              resolve(output.length > 0 ? output.join('\n\n') : undefined);
+              //resolve(img.outerHTML);
+            } else {
+              resolve(undefined);
+            }
+            clearInterval(id);
+          } else {
+            clearInterval(id);
+            handleError(responseGetImage);
+            resolve(undefined);
+          }
+          //return resultJson2;
+        } else {
+          clearInterval(id);
+          handleError(responseGetImage);
+          resolve(undefined);
+        }
+      }, retryAfter * 1000);
+    });
+    return imagePromise;
   }
 }

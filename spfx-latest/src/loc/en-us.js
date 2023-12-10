@@ -95,7 +95,7 @@ define([], function () {
     TextStop: 'Stop',
     TextSubmit: 'Submit',
     TextSummarizePdf: 'Summarise PDF content',
-    TextUndeterminedError: 'Undetermined error',
+    TextUndeterminedError: 'Unexpected error',
     TextUnshare: 'Unshare',
     TextUnshareMessage: 'Do you want to unshare',
     TextUpdate: 'Update',

@@ -8,6 +8,7 @@ import * as React from 'react';
 import { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
+import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMapper';
 import { IChatHistory, IChatMessage } from 'shared/model/IChat';
 import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
@@ -425,7 +426,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     return returnValue;
   }
 
-  function submitPayload() {
+  async function submitPayload() {
     setPrompt('');
     setIsProgress(true);
 
@@ -462,10 +463,13 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     resizePrompt({ target: textArea });
     scrollContentToBottom();
 
-    if (imageUrls?.length) {
-      payload.images = [...imageUrls];
+    const newImageUrls = await ChatHelper.compressImages(imageUrls); // await cannot be nested below
+    if (newImageUrls?.length) {
+      payload.images = [...newImageUrls];
       payload.images.forEach((url) => {
-        userRole.content += `\n\n<img src='${url}'/>`;
+        const img = document.createElement('img');
+        img.src = url;
+        userRole.content += `\n\n${img.outerHTML}`;
       });
       clearImages();
     } else if (pdfFileContent) {
@@ -564,37 +568,46 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   }
 
   function saveChatHistory(newChatHistory: IChatHistory[], modified?: string) {
+    const handleError = (e: any) => {
+      AzureServiceResponseMapper.saveErrorDetails(e.message);
+      setResponseContentError(strings.TextUndeterminedError);
+    };
+
     if (!chatHistoryId) {
       // New chat
       const requestText = newChatHistory[0].content;
       const newChatName: string = HtmlHelper.stripHtml(requestText.length > 255 ? requestText.substring(0, 255) : requestText);
-      storageService.createChat(newChatName, newChatHistory, (newChatHistoryId) => {
-        setChatHistoryId(newChatHistoryId);
-        setChatName(newChatName);
-        storageService.loadChatHistory(setMyChats);
-      });
+      storageService
+        .createChat(newChatName, newChatHistory, (newChatHistoryId) => {
+          setChatHistoryId(newChatHistoryId);
+          setChatName(newChatName);
+          storageService.loadChatHistory(setMyChats);
+        })
+        .catch((e) => handleError(e));
     } else {
-      storageService.updateChatHistory(
-        chatHistoryId,
-        newChatHistory,
-        () => {
-          const newMyChats = [...myChats];
-          const chat = newMyChats.find((r) => r.id === chatHistoryId);
-          if (chat && chat.message) {
-            // Partial UI update without requerying DB
-            chat.message = JSON.stringify(newChatHistory);
-            chat.modified = modified ?? ChatHelper.toLocalISOString(); //new Date().toISOString();
-            setMyChats(newMyChats);
-            //setReloadNavigation(true);
-            ChatHelper.scrollToTop(
-              !isCustomPanelOpen ? refConversationContainer?.current : refConversationContainerInCustomPanel?.current
-            );
-          } else {
-            storageService.loadChatHistory(setMyChats);
-          }
-        },
-        modified
-      );
+      storageService
+        .updateChatHistory(
+          chatHistoryId,
+          newChatHistory,
+          () => {
+            const newMyChats = [...myChats];
+            const chat = newMyChats.find((r) => r.id === chatHistoryId);
+            if (chat && chat.message) {
+              // Partial UI update without requerying DB
+              chat.message = JSON.stringify(newChatHistory);
+              chat.modified = modified ?? ChatHelper.toLocalISOString(); //new Date().toISOString();
+              setMyChats(newMyChats);
+              //setReloadNavigation(true);
+              ChatHelper.scrollToTop(
+                !isCustomPanelOpen ? refConversationContainer?.current : refConversationContainerInCustomPanel?.current
+              );
+            } else {
+              storageService.loadChatHistory(setMyChats);
+            }
+          },
+          modified
+        )
+        .catch((e) => handleError(e));
     }
   }
 
