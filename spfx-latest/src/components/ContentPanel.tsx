@@ -297,6 +297,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       isSubmitDisabled,
       chatHistoryParams,
       requestCharsCount,
+      clearChatMessages,
       resizePrompt,
       setPrompt,
       submitPayload,

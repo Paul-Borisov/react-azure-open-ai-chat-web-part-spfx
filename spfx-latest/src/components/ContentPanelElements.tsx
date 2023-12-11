@@ -231,6 +231,7 @@ export default class ContentPanelElements {
     isSubmitDisabled: boolean,
     chatHistoryParams: IMessageLength,
     requestCharsCount: number,
+    clearChatMessages: () => void,
     resizePrompt: (e: any) => void,
     setPrompt: (text: string) => void,
     submitPayload: () => void,
@@ -252,7 +253,16 @@ export default class ContentPanelElements {
     return (
       <>
         <div className={[styles.promptContainer, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
-          {props.examples ? <Prompts settings={props} setPrompt={(text: string) => setPrompt(text)} /> : null}
+          {props.examples ? (
+            <Prompts
+              settings={props}
+              setPrompt={(text: string) => {
+                clearChatMessages();
+                //setPrompt(text);
+                setTimeout(() => setPrompt(text), 0); // This trick provides reset of the same value stored into a state variable
+              }}
+            />
+          ) : null}
           <textarea
             ref={refPromptArea}
             placeholder={strings.TextSendMessage}

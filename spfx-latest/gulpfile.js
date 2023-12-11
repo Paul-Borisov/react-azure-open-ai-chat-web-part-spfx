@@ -34,7 +34,7 @@ const { addFastServe } = require('spfx-fast-serve-helpers');
 addFastServe(build);
 /* end of fast-serve */
 
-//const gulp = require('gulp');
-//gulp.task('copy-package', () => gulp.src('sharepoint/solution/*.sppkg').pipe(gulp.dest('../package')));
+const gulp = require('gulp');
+gulp.task('copy-package', () => gulp.src('sharepoint/solution/*.sppkg').pipe(gulp.dest('../package')));
 
 build.initialize(require('gulp'));
