@@ -265,7 +265,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 - Optionally, you can deploy the API Management service and publish (Azure) OpenAI endpoints there.
   - You should have an **api-key** for Azure OpenAI instance, with configured endpoints for GPT 3.5 and, optionally, GPT 4 text language models.
     - Alternatively, you should have an **api-key** for Native OpenAI.
-  - For detailed instructions on configuring Azure OpenAI and APIM endpoints, please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 11-22).
+  - For detailed instructions on configuring Azure OpenAI and APIM endpoints, please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 15-33).
 
 ## Configurations
 
