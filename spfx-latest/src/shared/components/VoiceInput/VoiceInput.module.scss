@@ -1,0 +1,19 @@
+.microphone {
+  font-size: 150%;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.languages {
+  z-index: 0;
+  width: 0px;
+  :global .ms-Dropdown-title {
+    border: 0px;
+    height: 10px;
+  }
+  :global .ms-Dropdown:focus::after {
+    border: 0px;
+  }
+  :global .ms-Dropdown-caretDownWrapper {
+    display: none;
+  }
+}

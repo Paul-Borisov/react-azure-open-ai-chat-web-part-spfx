@@ -1,8 +1,12 @@
+import { IAzureOpenAiChatProps } from 'components/IAzureOpenAiChatProps';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
+import { Utils } from 'shared/helpers/Utils';
 import { IChatHistory } from 'shared/model/IChat';
 import { IItemConfig } from 'shared/model/IItemConfig';
 import { IItemPayload } from 'shared/model/IItemPayload';
 import { FunctionCallingOptions } from 'shared/model/enums/FunctionCallingOptions';
+import { FunctionServices } from 'shared/model/enums/FunctionServices';
+import AzureApiService from 'shared/services/AzureApiService';
 
 const defaultResponseTokens = 2048; // Using 800 may produce incomplete output.
 
@@ -64,7 +68,7 @@ export default class ChatHelper {
       //https://platform.openai.com/playground?mode=chat&model=gpt-4-1106-preview
       returnValue = defaultResponseTokens * 2;
     } else if (/32k/i.test(model)) {
-      returnValue = defaultResponseTokens * 3;
+      returnValue = defaultResponseTokens * 2; // * 3 and * 4 will also work, * 2 looks safer to avoid errors
     } else if (/16k|-1106/i.test(model)) {
       returnValue = defaultResponseTokens;
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
@@ -108,6 +112,28 @@ export default class ChatHelper {
       }
     }
     return payload;
+  }
+
+  public static addFunctionServices(payload: IItemPayload, props: IAzureOpenAiChatProps) {
+    if (!payload || !props) return;
+
+    if (props.functions && props.bing) {
+      payload.services = payload.services || [];
+      payload.services.push({ name: FunctionServices.bing, key: props.apiKeyBing, locale: props.locale });
+    }
+    if (props.functions && props.google) {
+      payload.services = payload.services || [];
+      payload.services.push({ name: FunctionServices.google, key: props.apiKeyGoogle, locale: props.locale });
+    }
+    if (props.functions && props.images) {
+      payload.services = payload.services || [];
+      payload.services.push({
+        name: FunctionServices.image,
+        key: undefined,
+        locale: props.locale,
+        storageUrl: props.spImageLibraryUrl,
+      });
+    }
   }
 
   public static formatDate(date: string | Date, locale: string): string {
@@ -193,5 +219,54 @@ export default class ChatHelper {
     link.setAttribute('download', fileName);
     document.body.appendChild(link);
     link.click();
+    try {
+      document.body.removeChild(link);
+    } catch (e) {}
+  }
+
+  public static downloadImage(imageUrl: string, fileName: string = 'download.png') {
+    // https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+    fetch(imageUrl).then((res) =>
+      res.blob().then((url) => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(url);
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        try {
+          document.body.removeChild(link);
+        } catch (e) {}
+      })
+    );
+  }
+
+  public static hasDirectEndpoints(
+    apiService: AzureApiService,
+    props: IAzureOpenAiChatProps,
+    checkForNativeApimEndpoint?: boolean
+  ): boolean {
+    return (
+      apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi) ||
+      apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi4) ||
+      apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi) ||
+      apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi4) ||
+      (checkForNativeApimEndpoint &&
+        (apiService.isNative(props.endpointBaseUrlForOpenAi) || apiService.isNative(props.endpointBaseUrlForOpenAi4)))
+    );
+  }
+
+  public static async compressImages(imageUrls: string[]): Promise<string[]> {
+    const newImageUrls: string[] = [];
+    if (imageUrls?.length > 0) {
+      for (let i = 0; i < imageUrls.length; i++) {
+        const url = imageUrls[i];
+        if (url.length > 300 * 1024) {
+          newImageUrls.push(await Utils.compressImageToDataURL(url));
+        } else {
+          newImageUrls.push(url);
+        }
+      }
+    }
+    return Promise.resolve(newImageUrls);
   }
 }

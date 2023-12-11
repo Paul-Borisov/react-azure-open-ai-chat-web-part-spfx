@@ -1,7 +1,6 @@
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import * as React from 'react';
 import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
-import SearchResultMapper from 'shared/mappers/SearchResultMapper';
 import { IItemConfig } from 'shared/model/IItemConfig';
 import Chat from './Chat';
 import { IAzureOpenAiChatProps } from './IAzureOpenAiChatProps';

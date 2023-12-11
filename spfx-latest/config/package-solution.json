@@ -4,13 +4,13 @@
     "name": "azure-openai-chat",
     "title": "Azure OpenAI Chat Web Part",
     "id": "64e358ba-f88c-4fee-9a8a-6db06299d90a",
-    "version": "1.0.0.0",
+    "version": "1.1.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
       "name": "Paul Borisov",
-      "websiteUrl": "",
+      "websiteUrl": "https://www.linkedin.com/in/paul-borisov-b412a8171/",
       "privacyUrl": "",
       "termsOfUseUrl": "",
       "mpnId": ""

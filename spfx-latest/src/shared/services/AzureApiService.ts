@@ -5,6 +5,7 @@ import FunctionHelper from 'shared/helpers/FunctionHelper';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMapper';
 import { mapResponseData } from 'shared/mappers/ChatMessageMapper';
+import SearchResultMapper from 'shared/mappers/SearchResultMapper';
 import { IAzureApiServiceConfig } from 'shared/model/IAzureApiServiceConfig';
 import { IChatHistory, IChatMessage } from 'shared/model/IChat';
 import { IItemPayload } from 'shared/model/IItemPayload';
@@ -16,7 +17,10 @@ import SessionStorageService from './SessionStorageService';
 // These operations with sub-URLs must be configured in APIM below APIM > Open AI > All operations.
 enum Operations {
   StandardTextModel = '/chat', // gpt-3.5-turbo (URL reads as https://customer.azure-api.net/openai/chat)
+  StandardTextModelPreview = '/chatpreview', // gpt-4-1106-preview (URL reads as https://customer.azure-api.net/openai/chatpreview)
   AdvancedTextModel = '/completion', // text-davinci-003
+  BingSearch = '/bing/search',
+  GoogleSearch = '/google/search',
   ChatMessageLoadHistory = '/api/chatmessage/list',
   ChatMessageLoadHistoryShared = '/api/chatmessage/list/shared',
   ChatMessageCreate = '/api/chatmessage',
@@ -53,6 +57,14 @@ export default class AzureApiService {
         return false;
       }
     }
+  }
+
+  public getConfig(): IAzureApiServiceConfig {
+    return this.config;
+  }
+
+  public getAadClient(): AadHttpClient {
+    return this.aadClient;
   }
 
   public isConfigured(): boolean {
@@ -95,6 +107,7 @@ export default class AzureApiService {
   public async callQueryText(
     payload: IItemPayload,
     stream?: boolean,
+    stopSignal?: AbortController,
     callback?: (message: any, done?: boolean, isError?: boolean) => void,
     extendedMessages?: any[]
   ): Promise<string | undefined> {
@@ -137,6 +150,7 @@ export default class AzureApiService {
     const isOpenAiService: boolean = this.isOpenAiServiceUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isOpenAiNative: boolean = this.isOpenAiNativeUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isNative: boolean = this.isNative(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
+    const isApimPreview: boolean = /-preview/i.test(commonParameters.model) && !(isOpenAiService || isOpenAiNative || isNative);
 
     const isVision: boolean = (isNative || isOpenAiNative) && payload.images?.length > 0;
     if (isVision && commonParameters.max_tokens > GptModelTokenLimits[GptModels.Vision]) {
@@ -160,7 +174,11 @@ export default class AzureApiService {
         } else {
           targetUrl = baseUrl;
         }
-        targetUrl += isGpt ? Operations.StandardTextModel : Operations.AdvancedTextModel;
+        targetUrl += isGpt
+          ? !(isGpt4 && isApimPreview)
+            ? Operations.StandardTextModel
+            : Operations.StandardTextModelPreview
+          : Operations.AdvancedTextModel;
       }
       return targetUrl;
     };
@@ -194,7 +212,10 @@ export default class AzureApiService {
       }
     }
 
-    const functionCalling = !isVision ? FunctionHelper.ensureFunctionCalling(payload.functions, commonParameters) : undefined;
+    const functionCaller = !isVision ? new FunctionHelper() : undefined;
+    const functionCalling = functionCaller
+      ? functionCaller.init(payload.functions, payload.services, commonParameters)
+      : undefined;
 
     const body = JSON.stringify(
       isGpt
@@ -211,6 +232,7 @@ export default class AzureApiService {
     );
 
     if (!extendedMessages) SessionStorageService.clearRawResults();
+    if (!extendedMessages) AzureServiceResponseMapper.clearErrorDetails();
 
     if (!stream) {
       const requestHeaders: Headers = new Headers();
@@ -231,7 +253,7 @@ export default class AzureApiService {
 
       let response: HttpClientResponse = undefined;
       try {
-        if (this.authenticate) {
+        if (this.authenticate && !isOpenAiNative) {
           response = await this.aadClient.post(endpointUri, AadHttpClient.configurations.v1, postOptions);
         } else {
           response = await PageContextService.context.httpClient.post(endpointUri, HttpClient.configurations.v1, postOptions);
@@ -249,9 +271,19 @@ export default class AzureApiService {
           AzureServiceResponseMapper.mapToFunctionCalling(json, functionCalling, stream);
           if (functionCalling.length) {
             // If AI requested function calling.
-            const functionCallingResults = await FunctionHelper.call(functionCalling);
-            const newMessages = FunctionHelper.getExtendedMessages(json, messages, functionCalling, functionCallingResults);
-            return await this.callQueryText(payload, stream, callback, newMessages);
+            const functionCallingResults = await functionCaller.call(functionCalling, this, payload);
+            //console.log(functionCallingResults);
+            if (functionCallingResults.length > 0) {
+              if (/^<img /i.test(functionCallingResults[0])) {
+                // The response starts with a generated image
+                return functionCallingResults[0];
+              } else if (functionCallingResults[0] === undefined) {
+                // Error occured (with details saved and available)
+                return undefined;
+              }
+            }
+            const newMessages = functionCaller.getExtendedMessages(json, messages, functionCalling, functionCallingResults);
+            return await this.callQueryText(payload, stream, stopSignal, callback, newMessages);
           } else {
             return HtmlHelper.htmlDecode(AzureServiceResponseMapper.mapResponseQueryText(json));
           }
@@ -315,14 +347,27 @@ export default class AzureApiService {
           onclose: async () => {
             LogService.debug(null, 'Connection closed');
             if (functionCalling?.length) {
-              const functionCallingResults = await FunctionHelper.call(functionCalling);
-              const newMessages = FunctionHelper.getExtendedMessages(
+              const functionCallingResults = await functionCaller.call(functionCalling, this, payload);
+              //console.log(functionCallingResults);
+              if (functionCallingResults.length > 0) {
+                if (/^<img /i.test(functionCallingResults[0])) {
+                  // The response starts with a generated image
+                  callback(functionCallingResults[0]);
+                  callback('', true);
+                  return;
+                } else if (functionCallingResults[0] === undefined) {
+                  // Error occured (with details saved and available)
+                  callback('', true);
+                  return;
+                }
+              }
+              const newMessages = functionCaller.getExtendedMessages(
                 undefined,
                 messages,
                 functionCalling,
                 functionCallingResults
               );
-              this.callQueryText(payload, stream, callback, newMessages);
+              this.callQueryText(payload, stream, stopSignal, callback, newMessages);
               //if (functionCallingResults && callback) callback(functionCallingResults);
             } else if (callback) {
               callback('', true);
@@ -336,6 +381,7 @@ export default class AzureApiService {
             errorCounter++;
             if (errorCounter > maxErrors) throw 'Too many errors; disconnected.';
           },
+          signal: stopSignal.signal,
         });
       } catch (e) {
         LogService.error(e);
@@ -345,14 +391,10 @@ export default class AzureApiService {
   }
 
   public async loadChatHistory(callback: (data: IChatMessage[]) => void, shared?: boolean) {
-    const oid = window.location.search
-      .split('&')
-      .find((p) => p.startsWith('oid='))
-      ?.replace('oid=', '');
     const endpointUri: string = !shared
       ? `${this.config.endpointBaseUrlForWebApi}${Operations.ChatMessageLoadHistory}/${
           //PageContextService.context.pageContext.user.loginName
-          oid ?? PageContextService.context.pageContext.aadInfo.userId.toString() // ObjectID is more secure
+          PageContextService.context.pageContext.aadInfo.userId.toString() // ObjectID is more secure
         }`
       : `${this.config.endpointBaseUrlForWebApi}${Operations.ChatMessageLoadHistoryShared}`;
 
@@ -489,5 +531,122 @@ export default class AzureApiService {
       sharedWith: shareWith?.join(';'),
     };
     this.updateChat(id, payload, callback);
+  }
+
+  public async callBing(queryText: string, apiKey: string, model: string, market: string = 'en-US'): Promise<string> {
+    const serviceUri = 'https://api.bing.microsoft.com';
+
+    let endpointUri: string;
+    if (apiKey) {
+      endpointUri = `${serviceUri}/v7.0/search?q=${encodeURIComponent(queryText)}&mkt=${market}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl).origin}${Operations.BingSearch}?q=${encodeURIComponent(
+        queryText
+      )}&mkt=${market}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl4)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl4).origin}${Operations.BingSearch}?q=${encodeURIComponent(
+        queryText
+      )}&mkt=${market}`;
+    } else {
+      LogService.error(
+        `Preconfigured APIM URL is required to call the Bing endpoint (or an API Key for calling the endpoint at ${serviceUri})`
+      );
+      return Promise.resolve('');
+    }
+
+    let response: HttpClientResponse = undefined;
+    try {
+      let executed = false;
+      if (this.authenticate) {
+        if (!apiKey) {
+          executed = true;
+          response = await this.aadClient.get(endpointUri, AadHttpClient.configurations.v1);
+        }
+      }
+      if (!executed) {
+        const requestHeaders: Headers = new Headers();
+        if (apiKey) requestHeaders.append('Ocp-Apim-Subscription-Key', apiKey);
+
+        const options: IHttpClientOptions = {
+          headers: requestHeaders,
+        };
+        response = await PageContextService.context.httpClient.get(endpointUri, HttpClient.configurations.v1, options);
+      }
+    } catch (e) {
+      LogService.error(e);
+      return Promise.resolve('');
+    }
+
+    if (response.ok) {
+      const json = await response.json();
+      const keys = /gpt-(4|5|6)-(512k|256k|128k|64k|32k|1106|turbo)/i.test(model)
+        ? ['news', 'webPages', 'relatedSearches', 'images', 'videos']
+        : /-16k/i.test(model)
+        ? ['news', 'webPages', 'relatedSearches']
+        : ['news'];
+
+      const results = SearchResultMapper.mapSearchResultsOfBing(json, keys);
+      return Promise.resolve(JSON.stringify(results));
+    } else {
+      const error = await response.text();
+      LogService.error(error);
+      AzureServiceResponseMapper.saveErrorDetails(error);
+      return Promise.resolve('');
+    }
+  }
+
+  public async callGoogle(queryText: string, apiKey: string, model: string, market: string = 'en-US'): Promise<string> {
+    const serviceUri = 'https://www.googleapis.com';
+
+    let endpointUri: string;
+    if (apiKey) {
+      endpointUri = `${serviceUri}/customsearch/v1?${apiKey + '&'}q=${encodeURIComponent(queryText)}&lr=${market}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl).origin}${Operations.GoogleSearch}?q=${encodeURIComponent(
+        queryText
+      )}&lr=${market}`;
+    } else if (this.isApiManagementUrl(this.config.endpointBaseUrl4)) {
+      endpointUri = `${new URL(this.config.endpointBaseUrl4).origin}${Operations.GoogleSearch}?q=${encodeURIComponent(
+        queryText
+      )}&lr=${market}`;
+    } else {
+      LogService.error(
+        `Preconfigured APIM URL is required to call the Google endpoint (or an API Key in the format key=...&cx=... for calling the endpoint at ${serviceUri})`
+      );
+      return Promise.resolve('');
+    }
+
+    let response: HttpClientResponse = undefined;
+    try {
+      let executed = false;
+      if (this.authenticate) {
+        if (!apiKey) {
+          executed = true;
+          response = await this.aadClient.get(endpointUri, AadHttpClient.configurations.v1);
+        }
+      }
+      if (!executed) {
+        response = await PageContextService.context.httpClient.get(endpointUri, HttpClient.configurations.v1);
+      }
+    } catch (e) {
+      LogService.error(e);
+      return Promise.resolve('');
+    }
+
+    if (response.ok) {
+      const json = await response.json();
+      const keys = /gpt-(4|5|6)-(512k|256k|128k|64k|32k|1106|turbo)/i.test(model)
+        ? ['title', 'link', 'displayLink', 'snippet', 'pagemap.metatags', 'pagemap.cse_image']
+        : /-16k/i.test(model)
+        ? ['title', 'link', 'displayLink']
+        : ['title', 'link'];
+      const results = SearchResultMapper.mapCustomSearchResultsOfGoogle(json, keys);
+      return Promise.resolve(JSON.stringify(results));
+    } else {
+      const error = await response.text();
+      LogService.error(error);
+      AzureServiceResponseMapper.saveErrorDetails(error);
+      return Promise.resolve('');
+    }
   }
 }

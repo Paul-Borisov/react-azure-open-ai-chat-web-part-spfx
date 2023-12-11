@@ -1,10 +1,18 @@
 declare interface IAzureOpenAiChatWebPartStrings {
   BasicGroupName: string;
   FieldLabelApiKey: string;
+  FieldLabelApiKeyPlaceholder: string;
   FieldLabelAppId: string;
   FieldLabelEndpointBaseUrlForChatHistory: string;
   FieldLabelEndpointBaseUrlForOpenAi: string;
   FieldLabelEndpointBaseUrlForOpenAi4: string;
+  FieldLabelBing: string;
+  FieldLabelBingApiKey: string;
+  FieldLabelBingApiKeyPlaceholder: string;
+  FieldLabelExamples: string;
+  FieldLabelGoogle: string;
+  FieldLabelGoogleApiKey: string;
+  FieldLabelImages: string;
   FieldLabelLanguageModels: string;
   FieldLabelLocale: string;
   FieldLabelSharing: string;
@@ -14,6 +22,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelHighlight: string;
   FieldLabelHighlightStyles: string;
   FieldLabelDefaultStyle: string;
+  FieldLabelSharePointImageLibraryUrl: string;
   FieldLabelSharePointListUrl: string;
   FieldLabelStorageType: string;
   FieldLabelStorageTypeDatabase: string;
@@ -22,6 +31,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelDemoOnly: string;
   FieldLabelPromptAtBottom: string;
   FieldLabelUnlimitedHistoryLength: string;
+  FieldLabelVoiceInput: string;
 
   PlaceholderDescription: string;
   PlaceholderText: string;
@@ -45,14 +55,17 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextDescribeImages: string;
   TextEdit: string;
   TextError: string;
+  TextExamples: string;
   TextExists: string;
   TextExpand: string;
   TextFormat: string;
   TextFullScreen: string;
   TextGpt35: string;
   TextGpt4: string;
+  TextGpt4Turbo: string;
   TextHideMySharedChats: string;
   TextInvalidListUrl: string;
+  TextLanguage: string;
   TextListCreated: string;
   TextListDoesNotExist: string;
   TextListExists: string;
@@ -67,6 +80,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextPeoplePickerSuggestedContacts: string;
   TextPeoplePickerSuggestedPeople: string;
   TextPeoplePickerSuggestionsAvailable: string;
+  TextPreview: string;
   TextRecentChats: string;
   TextRefresh: string;
   TextRemove: string;
@@ -77,6 +91,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextShareMessage: string;
   TextSharedChats: string;
   TextShareWith: string;
+  TextStop: string;
   TextSubmit: string;
   TextSummarizePdf: string;
   TextUndeterminedError: string;
@@ -88,6 +103,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextUploadFiles: string;
   TextUploadImage: string;
   TextUploadPdf: string;
+  TextVoiceInput: string;
 }
 
 declare module 'AzureOpenAiChatWebPartStrings' {

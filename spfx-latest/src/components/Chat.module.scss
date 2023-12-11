@@ -138,6 +138,7 @@ $selection: $ms-color-gray150;
 }
 .panelContentPane {
   flex: auto;
+  height: 100vh;
   max-height: 410px;
   overflow-y: auto;
   @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
@@ -215,6 +216,7 @@ $selection: $ms-color-gray150;
 .modelSelector {
   border-radius: 5px;
   width: 100px;
+  min-width: max-content;
   height: 30px;
   font-weight: 600;
   margin-right: 5px;
@@ -262,6 +264,7 @@ $selection: $ms-color-gray150;
     height: 34px;
     padding: 15px 15px 0 15px;
     @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
+    z-index: 10;
   }
   .linkButton {
     flex: 0 0 35px;
@@ -492,7 +495,8 @@ $selection: $ms-color-gray150;
 }
 .widecontent {
   // Full Width Column
-  margin: 0 10%;
+  /*margin: 0 10%;*/
+  margin: 0 25px 0 0;
 }
 .shareWithHeader {
   padding: 5px;
@@ -602,4 +606,11 @@ $selection: $ms-color-gray150;
 
 .inputAreaWrap {
   padding-left: 0px;
+}
+
+.stopSignal {
+  cursor: pointer;
+  padding-right: 20px;
+  font-size: 170%;
+  vertical-align: sub;
 }

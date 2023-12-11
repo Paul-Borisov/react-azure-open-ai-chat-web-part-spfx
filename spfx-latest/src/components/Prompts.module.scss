@@ -1,0 +1,14 @@
+.prompts {
+  z-index: 0;
+  position: absolute;
+  margin-left: -10px;
+  margin-top: 10px;
+  width: 10px;
+  :global .ms-Dropdown-title {
+    border: 0px;
+    height: 10px;
+  }
+  :global .ms-Dropdown:focus::after {
+    border: 0px;
+  }
+}
