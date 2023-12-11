@@ -35,7 +35,11 @@ The integrations available in this release include:
   - The configuration is supported in two alternatives: 1. Using the additional APIM-endpoints https://**tenant**.azure-api.net/**bing** and/or https://**tenant**.azure-api.net/**google** 2. Using the direct Bing and Google endpoints with own **api-key** values stored in the web part settings (less secure).
 
 - Beta 1.1: Image generation from the prompt text. This option supports Dalle 3. Added on Dec 5, 2023.
-  - The configuration is supported in two alternatives: 1. Using the additional APIM-endpoint https://**tenant**.azure-api.net/openai/**dalle** 2. Using the Native OpenAI endpoint https://api.openai.com/v1/images/generations with **api-key** stored in the web part settings (less secure).
+  - The configuration is supported in three alternatives:
+    - 1. Using the additional APIM-endpoint https://**tenant**.azure-api.net/openai/**dalle**
+    - 2. Using the Azure OpenAI endpoint https://tenant.openai.azure.com/openai/deployments/dalle3/images/generations?api-version=2023-12-01-preview with **api-key** stored in the web part settings (less secure).
+      - The model Dalle3 is available for the deployment in Swedish Central zone (as of December 2023).
+    - 3. Using the Native OpenAI endpoint https://api.openai.com/v1/images/generations with **api-key** stored in the web part settings (less secure).
 
 - Beta 1.1: The option to use voice input to prompt text is available. Added on Dec 8, 2023.
   
