@@ -57,7 +57,7 @@ I am immensely grateful to Advania Finland for providing me with the opportunity
 
 # Table of Content
 
-- [Key features](../../releases/tag/v1)
+- [Key features](../../releases/tag/Version1.1)
 
 - [Presentation](docs/azure-openai-chat-web-part-presentation.pdf)
 
