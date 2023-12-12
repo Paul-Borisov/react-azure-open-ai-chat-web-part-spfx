@@ -51,7 +51,7 @@ export default class SearchResultMapper {
   }
 
   public static mapToCsv(data: any[], delimiter: string = this.delimiter): string {
-    if (!data.length) return '';
+    if (!data?.length) return '';
 
     const re = new RegExp(delimiter, 'g');
     const replaceDelimiter = (value: string): string => {

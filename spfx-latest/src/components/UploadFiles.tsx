@@ -1,4 +1,4 @@
-import { PrimaryButton, TooltipHost } from '@fluentui/react';
+import { PrimaryButton } from '@fluentui/react';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 import * as React from 'react';
@@ -16,7 +16,6 @@ enum UploadFileType {
 }
 
 interface IUploadFiles {
-  //fileUrls: string[];
   setImageUrls?: (newImageUrls: string[]) => void;
   setPdfFileContent?: (newPdfFileContent: { [key: string]: string }) => void;
   setIsOpen: (state: boolean) => void;
@@ -31,13 +30,9 @@ const UploadFiles: FunctionComponent<IUploadFiles> = (props) => {
     refObject: React.MutableRefObject<HTMLInputElement>,
     fileType: string,
     multiple: boolean
-    //fileUrls: string[],
   ): JSX.Element => {
     const handleImage = async (e) => {
       let newFileUrls = [];
-      //if (fileUrls?.length) {
-      //  newFileUrls.push(...fileUrls);
-      //}
       for (let i = 0; i < e.target.files.length; i++) {
         const reader = new FileReader();
         reader.onload = async (event) => {

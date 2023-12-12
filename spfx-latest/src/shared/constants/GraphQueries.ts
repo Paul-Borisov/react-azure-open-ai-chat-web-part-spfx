@@ -5,7 +5,7 @@ export default class GraphQueries {
     version: 'v1.0',
     endpoint: '/me/people', // Permission: People.Read
     top: 2500,
-    select: 'id,displayName,jobTitle,userPrincipalName,personType',
+    select: 'id,displayName,jobTitle,userPrincipalName,personType,imAddress',
     filter: "personType/class eq 'Person'",
   };
   public static readonly users: IODataQuery = {

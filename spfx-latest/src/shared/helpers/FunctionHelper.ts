@@ -1,4 +1,3 @@
-import { AadHttpClient } from '@microsoft/sp-http';
 import GraphQueries from 'shared/constants/GraphQueries';
 import SearchResultMapper from 'shared/mappers/SearchResultMapper';
 import { IFunctionService } from 'shared/model/IFunctionService';
@@ -139,26 +138,37 @@ export default class FunctionHelper {
 
   private async companyUsers(args: { myColleagues: boolean }): Promise<string> {
     const query: IODataQuery = args.myColleagues ? GraphQueries.myWorkingWithColleagues : GraphQueries.users;
-    const orgPeople = await AadService.getData(query).then((data: any[]) => {
-      data = args.myColleagues
-        ? data.filter((a) => a.displayName && a.jobTitle)
-        : data.filter((a) => a.imAddresses?.length > 0 && a.jobTitle);
-      return data
-        .sort((a, b) => (a.displayName > b.displayName ? 1 : a.displayName < b.displayName ? -1 : 0))
-        .map((person) => {
-          const entry = {
-            name: person.displayName,
-            title: person.jobTitle,
-            mail: person.userPrincipalName,
-            //id: person.id,
-          };
-          return entry;
-        });
-    });
+    let isError: boolean = false;
+    const orgPeople = await AadService.getData(query)
+      .then((data: any[]) => {
+        data = args.myColleagues
+          ? data.filter((a) => a.displayName && a.jobTitle)
+          : data.filter((a) => a.imAddresses?.length > 0 && a.jobTitle);
+        return data
+          .sort((a, b) => (a.displayName > b.displayName ? 1 : a.displayName < b.displayName ? -1 : 0))
+          .map((person) => {
+            const entry = {
+              name: person.displayName,
+              title: person.jobTitle,
+              mail: person.userPrincipalName,
+              //id: person.id,
+            };
+            return entry;
+          });
+      })
+      .catch((error) => {
+        isError = true;
+        return error;
+      });
 
-    //return Promise.resolve(JSON.stringify(orgPeople));
-    const results = getCsvContent(orgPeople);
-    return Promise.resolve(results || 'Data not found');
+    const notFound = 'Data not found';
+    if (!isError) {
+      //return Promise.resolve(JSON.stringify(orgPeople));
+      const results = getCsvContent(orgPeople);
+      return Promise.resolve(results || notFound);
+    } else {
+      return Promise.resolve(orgPeople ? JSON.stringify(orgPeople) : notFound);
+    }
   }
 
   private async currentDateAndTime(args: {}, locale: string = 'fi-FI'): Promise<string> {

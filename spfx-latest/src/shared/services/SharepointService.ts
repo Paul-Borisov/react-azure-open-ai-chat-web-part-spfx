@@ -384,15 +384,6 @@ export default class SharepointService {
       };
       await this.postData(query, payload, 'POST', '*');
 
-      /*try {
-        const serverRelativeUrl = UrlHelper.getServerRelativeUrl(listUrl);
-        if (!/\/lists\//i.test(serverRelativeUrl)) {
-          // Custom list was created under /Lists/... but listUrl looks different in settings. Correcting the mismatch.
-          query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/RootFolder/MoveTo('${serverRelativeUrl}')`;
-          await this.postData(query, {}, 'POST', '*');
-        }
-      } catch (e) {}*/
-
       // Break role imheritance and set Contribute permissions for "Everyone except external users"
       await this.ensureListPermissionsForEveryone(webUrl, listTitle);
     } else if (!force) {
@@ -676,17 +667,8 @@ export default class SharepointService {
       }
     });
 
-    // Remove permission inheritance and grant special permissions to Everyone except external users
-    try {
-      query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/BreakRoleInheritance(CopyRoleAssignments=false,ClearSubscopes=true)`;
-      await this.postData(query, {}, 'POST', '*');
-      const everyone = `c:0-.f|rolemanager|spo-grid-all-users/${PageContextService.context.pageContext.aadInfo.tenantId.toString()}`;
-      query.endpoint = `${webUrl}/_api/web/ensureuser('${everyone}')`;
-      const json = await this.postData(query, {}, 'POST', '*').then((r) => r.json());
-      // https://sharepointcass.com/2021/04/22/sharepoint-online-rest-apis-part-vi-permissions/
-      query.endpoint = `${webUrl}/_api/web/lists/getbytitle('${listTitle}')/RoleAssignments/AddRoleAssignment(PrincipalId=${json.Id},RoleDefId=1073741827)`;
-      await this.postData(query, {}, 'POST', '*');
-    } catch (e) {}
+    // Break role imheritance and set Contribute permissions for "Everyone except external users"
+    await this.ensureListPermissionsForEveryone(webUrl, listTitle);
 
     if (callback) callback(message);
   }
