@@ -86,7 +86,7 @@ I am immensely grateful to Advania Finland for providing me with the opportunity
 - [back to the top](#table-of-content)
 
 This is the simplest and least secure setup.
-You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
+You will not be able to use the Private Chat sharing and People Search features unless you approve the corresponding [SPFx permissions](#spfx-permissions).
 
 **Prerequisites**:
 
@@ -173,7 +173,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 - [back to the top](#table-of-content)
 
 This is the simplest and least secure standalone setup.
-You will not be able to use the Private Chat sharing feature unless you approve the corresponding [SPFx permissions](#spfx-permissions).
+You will not be able to use the Private Chat sharing and People Search features unless you approve the corresponding [SPFx permissions](#spfx-permissions).
 
 **Prerequisites**:
 
@@ -297,7 +297,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 - Microsoft Graph > People.Read and Microsoft Graph > User.Read.All: permissions needed to retrieve colleagues and other users from Azure AD.
 
-  - These permissions are necessary only if you plan to use the feature of private chat sharing in the web part (limited to specific Azure AD accounts).
+  - These permissions are necessary only if you plan to use the features of private chat sharing and people search in the web part (limited to specific Azure AD accounts).
 
 6. Add a new Site Page and the web part **Azure OpenAI Chat** to it.
 
