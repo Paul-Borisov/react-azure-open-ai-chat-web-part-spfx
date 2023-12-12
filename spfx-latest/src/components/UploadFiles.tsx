@@ -1,13 +1,14 @@
 import { PrimaryButton, TooltipHost } from '@fluentui/react';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 import { pdfjs } from 'react-pdf';
 import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
 import styles from './UploadFiles.module.scss';
 
-//pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString();
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+//pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 enum UploadFileType {
   image = 'image/png,image/jpeg,image/webp,image/gif',
