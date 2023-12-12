@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2021/03/ProvisioningSchema">
+  <pnp:Preferences Generator="PnP.Framework, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0d501f89f11b748c" />
+  <pnp:Templates ID="CONTAINER-TEMPLATE-8178B60E52DA44E6A670AAD7AE6AC223">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-8178B60E52DA44E6A670AAD7AE6AC223" Version="1" BaseSiteTemplate="SITEPAGEPUBLISHING#0" Scope="RootSite">
+      <pnp:Lists>
+        <pnp:ListInstance Title="dbChats" Description="Azure OpenAI Chats" DocumentTemplate="" TemplateType="100" Url="Lists/dbChats" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="50" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/Lists/dbChats/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/dbChats/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/dbChats/NewForm.aspx" ImageUrl="{site}/_layouts/15/images/itgen.png?rev=47" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="2" WriteSecurity="2" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{980DFBE2-B5EB-4C36-9ACF-6C320B914E22}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="{site}/Lists/dbChats/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="{site}/_layouts/15/images/generic.png?rev=47">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" Ascending="FALSE" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="username" />
+                <FieldRef Name="message" />
+                <FieldRef Name="enabled" />
+                <FieldRef Name="shared" />
+                <FieldRef Name="displayname" />
+                <FieldRef Name="sharedwith" />
+                <FieldRef Name="Created" />
+                <FieldRef Name="Modified" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field DisplayName="username" Type="Text" Required="FALSE" ID="{6f97f313-031a-428c-8099-0bd1be6d6757}" SourceID="{{listid:dbChats}}" StaticName="username" Name="username" ColName="nvarchar7" RowOrdinal="0" Version="2" MaxLength="36" />
+            <Field DisplayName="message" Type="Note" Required="FALSE" ID="{cf981e2c-a203-4b68-9a27-624e9cdd685b}" SourceID="{{listid:dbChats}}" StaticName="message" Name="message" ColName="ntext2" RowOrdinal="0" Version="1" />
+            <Field DisplayName="enabled" Type="Boolean" Required="FALSE" ID="{367236cc-7687-4b79-9ad4-c030f6e74866}" SourceID="{{listid:dbChats}}" StaticName="enabled" Name="enabled" ColName="bit1" RowOrdinal="0" Version="1">
+              <Default>1</Default>
+            </Field>
+            <Field DisplayName="shared" Type="Boolean" Required="FALSE" ID="{441fdf7f-364a-443d-9d2e-7787f6eacfef}" SourceID="{{listid:dbChats}}" StaticName="shared" Name="shared" ColName="bit2" RowOrdinal="0" Version="1">
+              <Default>0</Default>
+            </Field>
+            <Field DisplayName="displayname" Type="Text" Required="FALSE" ID="{dd1ef9e7-c00d-4e7e-a88f-2687a1a8e619}" SourceID="{{listid:dbChats}}" StaticName="displayname" Name="displayname" ColName="nvarchar8" RowOrdinal="0" Version="2" MaxLength="50" />
+            <Field DisplayName="sharedwith" Type="Note" Required="FALSE" ID="{7e1a00b9-d68b-4a4f-8b9d-1e2828f6ea73}" SourceID="{{listid:dbChats}}" StaticName="sharedwith" Name="sharedwith" ColName="ntext3" RowOrdinal="0" Version="1" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="76d13cd2-1bae-45a5-8b74-545b87b65037" Name="_ColorTag" DisplayName="Color Tag" />
+          </pnp:FieldRefs>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
+              <pnp:RoleAssignment Principal="c:0-.f|rolemanager|spo-grid-all-users/00000000-0000-0000-0000-000000000000" RoleDefinition="Contribute" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:ListInstance>
+      </pnp:Lists>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>
