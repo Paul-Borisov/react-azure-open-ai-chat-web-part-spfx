@@ -27,24 +27,23 @@ const suggestionProps: IBasePickerSuggestionsProps = {
 };
 
 interface IPeopePicker {
+  header?: JSX.Element;
   selectedUserIds: string[];
   onChange: (selectedPeople: IUser[]) => void;
 }
 
 export const PeoplePicker: React.FunctionComponent<IPeopePicker> = (props) => {
+  const [isNoData, setIsNoData] = React.useState<boolean>(false);
   const [peopleList, setPeopleList] = React.useState<IPersonaProps[]>([]);
   const [defaultSelectedItems, setDefaultSelectedItems] = React.useState<IPersonaProps[]>(undefined);
 
   const picker = React.useRef(null);
 
-  React.useMemo(() => {
-    //const query: IODataQuery = GraphQueries.myWorkingWithColleagues;
-    const query: IODataQuery = GraphQueries.users;
-    AadService.getData(query).then((data: any[]) => {
-      //data = data.filter((a) => a.imAddress && a.jobTitle);
-      data = data.filter((a) => a.imAddresses?.length > 0 && a.jobTitle);
+  React.useMemo(async () => {
+    const getOrgPeople = (data: any[]): IPersonaProps[] => {
       LogService.debug(null, data);
-      const orgPeople = data
+      const filtered = data.filter((a) => a.jobTitle);
+      return filtered
         .sort((a, b) => (a.displayName > b.displayName ? 1 : a.displayName < b.displayName ? -1 : 0))
         .map((person) => {
           const entry: IPersonaProps = {
@@ -55,10 +54,31 @@ export const PeoplePicker: React.FunctionComponent<IPeopePicker> = (props) => {
           };
           return entry;
         });
+    };
 
+    let query: IODataQuery = GraphQueries.users;
+    let data: any[];
+    data = await AadService.getData(query).catch((error) => LogService.error(error));
+
+    let orgPeople: IPersonaProps[];
+    if (data) {
+      orgPeople = getOrgPeople(data);
+    } else {
+      query = GraphQueries.myWorkingWithColleagues;
+      data = await AadService.getData(query).catch((error) => LogService.error(error));
+      if (data) orgPeople = getOrgPeople(data);
+    }
+
+    if (orgPeople) {
+      if (orgPeople.length === 0) {
+        setIsNoData(true);
+        return;
+      }
       setDefaultSelectedItems(orgPeople.filter((p) => props.selectedUserIds?.some((oid) => oid === p.tertiaryText)));
       setPeopleList(orgPeople);
-    });
+    } else {
+      setIsNoData(true);
+    }
   }, []);
 
   const filterPersonasByText = (filterText: string): IPersonaProps[] => {
@@ -111,8 +131,9 @@ export const PeoplePicker: React.FunctionComponent<IPeopePicker> = (props) => {
     return <PeoplePickerItem {...newProps} />;
   };
 
-  return peopleList?.length > 0 ? (
+  return isNoData ? null : peopleList?.length > 0 ? (
     <div>
+      {props.header}
       <NormalPeoplePicker
         // eslint-disable-next-line react/jsx-no-bind
         onResolveSuggestions={onFilterChanged}
@@ -138,7 +159,9 @@ export const PeoplePicker: React.FunctionComponent<IPeopePicker> = (props) => {
       />
     </div>
   ) : (
-    <CustomShimmer isCompact={true} />
+    <>
+      <CustomShimmer isCompact={true} />
+    </>
   );
 };
 

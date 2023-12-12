@@ -121,8 +121,8 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
           undefined,
           !props.context.pageContext.user.isExternalGuestUser
             ? [
-                <div className={styles.shareWithHeader}>{strings.TextShareWith}</div>,
                 <PeoplePicker
+                  header={<div className={styles.shareWithHeader}>{strings.TextShareWith}</div>}
                   selectedUserIds={myChats?.find((r) => r.id === chatHistoryId)?.sharedWith?.split(';') || []}
                   onChange={setShareWith}
                 />,
