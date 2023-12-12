@@ -158,6 +158,7 @@ You will not be able to use the Private Chat sharing and People Search features 
 
        - By default, the chat sharing option is disabled.
        - If you enable it using the corresponding checkbox below the field, click on the Update button to adjust the list's permissions.
+       - The used list template can be found in the [package](package/dbChats.xml).
 
        - Note, if you use Local storage you will be able to review sharing features. However, real sharing between users will not work with Local storage because chat history is stored locally. The maximum capacity of Local storage is limited to 10 Mb.
 
@@ -239,6 +240,7 @@ You will not be able to use the Private Chat sharing and People Search features 
 
        - By default, the chat sharing option is disabled.
        - If you enable it using the corresponding checkbox below the field, click on the Update button to adjust the list's permissions.
+       - The used list template can be found in the [package](package/dbChats.xml).
 
        - Note, if you use Local storage you will be able to review sharing features. However, real sharing between users will not work with Local storage because chat history is stored locally. The maximum capacity of Local storage is limited to 10 Mb.
 
@@ -358,6 +360,7 @@ You will not be able to use the Private Chat sharing and People Search features 
      - It will create a custom list called dbChats in the current site collection.
 
        - By default, the chat sharing option is disabled.
+       - The used list template can be found in the [package](package/dbChats.xml).
 
        - If you enable it using the corresponding checkbox below the field, click on the Update button to adjust the list's permissions.
 
