@@ -183,7 +183,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 ## Configurations
 
-1. Download the latest [release package](../../releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
+1. Download the latest [release package](../../releases/download/Version1.1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
 
 2. Create a site collection in SharePoint Online and an App Catalog for it.
 
@@ -271,7 +271,7 @@ You will not be able to use the Private Chat sharing feature unless you approve 
 
 ## Configurations
 
-1. Download the latest [release package](../../releases/download/v1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
+1. Download the latest [release package](../../releases/download/Version1.1/azure-openai-chat.sppkg) or compile it from the source code in **spfx-latest**.
 
 2. Create a site collection in SharePoint Online and an App Catalog for it.
 
