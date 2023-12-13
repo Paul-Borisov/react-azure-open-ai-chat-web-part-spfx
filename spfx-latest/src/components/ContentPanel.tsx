@@ -462,12 +462,13 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     setChatHistory(newChatHistory);
     textArea.value = '';
     resizePrompt({ target: textArea });
-    scrollContentToBottom();
 
-    const newImageUrls = await ChatHelper.compressImages(imageUrls); // await cannot be nested below
-    if (newImageUrls?.length) {
-      payload.images = [...newImageUrls];
-      payload.images.forEach((url) => {
+    if (imageUrls?.length) {
+      payload.images = imageUrls.map((url) => url); // Sumbit uncompressed images
+      payload.model = GptModels.Vision;
+      // Add compressed images to Chat history to optimize storage size
+      const newImageUrls = await ChatHelper.transformImages(imageUrls, props); // await cannot be nested below
+      newImageUrls.forEach((url) => {
         const img = document.createElement('img');
         img.src = url;
         userRole.content += `\n\n${img.outerHTML}`;
@@ -476,6 +477,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     } else if (pdfFileContent) {
       clearImages();
     }
+
+    setTimeout(scrollContentToBottom, 1500);
 
     const handleResponse = (response) => {
       setIsProgress(false);

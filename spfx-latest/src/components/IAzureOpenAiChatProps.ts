@@ -34,6 +34,8 @@ export interface IAzureOpenAiChatProps {
   streaming: boolean;
   // Option to enable full screen mode
   fullScreen: boolean;
+  // Option to enable GPT-4 Vision
+  vision: boolean;
   // Option to enable (external) function calling
   functions: boolean;
   // Option to enable Bing (functions must be enabled)

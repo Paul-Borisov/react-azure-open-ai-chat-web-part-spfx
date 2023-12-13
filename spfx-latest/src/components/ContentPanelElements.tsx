@@ -83,10 +83,7 @@ export default class ContentPanelElements {
   ): JSX.Element {
     const props = this.props;
 
-    const isVisionSupported =
-      /gpt-4/i.test(model) &&
-      (props.apiService.isNative(props.endpointBaseUrlForOpenAi4) ||
-        props.apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi4));
+    const isVisionSupported = props.vision;
     const isPdfSupported = true;
     // Upload button should be visible only if Enable integrations is turned on in web part settings.
     return props.functions && (isVisionSupported || isPdfSupported) ? (

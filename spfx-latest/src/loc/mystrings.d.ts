@@ -13,6 +13,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelGoogle: string;
   FieldLabelGoogleApiKey: string;
   FieldLabelImages: string;
+  FieldLabelImagesApim: string;
   FieldLabelLanguageModels: string;
   FieldLabelLocale: string;
   FieldLabelSharing: string;
@@ -31,6 +32,8 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelDemoOnly: string;
   FieldLabelPromptAtBottom: string;
   FieldLabelUnlimitedHistoryLength: string;
+  FieldLabelVision: string;
+  FieldLabelVisionApim: string;
   FieldLabelVoiceInput: string;
 
   PlaceholderDescription: string;

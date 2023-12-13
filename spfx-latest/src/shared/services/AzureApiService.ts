@@ -18,6 +18,7 @@ import SessionStorageService from './SessionStorageService';
 enum Operations {
   StandardTextModel = '/chat', // gpt-3.5-turbo (URL reads as https://customer.azure-api.net/openai/chat)
   StandardTextModelPreview = '/chatpreview', // gpt-4-1106-preview (URL reads as https://customer.azure-api.net/openai/chatpreview)
+  StandardTextModelVision = '/vision', // gpt-4-vision-preview (URL reads as https://customer.azure-api.net/openai/vision)
   AdvancedTextModel = '/completion', // text-davinci-003
   BingSearch = '/bing/search',
   GoogleSearch = '/google/search',
@@ -152,7 +153,8 @@ export default class AzureApiService {
     const isNative: boolean = this.isNative(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isApimPreview: boolean = /-preview/i.test(commonParameters.model) && !(isOpenAiService || isOpenAiNative || isNative);
 
-    const isVision: boolean = (isNative || isOpenAiNative) && payload.images?.length > 0;
+    //const isVision: boolean = (isNative || isOpenAiNative) && payload.images?.length > 0;
+    const isVision: boolean = payload.images?.length > 0;
     if (isVision && commonParameters.max_tokens > GptModelTokenLimits[GptModels.Vision]) {
       // gpt-4-vision-preview has been limited to max 4096 response tokens
       commonParameters.max_tokens = GptModelTokenLimits[GptModels.Vision];
@@ -174,11 +176,25 @@ export default class AzureApiService {
         } else {
           targetUrl = baseUrl;
         }
-        targetUrl += isGpt
+
+        if (isGpt) {
+          if (isGpt4 && isApimPreview) {
+            if (isVision) {
+              targetUrl += Operations.StandardTextModelVision;
+            } else {
+              targetUrl += Operations.StandardTextModelPreview;
+            }
+          } else {
+            targetUrl += Operations.StandardTextModel;
+          }
+        } else {
+          targetUrl += Operations.AdvancedTextModel;
+        }
+        /*targetUrl += isGpt
           ? !(isGpt4 && isApimPreview)
             ? Operations.StandardTextModel
             : Operations.StandardTextModelPreview
-          : Operations.AdvancedTextModel;
+          : Operations.AdvancedTextModel;*/
       }
       return targetUrl;
     };
