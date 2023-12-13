@@ -47,7 +47,7 @@ The integrations available in this release include:
 
 - Version 1.1: The option to use voice input to prompt text is available. Added on Dec 8, 2023.
 
-- [Beta 1.2](../releases/tag/Beta1.2). Dec 13, 2023: Added support for GPT-4 Vision APIM endpoint (/openai4/vision).
+- [Beta 1.2](../../releases/tag/Beta1.2). Dec 13, 2023: Added support for GPT-4 Vision APIM endpoint (/openai4/vision).
 
 ### Full-Scale Setup
 
