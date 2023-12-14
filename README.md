@@ -14,7 +14,7 @@ The web part interacts with private **Azure OpenAI** endpoints that are publishe
 In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (pages 11 and 21).
 
 - CONS: Granting access to the Native Open AI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
-- PROS: Using the Native OpenAI endpoint could grant you access to the latest language models like GPT-4 Vision that are not currently available in Azure OpenAI (as of December 2023).
+- PROS: Using the Native OpenAI endpoint could grant you access to the latest language models that are not currently available in Azure OpenAI.
 
 In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
 
