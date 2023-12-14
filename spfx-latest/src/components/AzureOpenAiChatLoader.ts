@@ -92,6 +92,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
         sharing: this.properties.sharing,
         streaming: this.properties.streaming,
         fullScreen: this.properties.fullScreen,
+        vision: this.properties.endpointBaseUrlForOpenAi4 && this.properties.functions && this.properties.vision,
         functions: this.properties.functions,
         bing: this.properties.functions && this.properties.bing,
         apiKeyBing:
@@ -241,9 +242,10 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                 /*PropertyPaneTextField('languageModels', {
                   label: strings.FieldLabelLanguageModels,
                 }),*/
-                PropertyPaneTextField('endpointBaseUrlForChatHistory', {
-                  label: strings.FieldLabelEndpointBaseUrlForChatHistory,
-                }),
+                this.properties.storageType === StorageType.Database &&
+                  PropertyPaneTextField('endpointBaseUrlForChatHistory', {
+                    label: strings.FieldLabelEndpointBaseUrlForChatHistory,
+                  }),
                 /*PropertyPaneTextField('apiKey', {
                   label: strings.FieldLabelApiKey,
                 }),*/
@@ -320,9 +322,20 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   properties: this.properties,
                   wpContext: this.context,
                 }),
+                this.properties.endpointBaseUrlForOpenAi4 &&
+                  this.properties.functions &&
+                  PropertyPaneCheckbox('vision', {
+                    text:
+                      this.apiService?.isApiManagementUrl(this.properties?.endpointBaseUrlForOpenAi4) &&
+                      !this.apiService?.isNative(this.properties?.endpointBaseUrlForOpenAi4)
+                        ? strings.FieldLabelVisionApim
+                        : strings.FieldLabelVision,
+                  }),
                 this.properties.functions &&
                   PropertyPaneCheckbox('images', {
-                    text: strings.FieldLabelImages,
+                    text: this.apiService?.isApiManagementUrl(this.properties?.endpointBaseUrlForOpenAi)
+                      ? strings.FieldLabelImagesApim
+                      : strings.FieldLabelImages,
                   }),
                 new PropertyPaneFieldCustomListUrl('spImageLibraryUrl', {
                   label: strings.FieldLabelSharePointImageLibraryUrl,

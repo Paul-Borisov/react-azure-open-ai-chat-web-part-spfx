@@ -14,6 +14,7 @@ define([], function () {
     FieldLabelGoogle: 'Google-søk',
     FieldLabelGoogleApiKey: 'Valgfri nøkkel for Google: key=API_NØKKEL&cx=SØKEMOTORID',
     FieldLabelImages: 'Bildegenerering (Dalle)',
+    FieldLabelImagesApim: 'Bildegenerering: konfigurer /dalle (docs)',
     FieldLabelLanguageModels: 'Språkmodeller',
     FieldLabelLocale: 'Lokal for datoer (standard er fi-FI)',
     FieldLabelSharing: 'Aktiver deling',
@@ -32,6 +33,8 @@ define([], function () {
     FieldLabelDemoOnly: '(kun demo)',
     FieldLabelPromptAtBottom: 'Vis ledetekstområdet nederst',
     FieldLabelUnlimitedHistoryLength: 'Ubegrenset lengde på chatteloggen (AI-svar i lange chatter kan være mindre nøyaktige)',
+    FieldLabelVision: 'Bildeanalyse (Vision)',
+    FieldLabelVisionApim: 'Bildeanalyse: konfigurer /vision (docs)',
     FieldLabelVoiceInput: 'Aktiver stemmeinndata',
 
     PlaceholderDescription: 'Konfigurer denne webdelen.',

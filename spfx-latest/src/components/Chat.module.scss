@@ -151,6 +151,7 @@ $selection: $ms-color-gray150;
   &.insidePanel {
     max-height: 83vh;
   }
+  scroll-behavior: smooth;
 }
 .responseRowsContainer {
   flex: auto;

@@ -14,6 +14,7 @@ define([], function () {
     FieldLabelGoogle: 'Google search',
     FieldLabelGoogleApiKey: 'Optional key for Google: key=API_KEY&cx=SEARCH_ENGINE_ID',
     FieldLabelImages: 'Image generation (Dalle)',
+    FieldLabelImagesApim: 'Image generation: configure /dalle (docs)',
     FieldLabelLanguageModels: 'Language models',
     FieldLabelLocale: 'Locale for dates (default is fi-FI)',
     FieldLabelSharing: 'Enable sharing',
@@ -32,6 +33,8 @@ define([], function () {
     FieldLabelDemoOnly: '(demo only)',
     FieldLabelPromptAtBottom: 'Show prompt area at bottom',
     FieldLabelUnlimitedHistoryLength: 'Unlimited chat history length (AI-responses in long chats may be less accurate)',
+    FieldLabelVision: 'Image analysis (Vision)',
+    FieldLabelVisionApim: 'Image analysis: configure /vision (docs)',
     FieldLabelVoiceInput: 'Enable voice input',
 
     PlaceholderDescription: 'Please configure this web part.',

@@ -14,6 +14,7 @@ define([], function () {
     FieldLabelGoogle: 'Google-haku',
     FieldLabelGoogleApiKey: 'Valinnainen avain Googlelle: key=API_AVAIN&cx=HAKUKONEEN_ID',
     FieldLabelImages: 'Kuvan luominen (Dalle)',
+    FieldLabelImagesApim: 'Kuvan luominen: konfiguroi /dalle (docs)',
     FieldLabelLanguageModels: 'Kielimallit',
     FieldLabelLocale: 'Päivämäärien kielikieli (oletus on fi-FI)',
     FieldLabelSharing: 'Ota jakaminen käyttöön',
@@ -32,6 +33,8 @@ define([], function () {
     FieldLabelDemoOnly: '(vain demo)',
     FieldLabelPromptAtBottom: 'Näytä kehotealue alareunassa',
     FieldLabelUnlimitedHistoryLength: 'Rajoittamaton chatin historian pituus (AI-vastaukset pitkissä keskusteluissa voivat olla vähemmän tarkkoja)',
+    FieldLabelVision: 'Kuvaanalyysi (Vision)',
+    FieldLabelVisionApim: 'Kuvaanalyysi: konfiguroi /vision (docs)',
     FieldLabelVoiceInput: 'Ota äänisyöttö käyttöön',
 
     PlaceholderDescription: 'Määritä tämä verkko-osa.',

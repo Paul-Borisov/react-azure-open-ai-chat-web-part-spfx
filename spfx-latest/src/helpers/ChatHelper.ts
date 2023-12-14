@@ -255,15 +255,25 @@ export default class ChatHelper {
     );
   }
 
-  public static async compressImages(imageUrls: string[]): Promise<string[]> {
+  public static async transformImages(imageUrls: string[], props: IAzureOpenAiChatProps): Promise<string[]> {
     const newImageUrls: string[] = [];
     if (imageUrls?.length > 0) {
-      for (let i = 0; i < imageUrls.length; i++) {
-        const url = imageUrls[i];
-        if (url.length > 300 * 1024) {
-          newImageUrls.push(await Utils.compressImageToDataURL(url));
-        } else {
-          newImageUrls.push(url);
+      const spStorageUrl = props.spImageLibraryUrl || props.spService.imageLibraryUrl;
+      const imageLibraryExists = await props.spService?.doesListExist(spStorageUrl);
+      if (imageLibraryExists) {
+        for (let i = 0; i < imageUrls.length; i++) {
+          const url = imageUrls[i];
+          const savedImageUrl = await props.spService.saveImage(url, spStorageUrl);
+          newImageUrls.push(savedImageUrl);
+        }
+      } else {
+        for (let i = 0; i < imageUrls.length; i++) {
+          const url = imageUrls[i];
+          if (url.length > 300 * 1024) {
+            newImageUrls.push(await Utils.compressImageToDataURL(url));
+          } else {
+            newImageUrls.push(url);
+          }
         }
       }
     }
