@@ -478,7 +478,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       clearImages();
     }
 
-    setTimeout(scrollContentToBottom, 1500);
+    scrollContentToBottom();
+    setTimeout(scrollContentToBottom, 1500); // Loading images may take some time
 
     const handleResponse = (response) => {
       setIsProgress(false);
