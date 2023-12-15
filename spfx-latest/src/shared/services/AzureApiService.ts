@@ -3,7 +3,6 @@ import { AadHttpClient, AadTokenProvider, HttpClient, HttpClientResponse, IHttpC
 import { GptModels, GptModelTokenLimits } from 'shared/constants/Application';
 import FunctionHelper from 'shared/helpers/FunctionHelper';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
-import { Utils } from 'shared/helpers/Utils';
 import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMapper';
 import { mapResponseData } from 'shared/mappers/ChatMessageMapper';
 import SearchResultMapper from 'shared/mappers/SearchResultMapper';
