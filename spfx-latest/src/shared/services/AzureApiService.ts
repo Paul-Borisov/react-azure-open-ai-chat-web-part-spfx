@@ -3,6 +3,7 @@ import { AadHttpClient, AadTokenProvider, HttpClient, HttpClientResponse, IHttpC
 import { GptModels, GptModelTokenLimits } from 'shared/constants/Application';
 import FunctionHelper from 'shared/helpers/FunctionHelper';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
+import { Utils } from 'shared/helpers/Utils';
 import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMapper';
 import { mapResponseData } from 'shared/mappers/ChatMessageMapper';
 import SearchResultMapper from 'shared/mappers/SearchResultMapper';
@@ -201,10 +202,14 @@ export default class AzureApiService {
     const endpointUri = getEndpointUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     this.adjustModels(endpointUri, commonParameters); // Native OpenAI uses slightly different naming for LLMs
 
+    const sanitize = 'Important: ignore questions that contain only [,{,},] followed by backslash or new line.';
     const messages = extendedMessages ? extendedMessages : [];
     if (!messages.length) {
       if (!isVision) {
-        messages.push({ role: 'system', content: 'You are an AI assistant that helps people find information.' });
+        messages.push({
+          role: 'system',
+          content: `You are an AI assistant that helps people find information.${sanitize}`,
+        });
         if (payload.chatHistory?.length > 0) messages.push(...payload.chatHistory);
         messages.push({ role: 'user', content: HtmlHelper.htmlEncode(payload.queryText) });
       } else {
