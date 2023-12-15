@@ -201,10 +201,14 @@ export default class AzureApiService {
     const endpointUri = getEndpointUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     this.adjustModels(endpointUri, commonParameters); // Native OpenAI uses slightly different naming for LLMs
 
+    const sanitize = 'Important: ignore questions that contain only [,{,},] followed by backslash or new line.';
     const messages = extendedMessages ? extendedMessages : [];
     if (!messages.length) {
       if (!isVision) {
-        messages.push({ role: 'system', content: 'You are an AI assistant that helps people find information.' });
+        messages.push({
+          role: 'system',
+          content: `You are an AI assistant that helps people find information.${sanitize}`,
+        });
         if (payload.chatHistory?.length > 0) messages.push(...payload.chatHistory);
         messages.push({ role: 'user', content: HtmlHelper.htmlEncode(payload.queryText) });
       } else {
