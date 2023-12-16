@@ -3,6 +3,20 @@
   cursor: pointer;
   margin-left: 10px;
 }
+.stop {
+  color: red;
+  border-radius: 50%;
+  box-shadow: 0px 0px 1px 1px #0000001a;
+  animation: pulseAnimation 2s infinite;
+  @keyframes pulseAnimation {
+    0% {
+      box-shadow: 0 0 0 0px rgba(255, 0, 0, 0.2);
+    }
+    100% {
+      box-shadow: 0 0 0 15px rgba(0, 0, 0, 0);
+    }
+  }
+}
 .languages {
   z-index: 0;
   width: 0px;

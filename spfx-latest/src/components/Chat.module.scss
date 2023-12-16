@@ -431,6 +431,9 @@ $selection: $ms-color-gray150;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .unshare {
+    text-decoration: line-through;
+  }
   .shared {
     font-weight: 600;
   }

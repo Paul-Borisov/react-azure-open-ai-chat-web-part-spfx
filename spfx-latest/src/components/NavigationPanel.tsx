@@ -400,12 +400,12 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
                 )}
                 {props.sharing && !shared && editingChatId !== id && (
                   <TooltipHost content={strings.TextShare}>
-                    <FontIcon iconName="PublishContent" onClick={(e) => confirmShareChat(true)} />
+                    <FontIcon iconName="Share" onClick={(e) => confirmShareChat(true)} />
                   </TooltipHost>
                 )}
                 {props.sharing && shared && editingChatId !== id && (
                   <TooltipHost content={strings.TextUnshare}>
-                    <FontIcon iconName="UnpublishContent" onClick={(e) => confirmShareChat(false)} />
+                    <FontIcon iconName="Share" className={styles.unshare} onClick={(e) => confirmShareChat(false)} />
                   </TooltipHost>
                 )}
               </div>

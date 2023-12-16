@@ -77,7 +77,7 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
         <TooltipHost content={strings.TextStop}>
           <FontIcon
             iconName={'CircleStopSolid'}
-            className={styles.microphone}
+            className={[styles.microphone, styles.stop].join(' ')}
             onClick={() => {
               handleSpeechRecognition();
             }}
