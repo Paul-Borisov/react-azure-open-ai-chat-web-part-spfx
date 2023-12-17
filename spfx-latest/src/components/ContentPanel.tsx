@@ -5,6 +5,7 @@ import useChatHistory from 'hooks/useChatHistory';
 import useStorageService from 'hooks/useStorageService';
 import { FunctionComponent } from 'react';
 import * as React from 'react';
+import VoiceOutput from 'shared/components/VoiceInput/VoiceInput';
 import { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
@@ -12,7 +13,6 @@ import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMappe
 import { IChatHistory, IChatMessage } from 'shared/model/IChat';
 import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
-import SpeechService from 'shared/services/SpeechService';
 import { IChatProps } from './Chat';
 import styles from './Chat.module.scss';
 import ContentPanelElements from './ContentPanelElements';
@@ -640,6 +640,9 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
         ? `.${styles.customPanel} div[id='${chatMessageId}']`
         : `div[id='${chatMessageId}']`;
 
+      const textToSpeech =
+        isAi && props.voiceOutput && ChatHelper.supportsTextToSpeech(props) ? elements.getTextToSpeech(r.content) : undefined;
+
       return (
         <div className={styles.responseRowPlaceholder}>
           <div key={index} className={styles.responseRow}>
@@ -647,37 +650,13 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               {isAi ? Icons.getOpenAILogo(strings.TextChat) : <FontIcon iconName={'UserFollowed'} className={styles.userIcon} />}
             </div>
             {isAi ? (
-              <>
-                {props.highlight ? (
-                  <div className={['ai', styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}>
-                    {!disabledHighlights?.find((id) => id === chatMessageId) ? formattedRows[index] : content}
-                  </div>
-                ) : (
-                  <div className={['ai', styles.message].join(' ')} dangerouslySetInnerHTML={{ __html: r.content }} />
-                )}
-                {isAi && props.voiceOutput ? (
-                  <TooltipHost content={strings.TextVoiceOutput}>
-                    <FontIcon
-                      iconName="InternetSharing"
-                      className={styles.voiceOutput}
-                      onClick={async (e) => {
-                        const stopFunction = 'textToSpeechStop'; // Global custom function to stop reading out
-                        if (window[stopFunction]) {
-                          try {
-                            window[stopFunction]();
-                          } catch (e) {}
-                          window[stopFunction] = undefined;
-                        } else {
-                          const el = e.target as any;
-                          if (el) el.style.display = 'none';
-                          await new SpeechService(props.apiService).callTextToSpeech(r.content, stopFunction);
-                          if (el) el.style.display = 'block';
-                        }
-                      }}
-                    />
-                  </TooltipHost>
-                ) : null}
-              </>
+              props.highlight ? (
+                <div className={['ai', styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}>
+                  {!disabledHighlights?.find((id) => id === chatMessageId) ? formattedRows[index] : content}
+                </div>
+              ) : (
+                <div className={['ai', styles.message].join(' ')} dangerouslySetInnerHTML={{ __html: r.content }} />
+              )
             ) : (
               <div
                 id={chatMessageId}
@@ -738,6 +717,13 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               </>
             ) : (
               <>
+                {isAi && props.voiceOutput ? (
+                  textToSpeech ? (
+                    textToSpeech
+                  ) : (
+                    <VoiceOutput output={true} text={r.content} tooltip={strings.TextVoiceOutput} />
+                  )
+                ) : null}
                 {rawResults && (
                   <TooltipHost content={strings.TextAllResults}>
                     <FontIcon

@@ -257,12 +257,14 @@ export default class ChatHelper {
     );
   }
 
-  public static supportsTextToSpeech(apiService: AzureApiService, props: IAzureOpenAiChatProps): boolean {
-    if (!apiService || !props) return false;
+  public static supportsTextToSpeech(props: IAzureOpenAiChatProps): boolean {
+    if (!props?.apiService) return false;
 
     return (
-      (apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi) && apiService.isNative(props.endpointBaseUrlForOpenAi)) ||
-      (apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi4) && apiService.isNative(props.endpointBaseUrlForOpenAi4))
+      (props.apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi) &&
+        props.apiService.isNative(props.endpointBaseUrlForOpenAi)) ||
+      (props.apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi4) &&
+        props.apiService.isNative(props.endpointBaseUrlForOpenAi4))
     );
   }
 

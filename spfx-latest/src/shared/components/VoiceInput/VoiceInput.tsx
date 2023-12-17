@@ -7,7 +7,10 @@ import { LocalesPopular } from 'shared/constants/Locales';
 import styles from './VoiceInput.module.scss';
 
 interface IVoiceInput {
-  setText: (text: string) => void;
+  output?: boolean;
+  text?: string;
+  tooltip?: string;
+  setText?: (text: string) => void;
 }
 
 const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
@@ -30,6 +33,8 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
     }
   }, [showLocales]);
 
+  const availableVoices = React.useMemo(() => speechSynthesis.getVoices(), []);
+
   const handleSpeechRecognition = (locale: string = defaultLocale) => {
     if (!started) {
       setStarted(true);
@@ -45,6 +50,35 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
     }
   };
 
+  const handleSpeechOutput = (locale: string = defaultLocale) => {
+    if (!started) {
+      setStarted(true);
+      const utterance = new SpeechSynthesisUtterance(props.text);
+      utterance.lang = locale;
+      const voices = availableVoices?.filter((v) => v.lang === locale);
+      if (voices.length) {
+        const firstNatural = voices.find((v) => /natural/i.test(v.voiceURI) || /natural/i.test(v.name));
+        utterance.voice = firstNatural ?? voices[0];
+      }
+      utterance.onend = () => setStarted(false);
+      utterance.onerror = () => setStarted(false);
+      const synth = speechSynthesis;
+      synth.speak(utterance);
+      /*const checkState = () => {
+        if (synth.speaking) {
+          setTimeout(checkState, 1000);
+        } else {
+          setStarted(false);
+        }
+      };
+      checkState();*/
+    } else {
+      setStarted(false);
+      const synth = speechSynthesis;
+      synth.cancel();
+    }
+  };
+
   const emptyOption = { key: '', text: strings.TextLanguage, itemType: DropdownMenuItemType.Header };
   const options: IDropdownOption[] = [{ ...emptyOption }];
   options.push(...LocalesPopular.map((l) => ({ key: l.code, text: l.label, title: l.title ?? l.label })));
@@ -57,7 +91,11 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
       //responsiveMode={ResponsiveMode.unknown}
       onChange={(e, option: IDropdownOption) => {
         if (option.key) {
-          handleSpeechRecognition(option.key.toString());
+          if (props.output) {
+            handleSpeechOutput(option.key.toString());
+          } else {
+            handleSpeechRecognition(option.key.toString());
+          }
         }
       }}
       onDismiss={() => {
@@ -70,8 +108,12 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
   return browserSupportsSpeechRecognition && isMicrophoneAvailable ? (
     <>
       {!started ? (
-        <TooltipHost content={strings.TextVoiceInput}>
-          <FontIcon iconName={'Microphone'} className={styles.microphone} onClick={() => setShowLocales(true)} />
+        <TooltipHost content={props.tooltip ?? strings.TextVoiceInput}>
+          <FontIcon
+            iconName={props.output ? 'InternetSharing' : 'Microphone'}
+            className={styles.microphone}
+            onClick={() => setShowLocales(true)}
+          />
         </TooltipHost>
       ) : (
         <TooltipHost content={strings.TextStop}>
@@ -79,7 +121,11 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
             iconName={'CircleStopSolid'}
             className={[styles.microphone, styles.stop].join(' ')}
             onClick={() => {
-              handleSpeechRecognition();
+              if (props.output) {
+                handleSpeechOutput();
+              } else {
+                handleSpeechRecognition();
+              }
             }}
           />
         </TooltipHost>
