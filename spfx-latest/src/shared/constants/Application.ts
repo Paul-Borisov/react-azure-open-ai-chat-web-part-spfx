@@ -9,8 +9,8 @@ export enum GptModels {
 }
 
 export const GptImageModelTextLimits: { [key: string]: number } = {
-  ['']: 975,
-  ['4']: 975,
+  ['']: 4096 - 25,
+  ['4']: 4096 - 25,
 };
 
 export const GptModelTokenLimits: { [key: string]: number } = {

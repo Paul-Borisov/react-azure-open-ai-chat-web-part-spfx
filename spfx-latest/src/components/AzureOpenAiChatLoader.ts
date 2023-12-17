@@ -107,6 +107,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
         images: this.properties.functions && this.properties.images,
         examples: this.properties.examples,
         voiceInput: this.properties.voiceInput,
+        voiceOutput: ChatHelper.supportsTextToSpeech(this.apiService, this.properties) && this.properties.voiceOutput,
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
@@ -351,6 +352,11 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                 PropertyPaneCheckbox('voiceInput', {
                   text: strings.FieldLabelVoiceInput,
                 }),
+                ChatHelper.supportsTextToSpeech(this.apiService, this.properties)
+                  ? PropertyPaneCheckbox('voiceOutput', {
+                      text: strings.FieldLabelVoiceOutput,
+                    })
+                  : null,
                 PropertyPaneCheckbox('highlight', {
                   text: strings.FieldLabelHighlight,
                 }),

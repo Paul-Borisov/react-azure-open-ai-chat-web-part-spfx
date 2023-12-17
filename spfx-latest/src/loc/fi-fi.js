@@ -36,6 +36,7 @@ define([], function () {
     FieldLabelVision: 'Kuvaanalyysi (Vision)',
     FieldLabelVisionApim: 'Kuvaanalyysi: konfiguroi /vision (docs)',
     FieldLabelVoiceInput: 'Ota äänisyöttö käyttöön',
+    FieldLabelVoiceOutput: 'Ota äänilähtö käyttöön (teksti puheeksi)',
 
     PlaceholderDescription: 'Määritä tämä verkko-osa.',
     PlaceholderText: 'Määritä verkko-osa',
@@ -108,5 +109,6 @@ define([], function () {
     TextUploadImage: 'Lataa kuvia',
     TextUpload: 'Lataa PDF',
     TextVoiceInput: 'Äänisyöttö',
+    TextVoiceOutput: 'Lue ulos',
   };
 });

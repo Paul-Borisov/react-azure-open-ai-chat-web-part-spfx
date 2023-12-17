@@ -36,6 +36,7 @@ define([], function () {
     FieldLabelVision: 'Image analysis (Vision)',
     FieldLabelVisionApim: 'Image analysis: configure /vision (docs)',
     FieldLabelVoiceInput: 'Enable voice input',
+    FieldLabelVoiceOutput: 'Enable voice output (text to speech)',
 
     PlaceholderDescription: 'Please configure this web part.',
     PlaceholderText: 'Configure your web part',
@@ -108,5 +109,6 @@ define([], function () {
     TextUploadImage: 'Upload images',
     TextUploadPdf: 'Upload PDF',
     TextVoiceInput: 'Voice input',
+    TextVoiceOutput: 'Read out',
   };
 });

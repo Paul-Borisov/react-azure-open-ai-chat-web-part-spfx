@@ -36,6 +36,7 @@ define([], function () {
     FieldLabelVision: 'Bildeanalyse (Vision)',
     FieldLabelVisionApim: 'Bildeanalyse: konfigurer /vision (docs)',
     FieldLabelVoiceInput: 'Aktiver stemmeinndata',
+    FieldLabelVoiceOutput: 'Aktiver stemmeutgang (tekst til tale)',
 
     PlaceholderDescription: 'Konfigurer denne webdelen.',
     PlaceholderText: 'Konfigurer webdelen din',
@@ -109,5 +110,6 @@ define([], function () {
     TextUploadImage: 'Last opp bilder',
     TextUploadImage: 'Last opp PDF',
     TextVoiceInput: 'Stemmeinndata',
+    TextVoiceOutput: 'Les opp',
   };
 });

@@ -35,6 +35,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   FieldLabelVision: string;
   FieldLabelVisionApim: string;
   FieldLabelVoiceInput: string;
+  FieldLabelVoiceOutput: string;
 
   PlaceholderDescription: string;
   PlaceholderText: string;
@@ -107,6 +108,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextUploadImage: string;
   TextUploadPdf: string;
   TextVoiceInput: string;
+  TextVoiceOutput: string;
 }
 
 declare module 'AzureOpenAiChatWebPartStrings' {

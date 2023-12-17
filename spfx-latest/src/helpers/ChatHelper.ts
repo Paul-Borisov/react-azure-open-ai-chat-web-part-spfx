@@ -33,7 +33,7 @@ export default class ChatHelper {
     const largeContentDeduction = 1500;
 
     let returnValue = Math.floor((4 * 1024 - responseTokens) * averageCharsPerToken);
-    if (/4-(1106|turbo)/i.test(model)) {
+    if (/4-(1106|turbo|vision)/i.test(model)) {
       returnValue = Math.floor((128 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/32k/i.test(model)) {
       returnValue = Math.floor((32 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
@@ -48,7 +48,7 @@ export default class ChatHelper {
   public static maxRequestLength(model: string, responseTokens: number, chatHistoryLength: number): number {
     // maxRequestLength = max allowed number of characters in the prompt.
     let maxCharacters = 4000; // GPT-35-turbo, 4k
-    if (/4-(1106|turbo)/i.test(model)) {
+    if (/4-(1106|turbo|vision)/i.test(model)) {
       maxCharacters = 125000; // ~ (128 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/32k/i.test(model)) {
       maxCharacters = 30000; // ~ (32 * 1024 * 3.6) / 3.75 long questions - answers.
@@ -245,6 +245,8 @@ export default class ChatHelper {
     props: IAzureOpenAiChatProps,
     checkForNativeApimEndpoint?: boolean
   ): boolean {
+    if (!apiService || !props) return false;
+
     return (
       apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi) ||
       apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi4) ||
@@ -252,6 +254,15 @@ export default class ChatHelper {
       apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi4) ||
       (checkForNativeApimEndpoint &&
         (apiService.isNative(props.endpointBaseUrlForOpenAi) || apiService.isNative(props.endpointBaseUrlForOpenAi4)))
+    );
+  }
+
+  public static supportsTextToSpeech(apiService: AzureApiService, props: IAzureOpenAiChatProps): boolean {
+    if (!apiService || !props) return false;
+
+    return (
+      (apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi) && apiService.isNative(props.endpointBaseUrlForOpenAi)) ||
+      (apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi4) && apiService.isNative(props.endpointBaseUrlForOpenAi4))
     );
   }
 

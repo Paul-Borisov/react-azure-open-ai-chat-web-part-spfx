@@ -52,6 +52,8 @@ export interface IAzureOpenAiChatProps {
   examples: boolean;
   // Option to enable voice input to the pronpt text
   voiceInput: boolean;
+  // Option to enable voice output for AI-generated text
+  voiceOutput: boolean;
   // Option to enable code highlighting
   highlight: boolean;
   // Option to show code highlighting styles (requires highlight == true)

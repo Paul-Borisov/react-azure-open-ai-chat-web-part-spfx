@@ -36,6 +36,7 @@ define([], function () {
     FieldLabelVision: 'Анализ изображения (Vision)',
     FieldLabelVisionApim: 'Анализ изображения: настройте URL-адрес /vision (docs)',
     FieldLabelVoiceInput: 'Включить голосовой ввод',
+    FieldLabelVoiceOutput: 'Включить голосовой вывод (текст в речь)',
 
     PlaceholderDescription: 'Пожалуйста, настройте эту веб-часть.',
     PlaceholderText: 'Настройте Вашу веб-часть',
@@ -108,5 +109,6 @@ define([], function () {
     TextUploadImage: 'Загрузить картинки',
     TextUploadPdf: 'Загрузить PDF',
     TextVoiceInput: 'Голосовой ввод',
+    TextVoiceOutput: 'Прочитать',
   };
 });
