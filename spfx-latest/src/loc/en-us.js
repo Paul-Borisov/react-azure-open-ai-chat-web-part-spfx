@@ -58,6 +58,7 @@ define([], function () {
     TextDeleteMessage: 'Do you want to delete',
     TextDescribeImage: 'What is in this image?',
     TextDescribeImages: 'What is in these images?',
+    TextDeviceUnavailable: 'Deice unavailable',
     TextEdit: 'Edit',
     TextError: 'Error occurred',
     TextExamples: 'Examples',

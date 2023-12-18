@@ -58,6 +58,7 @@ define([], function () {
     TextDeleteMessage: 'Вы хотите удалить',
     TextDescribeImage: 'Что находится на этом изображении?',
     TextDescribeImages: 'Что находится на этих изображениях?',
+    TextDeviceUnavailable: 'Устройство недоступно',
     TextEdit: 'Редактировать',
     TextError: 'Произошла ошибка',
     TextExamples: 'Примеры',

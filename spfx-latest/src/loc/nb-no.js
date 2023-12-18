@@ -58,6 +58,7 @@ define([], function () {
     TextDeleteMessage: 'Vil du slette',
     TextDescribeImage: 'Hva er på dette bildet?',
     TextDescribeImages: 'Hva er i disse bildene?',
+    TextDeviceUnavailable: 'Enheten er utilgjengelig',
     TextDemoOnly: '(demo only)',
     TextEdit: 'Rediger',
     TextError: 'Feil oppsto',

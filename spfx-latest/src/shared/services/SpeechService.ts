@@ -17,12 +17,7 @@ export default class SpeechService {
     this.apiService = apiService;
   }
 
-  public async callTextToSpeech(
-    queryText: string,
-    stopFunction: string,
-    highDefinition: boolean = false,
-    voice = 'onyx'
-  ): Promise<string> {
+  public async callTextToSpeech(queryText: string, highDefinition: boolean = false, voice = 'onyx'): Promise<ArrayBuffer> {
     const apiService = this.apiService;
     const config = apiService.getConfig();
     const aadClient = apiService.getAadClient();
@@ -89,31 +84,7 @@ export default class SpeechService {
     }
 
     if (response.ok) {
-      const audioContext = window.AudioContext || (window as any).webkitAudioContext;
-      if (audioContext) {
-        const ctx = new audioContext();
-
-        const audio = await response
-          .arrayBuffer()
-          .then((buffer) => ctx.decodeAudioData(buffer).then((decodedAudio) => decodedAudio));
-
-        if (audio) {
-          const playSound = ctx.createBufferSource();
-          playSound.buffer = audio;
-          playSound.connect(ctx.destination);
-          playSound.start(ctx.currentTime);
-          window[stopFunction] = () => playSound.stop(0);
-          return Promise.resolve('OK');
-        } else {
-          return Promise.resolve(undefined);
-        }
-      } else {
-        const message = 'AudioContext is not supported by this browser';
-        LogService.error(message);
-        AzureServiceResponseMapper.saveErrorDetails(message);
-        LogService.error(message);
-        return Promise.resolve(undefined);
-      }
+      return response.arrayBuffer();
     } else {
       return handleError(response);
     }

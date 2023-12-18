@@ -57,6 +57,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextDeleteMessage: string;
   TextDescribeImage: string;
   TextDescribeImages: string;
+  TextDeviceUnavailable: string;
   TextEdit: string;
   TextError: string;
   TextExamples: string;

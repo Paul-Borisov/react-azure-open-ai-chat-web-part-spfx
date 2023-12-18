@@ -58,6 +58,7 @@ define([], function () {
     TextDeleteMessage: 'Haluatko poistaa',
     TextDescribeImage: 'Mitä tässä kuvassa on?',
     TextDescribeImages: 'Mitä näissä kuvissa on?',
+    TextDeviceUnavailable: 'Laite ei ole käytettävissä',
     TextEdit: 'Muokkaa',
     TextError: 'Tapahtui virhe',
     TextExamples: 'Esimerkit',

@@ -8,10 +8,9 @@ import { getSimpleDialog } from 'shared/components/CustomDialog';
 import { CustomShimmer } from 'shared/components/CustomShimmer/CustomShimmer';
 import LinkButton from 'shared/components/LinkButton/LinkButton';
 import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
-import VoiceInput from 'shared/components/VoiceInput/VoiceInput';
+import VoiceInput from 'shared/components/Speech/VoiceInput';
 import { IChatHistory } from 'shared/model/IChat';
 import SessionStorageService from 'shared/services/SessionStorageService';
-import SpeechService from 'shared/services/SpeechService';
 import { IChatProps } from './Chat';
 import styles from './Chat.module.scss';
 import * as Icons from './Icons';
@@ -327,31 +326,6 @@ export default class ContentPanelElements {
           {<FontIcon iconName={'Send'} style={{ opacity: isProgress ? 0.5 : 1 }} />}
         </TooltipHost>
       </LinkButton>
-    );
-  }
-
-  public getTextToSpeech(text: string): JSX.Element {
-    return (
-      <TooltipHost content={strings.TextVoiceOutput}>
-        <FontIcon
-          iconName="InternetSharing"
-          className={styles.voiceOutput}
-          onClick={async (e) => {
-            const stopFunction = 'textToSpeechStop'; // Global custom function to stop reading out
-            if (window[stopFunction]) {
-              try {
-                window[stopFunction]();
-              } catch (e) {}
-              window[stopFunction] = undefined;
-            } else {
-              const el = e.target as any;
-              if (el) el.style.display = 'none';
-              await new SpeechService(this.props.apiService).callTextToSpeech(text, stopFunction);
-              if (el) el.style.display = 'block';
-            }
-          }}
-        />
-      </TooltipHost>
     );
   }
 }

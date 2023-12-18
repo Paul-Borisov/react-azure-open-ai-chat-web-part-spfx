@@ -2,6 +2,9 @@
   font-size: 150%;
   cursor: pointer;
   margin-left: 10px;
+  &.unavailable {
+    color: #ccc;
+  }
 }
 .stop {
   color: red;
