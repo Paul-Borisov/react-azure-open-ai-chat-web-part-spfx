@@ -47,14 +47,15 @@ The integrations available in this release include:
 
 - Version 1.1: The option to use voice input to prompt text is available. Added on Dec 8, 2023.
 
-- [Beta 1.2](../../releases/tag/Beta1.2). Dec 13, 2023: Added opyional support for GPT-4 Vision APIM endpoint (/openai4/vision).
+- [Beta 1.2](../../releases/tag/Beta1.2). Dec 13, 2023: Added the optional support for GPT-4 Vision APIM endpoint (/openai4/vision).
   
-- [Beta 1.2](../../releases/tag/Beta1.2). Dec 16, 2023: Added optional support for /tts APIM endpoint (/openainative/tts) and Native OpenAI text-to-speech model for AI-generated texts.
+- [Beta 1.2](../../releases/tag/Beta1.2). Dec 16, 2023: Added the optional support for /tts APIM endpoint (/openainative/tts) and Native OpenAI text-to-speech model for AI-generated texts.
 
-- [Beta 1.2](../../releases/tag/Beta1.2). Dec 18, 2023: Added optional support for Web Speech API (window.speechSynthesis) to provide voice outputs when OpenAI text-to-speech is not available.
-  - OpenAI text-to-speech model can automatically handle texts that contain mixed languages. The standard Web Speech API requires selecting the preferred language; using default page language is not always optimal.
+- [Beta 1.2](../../releases/tag/Beta1.2). Dec 18, 2023: Added the optional support for Web Speech API (window.speechSynthesis) to provide voice outputs to AI-generated texts when OpenAI text-to-speech model is not available.
+  - OpenAI text-to-speech model automatically handles text that contains mixed languages.
+  - The standard Web Speech API requires selecting the preferred language; using default page language is not always optimal.
   - Azure OpenAI does not yet have support for text-to-speech models (as of Dec 2023).
-
+ 
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
