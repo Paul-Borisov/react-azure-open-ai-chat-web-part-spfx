@@ -721,7 +721,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
             ) : (
               <>
                 {isAi && props.voiceOutput ? (
-                  <VoiceOutput text={r.content} tooltip={strings.TextVoiceOutput} getAudio={getAudio} />
+                  <VoiceOutput text={HtmlHelper.stripHtml(r.content)} tooltip={strings.TextVoiceOutput} getAudio={getAudio} />
                 ) : null}
                 {rawResults && (
                   <TooltipHost content={strings.TextAllResults}>
