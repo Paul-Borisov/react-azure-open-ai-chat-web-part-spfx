@@ -473,7 +473,7 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
       //setReloadNavigation(true);
       storageService.loadChatHistory((data) => {
         if (data) {
-          ChatHelper.decrypt(data, encService);
+          ChatHelper.decrypt(data, encService, true);
           setSharedChats(data);
         }
       }, true);
