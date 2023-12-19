@@ -3,7 +3,8 @@ import * as strings from 'AzureOpenAiChatWebPartStrings';
 import * as React from 'react';
 import 'regenerator-runtime/runtime';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import { IVoice } from './IVoice';
+import useSpeech from 'shared/hooks/useSpeech';
+import { IVoice } from 'shared/model/IVoice';
 import Languages from './Languages';
 import styles from './Speech.module.scss';
 
@@ -19,8 +20,7 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
     browserSupportsSpeechRecognition,
     isMicrophoneAvailable,
   } = useSpeechRecognition();
-  const [showLocales, setShowLocales] = React.useState<boolean>(false);
-  const [started, setStarted] = React.useState<boolean>(false);
+  const { showLocales, setShowLocales, started, setStarted } = useSpeech();
 
   const handleSpeechRecognition = (locale: string = 'en-US') => {
     if (!started) {

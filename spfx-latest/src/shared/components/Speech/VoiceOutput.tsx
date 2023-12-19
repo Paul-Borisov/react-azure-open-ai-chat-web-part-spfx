@@ -1,25 +1,31 @@
 import { FontIcon, TooltipHost } from '@fluentui/react';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import * as React from 'react';
+import HtmlHelper from 'shared/helpers/HtmlHelper';
+import useSpeech from 'shared/hooks/useSpeech';
+import { IVoice } from 'shared/model/IVoice';
 import LogService from 'shared/services/LogService';
-import { IVoice } from './IVoice';
 import Languages from './Languages';
 import styles from './Speech.module.scss';
 
 interface IVoiceOutput extends IVoice {
+  querySelector?: string;
   text?: string;
   getAudio?: (text: string) => Promise<ArrayBuffer>;
 }
 
 const VoiceOutput: React.FunctionComponent<IVoiceOutput> = (props) => {
-  const [showLocales, setShowLocales] = React.useState<boolean>(false);
-  const [started, setStarted] = React.useState<boolean>(false);
+  const { showLocales, setShowLocales, started, setStarted } = useSpeech();
   const [player, setPlayer] = React.useState<AudioBufferSourceNode>();
+
+  const text = props.querySelector
+    ? HtmlHelper.stripHtml(document.querySelector(props.querySelector)?.innerHTML ?? props.text)
+    : HtmlHelper.stripHtml(props.text);
 
   const handleSpeechOutput = (locale: string = 'en-US') => {
     if (!started) {
       setStarted(true);
-      const utterance = new SpeechSynthesisUtterance(props.text);
+      const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = locale;
       const availableVoices = speechSynthesis.getVoices();
       const voices = availableVoices?.filter((v) => v.lang === locale);
@@ -38,12 +44,12 @@ const VoiceOutput: React.FunctionComponent<IVoiceOutput> = (props) => {
     }
   };
 
-  const isAvailable = (!!props.getAudio && !!window.AudioContext) || (!!props.text && !!window.speechSynthesis);
+  const isAvailable = (!!props.getAudio && !!window.AudioContext) || (!!text && !!window.speechSynthesis);
 
   return isAvailable ? (
     <>
       {!started ? (
-        <TooltipHost content={props.tooltip ?? strings.TextVoiceInput}>
+        <TooltipHost content={props.tooltip ?? strings.TextVoiceOutput}>
           <FontIcon
             iconName={'InternetSharing'}
             className={styles.microphone}
@@ -54,7 +60,7 @@ const VoiceOutput: React.FunctionComponent<IVoiceOutput> = (props) => {
               } else {
                 setStarted(true);
                 props
-                  .getAudio(props.text)
+                  .getAudio(text)
                   .then((buffer) => {
                     const ctx = new AudioContext();
                     ctx.decodeAudioData(buffer).then((audio) => {

@@ -654,11 +654,18 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
             </div>
             {isAi ? (
               props.highlight ? (
-                <div className={['ai', styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}>
+                <div
+                  id={chatMessageId}
+                  className={['ai', styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}
+                >
                   {!disabledHighlights?.find((id) => id === chatMessageId) ? formattedRows[index] : content}
                 </div>
               ) : (
-                <div className={['ai', styles.message].join(' ')} dangerouslySetInnerHTML={{ __html: r.content }} />
+                <div
+                  id={chatMessageId}
+                  className={['ai', styles.message].join(' ')}
+                  dangerouslySetInnerHTML={{ __html: r.content }}
+                />
               )
             ) : (
               <div
@@ -721,7 +728,12 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
             ) : (
               <>
                 {isAi && props.voiceOutput ? (
-                  <VoiceOutput text={HtmlHelper.stripHtml(r.content)} tooltip={strings.TextVoiceOutput} getAudio={getAudio} />
+                  <VoiceOutput
+                    querySelector={chatMessageIdSelector}
+                    text={HtmlHelper.stripHtml(r.content)}
+                    tooltip={strings.TextVoiceOutput}
+                    getAudio={getAudio}
+                  />
                 ) : null}
                 {rawResults && (
                   <TooltipHost content={strings.TextAllResults}>
