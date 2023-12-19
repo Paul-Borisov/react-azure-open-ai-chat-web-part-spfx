@@ -55,7 +55,12 @@ The integrations available in this release include:
   - OpenAI text-to-speech model automatically handles text that contains mixed languages.
   - The standard Web Speech API requires selecting the preferred language; using default page language is not always optimal.
   - Azure OpenAI does not yet have support for text-to-speech models (as of Dec 2023).
- 
+
+- [Beta 1.2](../../releases/tag/Beta1.2). Dec 19, 2023: Added the optional support for AES data encryption for all storage types
+  - SharePoint list
+  - Database
+  - Local Storage.
+
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
