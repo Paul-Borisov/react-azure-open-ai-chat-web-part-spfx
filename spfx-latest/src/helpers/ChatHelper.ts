@@ -302,15 +302,15 @@ export default class ChatHelper {
     return typeof value === 'string' ? encService.encrypt(value) : encService.encrypt(JSON.stringify(value));
   }
 
-  public static decrypt(value: IChatMessage[], encService?: EncryptionService): void {
+  public static decrypt(value: IChatMessage[], encService?: EncryptionService, shared?: boolean): void {
     if (!encService) encService = new EncryptionService();
     value.forEach((r) => {
       try {
-        r.name = encService.decrypt(r.name);
+        r.name = encService.decrypt(r.name, true, shared ? r.username : undefined);
         if (r.message?.startsWith('"enc:')) {
           r.message = encService.decrypt(r.message.replace(/^"/, '').replace(/"$/, '')); // A weird storage format in LocalStorage
         } else {
-          r.message = encService.decrypt(r.message);
+          r.message = encService.decrypt(r.message, true, shared ? r.username : undefined);
         }
       } catch (e) {}
     });

@@ -21,9 +21,11 @@ export default class EncryptionService {
     return `${addPrefix ? EncryptionService.prefix : ''}${cryptoJS.AES.encrypt(value, this.key).toString()}`;
   }
 
-  public decrypt(value: string, hasPrefix: boolean = true): string {
+  public decrypt(value: string, hasPrefix: boolean = true, oid?: string): string {
     if (!value?.startsWith(EncryptionService.prefix) || !this.key) return value;
-    const decrypted = cryptoJS.AES.decrypt(value.substring(hasPrefix ? EncryptionService.prefix.length : 0), this.key).toString(
+
+    const key = oid ? oid.split('').reverse().join('') : this.key;
+    const decrypted = cryptoJS.AES.decrypt(value.substring(hasPrefix ? EncryptionService.prefix.length : 0), key).toString(
       cryptoJS.enc.Utf8
     );
     return decrypted ? decrypted : value;

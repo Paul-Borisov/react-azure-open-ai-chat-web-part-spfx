@@ -10,6 +10,7 @@ import Application from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
 import { IChatHistory, IChatMessage, IUser } from 'shared/model/IChat';
+import EncryptionService from 'shared/services/EncryptionService';
 import LogService from 'shared/services/LogService';
 import PageContextService from 'shared/services/PageContextService';
 import SessionStorageService from 'shared/services/SessionStorageService';
@@ -21,6 +22,7 @@ interface INavigationPanel {
   chatHistoryId: string;
   chatName: string;
   isCustomPanelOpen: boolean;
+  encService: EncryptionService;
   firstLoad: boolean;
   myChats: IChatMessage[];
   props: IChatProps;
@@ -52,6 +54,7 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
   chatHistoryId,
   chatName,
   isCustomPanelOpen,
+  encService,
   firstLoad,
   myChats,
   props,
@@ -468,7 +471,12 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
       //}
       setMyChats([...newMyChats]);
       //setReloadNavigation(true);
-      storageService.loadChatHistory(setSharedChats, true);
+      storageService.loadChatHistory((data) => {
+        if (data) {
+          ChatHelper.decrypt(data, encService);
+          setSharedChats(data);
+        }
+      }, true);
     });
   }
 

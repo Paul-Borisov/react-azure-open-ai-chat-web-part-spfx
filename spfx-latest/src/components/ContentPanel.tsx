@@ -201,7 +201,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     const loadData = (setter: (data: IChatMessage[]) => void, shared: boolean) =>
       storageService.loadChatHistory((data) => {
         if (data) {
-          ChatHelper.decrypt(data);
+          ChatHelper.decrypt(data, encService, shared);
           setter(data);
         } else {
           setResponseContentError(strings.TextUndeterminedError);
@@ -330,6 +330,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
             chatName={chatName}
             clearChatMessages={clearChatMessages}
             isCustomPanelOpen={isCustomPanelOpen}
+            encService={encService}
             firstLoad={firstLoad}
             loadChats={loadChats}
             myChats={myChats}
