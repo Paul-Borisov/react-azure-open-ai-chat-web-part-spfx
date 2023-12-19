@@ -72,11 +72,12 @@ public static class ChatMessageEndpoints {
       if (checkUserPermissions) {
         var user = GetUser(context);
         chatMessage.Username = user?.Id;
-        chatMessage.DisplayName = user?.Name;
+        if (chatMessage.DisplayName == null) chatMessage.DisplayName = user?.Name;
       }
       if (chatMessage.Created == null) chatMessage.Created = DateTime.Now.ToUniversalTime();
       if (chatMessage.Modified == null) chatMessage.Modified = DateTime.Now.ToUniversalTime();
       if (chatMessage.Enabled == null) chatMessage.Enabled = true;
+      if (chatMessage.DisplayName == "") chatMessage.DisplayName = null;
       //if (chatMessage.Shared == null) chatMessage.Shared = false; // Should be NULL if the chat was never shared after its creation
 
       db.ChatMessages.Add(chatMessage);
@@ -109,7 +110,7 @@ public static class ChatMessageEndpoints {
             .SetProperty(m => m.Modified, modified) // DateTime.Now.ToUniversalTime() is not accepted here (and no need)
             .SetProperty(m => m.Enabled, chatMessage.Enabled ?? row.Enabled)
             .SetProperty(m => m.Shared, chatMessage.Shared ?? row.Shared)
-            .SetProperty(m => m.DisplayName, row.DisplayName)
+            .SetProperty(m => m.DisplayName, chatMessage.DisplayName == "" ? null : row.DisplayName)
             .SetProperty(m => m.SharedWith, sharedWith)
           );
 

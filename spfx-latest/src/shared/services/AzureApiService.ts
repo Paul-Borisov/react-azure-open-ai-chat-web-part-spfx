@@ -466,7 +466,12 @@ export default class AzureApiService {
     }
   }
 
-  public async createChat(newChatName: string, newChatHistory: IChatHistory[], callback: (newChatGuid: string) => void) {
+  public async createChat(
+    newChatName: string,
+    newChatHistory: IChatHistory[] | string,
+    callback: (newChatGuid: string) => void,
+    displayName?: string
+  ) {
     const endpointUri: string = `${this.config.endpointBaseUrlForWebApi}${Operations.ChatMessageCreate}`;
 
     const newChatGuid = (crypto as any).randomUUID();
@@ -475,7 +480,8 @@ export default class AzureApiService {
       name: newChatName,
       //username: PageContextService.context.pageContext.user.loginName,
       username: PageContextService.context.pageContext.aadInfo.userId.toString(), // ObjectID is more secure
-      message: JSON.stringify(newChatHistory),
+      message: typeof newChatHistory !== 'string' ? JSON.stringify(newChatHistory) : newChatHistory,
+      displayName: displayName === undefined ? PageContextService.context.pageContext.user.displayName : displayName,
     };
 
     const options: IHttpClientOptions = {
@@ -530,9 +536,9 @@ export default class AzureApiService {
     }
   }
 
-  public async updateChatHistory(id: string, newChatHistory: IChatHistory[], callback: () => void, modified?: string) {
+  public async updateChatHistory(id: string, newChatHistory: IChatHistory[] | string, callback: () => void, modified?: string) {
     const payload = {
-      message: JSON.stringify(newChatHistory),
+      message: typeof newChatHistory !== 'string' ? JSON.stringify(newChatHistory) : newChatHistory,
       modified: modified,
     };
     this.updateChat(id, payload, callback);
@@ -551,6 +557,13 @@ export default class AzureApiService {
       sharedWith: shareWith?.join(';'),
     };
     this.updateChat(id, payload, callback);
+  }
+
+  public async clearDisplayName(id: string) {
+    const payload = {
+      displayname: '',
+    };
+    this.updateChat(id, payload, undefined);
   }
 
   public async callBing(queryText: string, apiKey: string, model: string, market: string = 'en-US'): Promise<string> {

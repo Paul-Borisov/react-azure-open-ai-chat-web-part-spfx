@@ -6,11 +6,12 @@ import useStorageService from 'hooks/useStorageService';
 import { FunctionComponent } from 'react';
 import * as React from 'react';
 import VoiceOutput from 'shared/components/Speech/VoiceOutput';
-import { GptModels } from 'shared/constants/Application';
+import Application, { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
 import AzureServiceResponseMapper from 'shared/mappers/AzureServiceResponseMapper';
 import { IChatHistory, IChatMessage } from 'shared/model/IChat';
+import EncryptionService from 'shared/services/EncryptionService';
 import LogService from 'shared/services/LogService';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import SpeechService from 'shared/services/SpeechService';
@@ -75,6 +76,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
 
   const wpId = React.useMemo(() => props.context.webPartTag.substring(props.context.webPartTag.lastIndexOf('.') + 1), []);
   const stopSignal = React.useMemo(() => new AbortController(), [signalReload]);
+  const encService = React.useMemo(() => new EncryptionService(), []);
 
   const chatHistoryParams = useChatHistory(
     chatHistory,
@@ -91,8 +93,10 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   const setTextArea = (newValue: string) =>
     setTimeout(() => {
       const targetTextArea = getTextArea();
-      targetTextArea.value = newValue;
-      resizePrompt({ target: targetTextArea });
+      if (targetTextArea) {
+        targetTextArea.value = newValue;
+        resizePrompt({ target: targetTextArea });
+      }
     }, 200);
 
   React.useMemo(() => {
@@ -193,16 +197,21 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     setIsProgress(true);
     setFormattedContent([]);
     setResponseContentError(undefined);
-    storageService
-      .loadChatHistory((data) => (data ? setMyChats(data) : setResponseContentError(strings.TextUndeterminedError)))
+
+    const loadData = (setter: (data: IChatMessage[]) => void, shared: boolean) =>
+      storageService.loadChatHistory((data) => {
+        if (data) {
+          ChatHelper.decrypt(data);
+          setter(data);
+        } else {
+          setResponseContentError(strings.TextUndeterminedError);
+        }
+      }, shared);
+    loadData(setMyChats, false)
       .then(() => {
         if (typeof callback === 'function') callback();
         if (props.sharing) {
-          storageService
-            .loadChatHistory(
-              (data) => (data ? setSharedChats(data) : setResponseContentError(strings.TextUndeterminedError)),
-              true
-            )
+          loadData(setSharedChats, true)
             .then(() => setIsProgress(false))
             .catch(() => setIsProgress(false));
         } else {
@@ -240,7 +249,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     setFormattedContent([]);
   }
 
-  function reloadChatHistory(id: string, name: string, newChatHistory: IChatHistory[]) {
+  function reloadChatHistory(id: string, name: string, newChatHistory: IChatHistory[], e?: any) {
     setChatHistoryId(id);
     setChatName(name);
     setChatHistory(newChatHistory);
@@ -248,7 +257,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     scrollContentToBottom();
     SessionStorageService.clearRawResults();
     clearImages();
-    setResponseContentError(undefined);
+    setResponseContentError(!e ? undefined : e.message);
   }
 
   function scrollContentToBottom() {
@@ -266,7 +275,11 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     refPromptArea: React.LegacyRef<HTMLTextAreaElement>,
     refNavigation: React.LegacyRef<HTMLDivElement>
   ): JSX.Element {
-    const rows = chatHistory.length > 0 ? getChatHistoryContent(chatHistory.filter((r) => typeof r.content === 'string')) : [];
+    if (!Array.isArray(chatHistory)) LogService.error('Invalid data format: chatHistory is not an array');
+    const rows =
+      Array.isArray(chatHistory) && chatHistory?.length > 0
+        ? getChatHistoryContent(chatHistory.filter((r) => typeof r.content === 'string'))
+        : [];
 
     const fileUpload = elements.getFileUpload(
       model,
@@ -440,7 +453,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     const payload = ChatHelper.getItemPayload(props.config, requestText, model, props.functions);
     ChatHelper.addFunctionServices(payload, props);
 
-    payload.chatHistory = JSON.parse(JSON.stringify(chatHistory)); // Removes possible references and allows adjusting the history.
+    payload.chatHistory = pdfFileContent ? [] : JSON.parse(JSON.stringify(chatHistory)); // Removes possible references and allows adjusting the history.
     ChatHelper.truncateImages(payload.chatHistory); // Truncates unnecessary images from the history to reduce request costs.
 
     if (chatHistoryParams.maxContentLengthExceeded && props.unlimitedHistoryLength) {
@@ -580,26 +593,58 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       setResponseContentError(strings.TextUndeterminedError);
     };
 
+    let history: IChatHistory[] | string;
+    if (props.storageEncryption) {
+      history = ChatHelper.encrypt(newChatHistory, encService);
+    } else {
+      history = newChatHistory;
+    }
+
+    const reloadMyChats = () =>
+      storageService.loadChatHistory((messages) => {
+        ChatHelper.decrypt(messages, encService);
+        setMyChats(messages);
+      });
+
     if (!chatHistoryId) {
       // New chat
       const requestText = newChatHistory[0].content;
-      const newChatName: string = HtmlHelper.stripHtml(requestText.length > 255 ? requestText.substring(0, 255) : requestText);
+      let name: string = HtmlHelper.stripHtml(
+        requestText.length > Application.MaxChatNameLength ? requestText.substring(0, Application.MaxChatNameLength) : requestText
+      );
+      let newChatName: string;
+      if (props.storageEncryption) {
+        name =
+          name.length > Application.MaxChatNameLengthEncrypted ? name.substring(0, Application.MaxChatNameLengthEncrypted) : name;
+        newChatName = ChatHelper.encrypt(name, encService);
+      } else {
+        newChatName = name;
+      }
       storageService
-        .createChat(newChatName, newChatHistory, (newChatHistoryId) => {
-          setChatHistoryId(newChatHistoryId);
-          setChatName(newChatName);
-          storageService.loadChatHistory(setMyChats);
-        })
+        .createChat(
+          newChatName,
+          history,
+          (newChatHistoryId) => {
+            setChatHistoryId(newChatHistoryId);
+            setChatName(name);
+            reloadMyChats();
+          },
+          props.storageEncryption ? '' : undefined
+        )
         .catch((e) => handleError(e));
     } else {
       storageService
         .updateChatHistory(
           chatHistoryId,
-          newChatHistory,
+          history,
           () => {
             const newMyChats = [...myChats];
             const chat = newMyChats.find((r) => r.id === chatHistoryId);
             if (chat && chat.message) {
+              if (props.storageEncryption && chat.displayName) {
+                storageService.clearDisplayName(chat.id);
+                chat.displayName = undefined;
+              }
               // Partial UI update without requerying DB
               chat.message = JSON.stringify(newChatHistory);
               chat.modified = modified ?? ChatHelper.toLocalISOString(); //new Date().toISOString();
@@ -609,7 +654,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                 !isCustomPanelOpen ? refConversationContainer?.current : refConversationContainerInCustomPanel?.current
               );
             } else {
-              storageService.loadChatHistory(setMyChats);
+              reloadMyChats();
             }
           },
           modified

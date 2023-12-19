@@ -111,6 +111,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
+        storageEncryption: this.properties.storageEncryption,
         storageType: this.properties.storageType || StorageType.Database,
         promptAtBottom: this.properties.promptAtBottom,
         unlimitedHistoryLength: this.properties.unlimitedHistoryLength,
@@ -286,6 +287,9 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   disabled: this.properties.storageType !== StorageType.SharePoint,
                   sharing: this.properties.sharing,
                   listType: ListType.CustomList,
+                }),
+                PropertyPaneCheckbox('storageEncryption', {
+                  text: strings.FieldLabelEncryption,
                 }),
                 PropertyPaneCheckbox('sharing', {
                   text: `${strings.FieldLabelSharing}${

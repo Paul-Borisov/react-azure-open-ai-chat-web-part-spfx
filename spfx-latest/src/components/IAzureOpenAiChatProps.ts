@@ -60,6 +60,8 @@ export interface IAzureOpenAiChatProps {
   highlightStyles: boolean;
   // Option for default code highlighting style (requires highlight == true)
   highlightStyleDefault: string;
+  // Option to enable storage encryption
+  storageEncryption: boolean;
   // Option for various storage types. Default is Database (when empty)
   storageType: StorageType;
   // Option to choose desired location of prompt texarea above or below content panel

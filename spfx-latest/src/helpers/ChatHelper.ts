@@ -1,12 +1,13 @@
 import { IAzureOpenAiChatProps } from 'components/IAzureOpenAiChatProps';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import { Utils } from 'shared/helpers/Utils';
-import { IChatHistory } from 'shared/model/IChat';
+import { IChatHistory, IChatMessage } from 'shared/model/IChat';
 import { IItemConfig } from 'shared/model/IItemConfig';
 import { IItemPayload } from 'shared/model/IItemPayload';
 import { FunctionCallingOptions } from 'shared/model/enums/FunctionCallingOptions';
 import { FunctionServices } from 'shared/model/enums/FunctionServices';
 import AzureApiService from 'shared/services/AzureApiService';
+import EncryptionService from 'shared/services/EncryptionService';
 
 const defaultResponseTokens = 2048; // Using 800 may produce incomplete output.
 
@@ -291,5 +292,27 @@ export default class ChatHelper {
       }
     }
     return Promise.resolve(newImageUrls);
+  }
+
+  public static encrypt(value: IChatHistory[] | string, encService?: EncryptionService): string {
+    if (!value) return value?.toString();
+
+    if (!encService) encService = new EncryptionService();
+
+    return typeof value === 'string' ? encService.encrypt(value) : encService.encrypt(JSON.stringify(value));
+  }
+
+  public static decrypt(value: IChatMessage[], encService?: EncryptionService): void {
+    if (!encService) encService = new EncryptionService();
+    value.forEach((r) => {
+      try {
+        r.name = encService.decrypt(r.name);
+        if (r.message?.startsWith('"enc:')) {
+          r.message = encService.decrypt(r.message.replace(/^"/, '').replace(/"$/, '')); // A weird storage format in LocalStorage
+        } else {
+          r.message = encService.decrypt(r.message);
+        }
+      } catch (e) {}
+    });
   }
 }

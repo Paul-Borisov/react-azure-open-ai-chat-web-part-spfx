@@ -19,4 +19,6 @@ export const GptModelTokenLimits: { [key: string]: number } = {
 
 export default class Application {
   public static readonly Name: string = 'OpenAI';
+  public static readonly MaxChatNameLength: number = 255;
+  public static readonly MaxChatNameLengthEncrypted: number = 150;
 }
