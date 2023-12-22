@@ -423,7 +423,7 @@ In addition to the standard set of modules employed by SPFx 1.18 with React base
 - @fluentui/react: Provided by Microsoft for building a richer UI experience.
 - @microsoft/fetch-event-source: Used to implement Consecutive Event Streaming. It is used only when the web part setting **Event streaming** is enabled (default).
 - crypto-js, @types/crypto-js: These are used to encrypt and decrypt an api-key when the user explicitly adds it to web part settings. This is not required in the default APIM-based setup.
-- react-pdf: Used to extract text from uploaded PDFs. It is used only when the web part setting **Enable integrations** is turned on (turned off by default).
+- react-pdf: Used to extract text from uploaded PDFs. It is used only when the web part setting **Enable integrations** is turned on (off by default).
 - react-syntax-highlighter: Adds code highlighting capabilities. It is used only when the web part setting **Code highlighting** is enabled (default).
 - react-speech-recognition: the library uses Web Speech API and provides the capabilities for the Voice input feature.
 - prettier, fast-serve: These development tools are used exclusively in the development environment.
