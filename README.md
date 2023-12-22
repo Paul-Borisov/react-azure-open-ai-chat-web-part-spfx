@@ -20,7 +20,7 @@ In addition to the default configuration, you have the option to publish the Nat
 - CONS: Granting access to the Native OpenAI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
 - PROS: Using the Native OpenAI endpoint could grant you access to the latest language models that are not currently available in Azure OpenAI.
 
-In the simplest case, you can also use direct access to (Azure) OpenAI endpoints, configured with an api-key explicitly stored in the web part properties.
+In the simplest case, you can also use direct access to Azure OpenAI and Native OpenAI endpoints, configured with an api-key explicitly stored in the web part properties.
 
 - **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure OpenAI.
 - The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
