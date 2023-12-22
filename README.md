@@ -15,14 +15,14 @@ This web part interacts with private **Azure OpenAI** endpoints that are publish
 - Chats are private and visible only to their creators. Creators have the option to share their chats when this feature is enabled in the web part settings (disabled by default).
 - The web part incorporates tampering prevention logic to guard against unauthorized access to another user's data by their GUID. Creators can share their chats with everyone or only with specific people in the company.
 
-In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (pages 11 and 21).
+In addition to the default configuration, you have the option to publish the Native OpenAI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (pages 11 and 21).
 
-- CONS: Granting access to the Native Open AI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
+- CONS: Granting access to the Native OpenAI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
 - PROS: Using the Native OpenAI endpoint could grant you access to the latest language models that are not currently available in Azure OpenAI.
 
-In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
+In the simplest case, you can also use direct access to (Azure) OpenAI endpoints, configured with an api-key explicitly stored in the web part properties.
 
-- **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure Open AI.
+- **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure OpenAI.
 - The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
   However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
 
