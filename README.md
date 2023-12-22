@@ -4,21 +4,25 @@ This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user exp
 
 **Data Privacy**
 
-The web part interacts with private **Azure OpenAI** endpoints that are published via Azure API Management service (APIM).
+Azure OpenAI is the private GDPR-compliant service developed by Microsoft and deployable to your Azure tenant. Data provided to endpoints of Azure OpenAI is kept inside the boundaries of your tenant.
+
+Native OpenAI is a public service, which provides access to its optional API by paid subscriptions. Any data provided to endpoints of Native OpenAI goes outside the boundaries of your tenant. As of December 2023, Native OpenAI is <a href="https://openai.com/security" target="_blank">GDPR-compliant</a>.
+
+This web part interacts with private **Azure OpenAI** endpoints that are published via Azure API Management service (APIM).
 
 - By default, this setup provides enhanced data privacy. In this configuration, requests to AI do not travel outside your Azure tenant.
 - APIM consistently validates the identities of SharePoint users for each individual request. If the request originates from authorized domains, APIM retrieves the **api-key** from the secure vault and injects it into the request before forwarding it to the AI endpoint. This process ensures that the api-key does not get exposed in the browser.
 - Chats are private and visible only to their creators. Creators have the option to share their chats when this feature is enabled in the web part settings (disabled by default).
 - The web part incorporates tampering prevention logic to guard against unauthorized access to another user's data by their GUID. Creators can share their chats with everyone or only with specific people in the company.
 
-In addition to the default configuration, you have the option to publish the Native Open AI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (pages 11 and 21).
+In addition to the default configuration, you have the option to publish the Native OpenAI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (pages 11 and 21).
 
-- CONS: Granting access to the Native Open AI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
+- CONS: Granting access to the Native OpenAI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
 - PROS: Using the Native OpenAI endpoint could grant you access to the latest language models that are not currently available in Azure OpenAI.
 
-In the simplest case, you can also use direct access to (Azure) Open AI endpoints, configured with an api-key explicitly stored in the web part properties.
+In the simplest case, you can also use direct access to Azure OpenAI and Native OpenAI endpoints, configured with an api-key explicitly stored in the web part properties.
 
-- **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure Open AI.
+- **This setup, while the least secure, can provide a quicker start.** It is not recommended for production use, but it can be used for quick tests or in situations where you do not have access to Azure API Management or Azure OpenAI.
 - The stored key is encrypted in the web part properties and displayed as \*\*\* in the Property Pane.
   However, it will travel in browser requests and can be viewed within the DEV tools > Network > Request headers.
 
@@ -419,7 +423,7 @@ In addition to the standard set of modules employed by SPFx 1.18 with React base
 - @fluentui/react: Provided by Microsoft for building a richer UI experience.
 - @microsoft/fetch-event-source: Used to implement Consecutive Event Streaming. It is used only when the web part setting **Event streaming** is enabled (default).
 - crypto-js, @types/crypto-js: These are used to encrypt and decrypt an api-key when the user explicitly adds it to web part settings. This is not required in the default APIM-based setup.
-- react-pdf: Used to extract text from uploaded PDFs. It is used only when the web part setting **Enable integrations** is enabled (disabled by default).
+- react-pdf: Used to extract text from uploaded PDFs. It is used only when the web part setting **Enable integrations** is turned on (off by default).
 - react-syntax-highlighter: Adds code highlighting capabilities. It is used only when the web part setting **Code highlighting** is enabled (default).
 - react-speech-recognition: the library uses Web Speech API and provides the capabilities for the Voice input feature.
 - prettier, fast-serve: These development tools are used exclusively in the development environment.
