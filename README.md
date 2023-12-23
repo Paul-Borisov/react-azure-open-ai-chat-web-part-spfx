@@ -15,7 +15,7 @@ This web part interacts with private **Azure OpenAI** endpoints that are publish
 - Chats are private and visible only to their creators. Creators have the option to share their chats when this feature is enabled in the web part settings (disabled by default).
 - The web part incorporates tampering prevention logic to guard against unauthorized access to another user's data by their GUID. Creators can share their chats with everyone or only with specific people in the company.
 
-In addition to the default configuration, you have the option to publish the Native OpenAI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (pages 11 and 21).
+In addition to the default configuration, you have the option to publish the Native OpenAI endpoint in APIM. You can find instructions in the [documentation](docs/azure-openai-chat-web-part.pdf) (pages 23 and 32-35).
 
 - CONS: Granting access to the Native OpenAI endpoint requires a separate **api-key** for it and could potentially compromise data privacy, as requests might travel outside your Azure tenant under this setup.
 - PROS: Using the Native OpenAI endpoint could grant you access to the latest language models that are not currently available in Azure OpenAI.
@@ -35,36 +35,38 @@ The integrations available in this release include:
 - Local Date and Time
 - Analysis of an uploaded PDF and summarization of its content
 - Analysis of uploaded images and description of their content
-- Version 1.1: Search on the Internet: Bing and Google (+ Reddit). Added on Dec 2, 2023.
+- Version 1.1 includes additional features:
+  - Search on the Internet: Bing and Google (+ Reddit). Added on Dec 2, 2023.
+    - The configuration is supported in two alternatives:
+      - 1. Using the additional APIM-endpoints https://**tenant**.azure-api.net/**bing** and/or https://**tenant**.azure-api.net/**google**
+      - 2. Using the direct Bing and Google endpoints with own **api-key** values stored in the web part settings (less secure).
 
-  - The configuration is supported in two alternatives:
-    - 1. Using the additional APIM-endpoints https://**tenant**.azure-api.net/**bing** and/or https://**tenant**.azure-api.net/**google**
-    - 2. Using the direct Bing and Google endpoints with own **api-key** values stored in the web part settings (less secure).
+  - Image generation from the prompt text. This option supports Dalle 3. Added on Dec 5, 2023.
 
-- Version 1.1: Image generation from the prompt text. This option supports Dalle 3. Added on Dec 5, 2023.
+    - The configuration is supported in three alternatives:
+      - 1. Using the additional APIM-endpoint https://**tenant**.azure-api.net/openai/**dalle**
+      - 2. Using the Azure OpenAI endpoint https://**tenant**.openai.azure.com/openai/deployments/dalle3/images/generations?api-version=2023-12-01-preview with **api-key** stored in the web part settings (less secure).
+        - The model Dalle3 is available for the deployment in Swedish Central zone (as of December 2023).
+      - 3. Using the Native OpenAI endpoint https://**api.openai.com**/v1/images/generations with **api-key** stored in the web part settings (less secure).
 
-  - The configuration is supported in three alternatives:
-    - 1. Using the additional APIM-endpoint https://**tenant**.azure-api.net/openai/**dalle**
-    - 2. Using the Azure OpenAI endpoint https://**tenant**.openai.azure.com/openai/deployments/dalle3/images/generations?api-version=2023-12-01-preview with **api-key** stored in the web part settings (less secure).
-      - The model Dalle3 is available for the deployment in Swedish Central zone (as of December 2023).
-    - 3. Using the Native OpenAI endpoint https://**api.openai.com**/v1/images/generations with **api-key** stored in the web part settings (less secure).
+  - The option to use voice input to prompt text is available. Added on Dec 8, 2023.
 
-- Version 1.1: The option to use voice input to prompt text is available. Added on Dec 8, 2023.
-
-- [Beta 1.2](../../releases/tag/Beta1.2). Dec 13, 2023: Added the optional support for GPT-4 Vision APIM endpoint (/openai4/vision).
-  
-- [Beta 1.2](../../releases/tag/Beta1.2). Dec 16, 2023: Added the optional support for /tts APIM endpoint (/openainative/tts) and Native OpenAI text-to-speech model for AI-generated texts.
-
-- [Beta 1.2](../../releases/tag/Beta1.2). Dec 18, 2023: Added the optional support for Web Speech API (window.speechSynthesis) to provide voice outputs to AI-generated texts when OpenAI text-to-speech model is not available.
-  - OpenAI text-to-speech model automatically handles text that contains mixed languages.
-  - The standard Web Speech API requires selecting the preferred language; using default page language is not always optimal.
-  - Azure OpenAI does not yet have support for text-to-speech models (as of Dec 2023).
-
-- [Beta 1.2](../../releases/tag/Beta1.2). Dec 19, 2023: Added the optional support for AES data encryption for all storage types
-  - SharePoint list
-  - Database
-  - Local Storage.
-
+- Version 1.2 released on Dec 23, 2023. It includes the optional support for:
+  - Data encryption for all storage types.
+    - SharePoint list
+    - Database
+    - Local Storage
+    - Seamless support of the Chat Sharing option for all storage types
+ 
+  - GPT-4 Vision APIM endpoint (/openai4/vision).
+    
+  - Speech synthesis to read out AI-generated texts by default
+    - The standard Web Speech API requires selecting the preferred language; using default page language is not always optimal. This default option is used when Native OpenAI text-to-speech model is not available.
+    - Azure OpenAI does not yet have support for text-to-speech models (as of Dec 2023).
+      
+  - /tts APIM endpoint (/openainative/tts) and Native OpenAI text-to-speech model for AI-generated texts.
+    - In case of using Native OpenAI endpoints - direct URL or APIM-based operation - the native text-to-speech model automatically handles text that contains mixed languages.
+      
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
@@ -289,7 +291,7 @@ You will not be able to use the Private Chat sharing and People Search features 
 - Optionally, you can deploy the API Management service and publish (Azure) OpenAI endpoints there.
   - You should have an **api-key** for Azure OpenAI instance, with configured endpoints for GPT 3.5 and, optionally, GPT 4 text language models.
     - Alternatively, you should have an **api-key** for Native OpenAI.
-  - For detailed instructions on configuring Azure OpenAI and APIM endpoints, please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 17-38).
+  - For detailed instructions on configuring Azure OpenAI and APIM endpoints, please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 19-41).
 
 ## Configurations
 
@@ -404,8 +406,8 @@ You will not be able to use the Private Chat sharing and People Search features 
 
 Please refer to the project documentation in [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) and [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf)
 
-- For detailed instructions on configuring Backend services, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 17-38).
-- For detailed instructions on deploying the web part and configuring its settings, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 3-11).
+- For detailed instructions on configuring Backend services, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 19-41).
+- For detailed instructions on deploying the web part and configuring its settings, please refer to [azure-openai-chat-web-part.pdf](docs/azure-openai-chat-web-part.pdf) (pages 3-12).
 - For more options regarding the security of Backend services, please refer to [azure-openai-chat-security.pdf](docs/azure-openai-chat-security.pdf).
 
 # Notes on npm install and associated warnings
