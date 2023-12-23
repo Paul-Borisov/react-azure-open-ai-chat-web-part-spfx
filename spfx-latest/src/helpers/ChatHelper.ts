@@ -1,12 +1,13 @@
 import { IAzureOpenAiChatProps } from 'components/IAzureOpenAiChatProps';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import { Utils } from 'shared/helpers/Utils';
-import { IChatHistory } from 'shared/model/IChat';
+import { IChatHistory, IChatMessage } from 'shared/model/IChat';
 import { IItemConfig } from 'shared/model/IItemConfig';
 import { IItemPayload } from 'shared/model/IItemPayload';
 import { FunctionCallingOptions } from 'shared/model/enums/FunctionCallingOptions';
 import { FunctionServices } from 'shared/model/enums/FunctionServices';
 import AzureApiService from 'shared/services/AzureApiService';
+import EncryptionService from 'shared/services/EncryptionService';
 
 const defaultResponseTokens = 2048; // Using 800 may produce incomplete output.
 
@@ -33,7 +34,7 @@ export default class ChatHelper {
     const largeContentDeduction = 1500;
 
     let returnValue = Math.floor((4 * 1024 - responseTokens) * averageCharsPerToken);
-    if (/4-(1106|turbo)/i.test(model)) {
+    if (/4-(1106|turbo|vision)/i.test(model)) {
       returnValue = Math.floor((128 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/32k/i.test(model)) {
       returnValue = Math.floor((32 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
@@ -48,7 +49,7 @@ export default class ChatHelper {
   public static maxRequestLength(model: string, responseTokens: number, chatHistoryLength: number): number {
     // maxRequestLength = max allowed number of characters in the prompt.
     let maxCharacters = 4000; // GPT-35-turbo, 4k
-    if (/4-(1106|turbo)/i.test(model)) {
+    if (/4-(1106|turbo|vision)/i.test(model)) {
       maxCharacters = 125000; // ~ (128 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/32k/i.test(model)) {
       maxCharacters = 30000; // ~ (32 * 1024 * 3.6) / 3.75 long questions - answers.
@@ -245,6 +246,8 @@ export default class ChatHelper {
     props: IAzureOpenAiChatProps,
     checkForNativeApimEndpoint?: boolean
   ): boolean {
+    if (!apiService || !props) return false;
+
     return (
       apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi) ||
       apiService.isOpenAiServiceUrl(props.endpointBaseUrlForOpenAi4) ||
@@ -252,6 +255,17 @@ export default class ChatHelper {
       apiService.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi4) ||
       (checkForNativeApimEndpoint &&
         (apiService.isNative(props.endpointBaseUrlForOpenAi) || apiService.isNative(props.endpointBaseUrlForOpenAi4)))
+    );
+  }
+
+  public static supportsTextToSpeech(props: IAzureOpenAiChatProps): boolean {
+    if (!props?.apiService) return false;
+
+    return (
+      (props.apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi) &&
+        props.apiService.isNative(props.endpointBaseUrlForOpenAi)) ||
+      (props.apiService.isApiManagementUrl(props.endpointBaseUrlForOpenAi4) &&
+        props.apiService.isNative(props.endpointBaseUrlForOpenAi4))
     );
   }
 
@@ -278,5 +292,27 @@ export default class ChatHelper {
       }
     }
     return Promise.resolve(newImageUrls);
+  }
+
+  public static encrypt(value: IChatHistory[] | string, encService?: EncryptionService): string {
+    if (!value) return value?.toString();
+
+    if (!encService) encService = new EncryptionService();
+
+    return typeof value === 'string' ? encService.encrypt(value) : encService.encrypt(JSON.stringify(value));
+  }
+
+  public static decrypt(value: IChatMessage[], encService?: EncryptionService, shared?: boolean): void {
+    if (!encService) encService = new EncryptionService();
+    value.forEach((r) => {
+      try {
+        r.name = encService.decrypt(r.name, true, shared ? r.username : undefined);
+        if (r.message?.startsWith('"enc:')) {
+          r.message = encService.decrypt(r.message.replace(/^"/, '').replace(/"$/, '')); // A weird storage format in LocalStorage
+        } else {
+          r.message = encService.decrypt(r.message, true, shared ? r.username : undefined);
+        }
+      } catch (e) {}
+    });
   }
 }

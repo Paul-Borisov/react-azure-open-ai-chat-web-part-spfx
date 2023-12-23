@@ -10,6 +10,7 @@ define([], function () {
     FieldLabelBing: 'Bing-søk',
     FieldLabelBingApiKey: 'Valgfri api-nøkkel for Bing',
     FieldLabelBingApiKeyPlaceholder: 'Legg til hvis APIM-endepunkt ikke er konfigurert',
+    FieldLabelEncryption: 'Aktiver lagringskryptering',
     FieldLabelExamples: 'Aktiver eksempler for ledeteksten',
     FieldLabelGoogle: 'Google-søk',
     FieldLabelGoogleApiKey: 'Valgfri nøkkel for Google: key=API_NØKKEL&cx=SØKEMOTORID',
@@ -36,6 +37,7 @@ define([], function () {
     FieldLabelVision: 'Bildeanalyse (Vision)',
     FieldLabelVisionApim: 'Bildeanalyse: konfigurer /vision (docs)',
     FieldLabelVoiceInput: 'Aktiver stemmeinndata',
+    FieldLabelVoiceOutput: 'Aktiver stemmeutgang (tekst til tale)',
 
     PlaceholderDescription: 'Konfigurer denne webdelen.',
     PlaceholderText: 'Konfigurer webdelen din',
@@ -48,7 +50,7 @@ define([], function () {
     TextClose: 'Lukk',
     TextCodeStyle: 'Kode stil',
     TextCollapse: 'Skjul',
-    TextCommands: 'kommandoer',
+    TextCommands: 'resultat',
     TextConfigure: 'Konfigurer',
     TextCopy: 'Kopier',
     TextCreate: 'Lag',
@@ -57,6 +59,7 @@ define([], function () {
     TextDeleteMessage: 'Vil du slette',
     TextDescribeImage: 'Hva er på dette bildet?',
     TextDescribeImages: 'Hva er i disse bildene?',
+    TextDeviceUnavailable: 'Enheten er utilgjengelig',
     TextDemoOnly: '(demo only)',
     TextEdit: 'Rediger',
     TextError: 'Feil oppsto',
@@ -109,5 +112,6 @@ define([], function () {
     TextUploadImage: 'Last opp bilder',
     TextUploadImage: 'Last opp PDF',
     TextVoiceInput: 'Stemmeinndata',
+    TextVoiceOutput: 'Les opp',
   };
 });

@@ -10,6 +10,7 @@ define([], function () {
     FieldLabelBing: 'Bing-haku',
     FieldLabelBingApiKey: 'Valinnainen api-avain Bingille',
     FieldLabelBingApiKeyPlaceholder: 'Lisää, jos APIM-päätepistettä ei ole määritetty',
+    FieldLabelEncryption: 'Ota tallennustilan salaus käyttöön',
     FieldLabelExamples: 'Ota esimerkit käyttöön kehotetekstissä',
     FieldLabelGoogle: 'Google-haku',
     FieldLabelGoogleApiKey: 'Valinnainen avain Googlelle: key=API_AVAIN&cx=HAKUKONEEN_ID',
@@ -36,6 +37,7 @@ define([], function () {
     FieldLabelVision: 'Kuvaanalyysi (Vision)',
     FieldLabelVisionApim: 'Kuvaanalyysi: konfiguroi /vision (docs)',
     FieldLabelVoiceInput: 'Ota äänisyöttö käyttöön',
+    FieldLabelVoiceOutput: 'Ota äänilähtö käyttöön (teksti puheeksi)',
 
     PlaceholderDescription: 'Määritä tämä verkko-osa.',
     PlaceholderText: 'Määritä verkko-osa',
@@ -48,7 +50,7 @@ define([], function () {
     TextClose: 'Sulje',
     TextCodeStyle: 'Koodityyli',
     TextCollapse: 'Tiivistä',
-    TextCommands: 'komentoja',
+    TextCommands: 'tulos',
     TextConfigure: 'Määritä',
     TextCopy: 'Kopioi',
     TextCreate: 'Luota',
@@ -57,6 +59,7 @@ define([], function () {
     TextDeleteMessage: 'Haluatko poistaa',
     TextDescribeImage: 'Mitä tässä kuvassa on?',
     TextDescribeImages: 'Mitä näissä kuvissa on?',
+    TextDeviceUnavailable: 'Laite ei ole käytettävissä',
     TextEdit: 'Muokkaa',
     TextError: 'Tapahtui virhe',
     TextExamples: 'Esimerkit',
@@ -108,5 +111,6 @@ define([], function () {
     TextUploadImage: 'Lataa kuvia',
     TextUpload: 'Lataa PDF',
     TextVoiceInput: 'Äänisyöttö',
+    TextVoiceOutput: 'Lue ulos',
   };
 });

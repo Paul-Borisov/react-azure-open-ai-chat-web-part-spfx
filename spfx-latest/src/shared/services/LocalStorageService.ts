@@ -24,16 +24,23 @@ export default class LocalStorageService {
 
   public static async deleteChat(id: string, callback: () => void) {
     const messages = this.getChatMessages();
-    const chatMessage = messages.find((m) => m.id === id);
+    /*const chatMessage = messages.find((m) => m.id === id);
     if (chatMessage) {
       chatMessage.enabled = false;
       chatMessage.modified = new Date().toISOString();
     }
-    this.saveChatMessages(messages);
+    this.saveChatMessages(messages);*/
+    // No reason to keep the localStorage occupied; just remove it.
+    this.saveChatMessages(messages.filter((m) => m.id !== id));
     callback();
   }
 
-  public static async createChat(newChatName: string, newChatHistory: IChatHistory[], callback: (newChatGuid: string) => void) {
+  public static async createChat(
+    newChatName: string,
+    newChatHistory: IChatHistory[],
+    callback: (newChatGuid: string) => void,
+    displayName?: string
+  ) {
     const newChatGuid = (crypto as any).randomUUID();
     const newChatMessage: IChatMessage = {
       id: newChatGuid,
@@ -44,7 +51,7 @@ export default class LocalStorageService {
       modified: new Date().toISOString(),
       enabled: true,
       shared: false,
-      displayName: PageContextService.context.pageContext.user.displayName,
+      displayName: displayName === undefined ? PageContextService.context.pageContext.user.displayName : displayName,
       sharedWith: undefined,
     };
     const messages = this.getChatMessages();
@@ -82,5 +89,14 @@ export default class LocalStorageService {
     }
     this.saveChatMessages(messages);
     if (callback) callback();
+  }
+
+  public static async clearDisplayName(id: string) {
+    const messages = this.getChatMessages();
+    const chatMessage = messages.find((m) => m.id === id);
+    if (chatMessage) {
+      chatMessage.displayName = null;
+    }
+    this.saveChatMessages(messages);
   }
 }

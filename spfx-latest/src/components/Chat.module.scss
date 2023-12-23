@@ -42,6 +42,10 @@ $selection: $ms-color-gray150;
     background-color: $dark;
   }
 }
+.voiceOutput {
+  cursor: pointer;
+  font-size: 150%;
+}
 .panelHeader {
   position: absolute;
   left: 0;
@@ -491,6 +495,7 @@ $selection: $ms-color-gray150;
   &.insidePanel {
     padding-top: 5px;
   }
+  word-break: break-word;
 }
 .errorMessage {
   margin-bottom: 10px !important;

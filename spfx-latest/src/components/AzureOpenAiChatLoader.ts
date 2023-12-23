@@ -107,9 +107,11 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
         images: this.properties.functions && this.properties.images,
         examples: this.properties.examples,
         voiceInput: this.properties.voiceInput,
+        voiceOutput: this.properties.voiceOutput,
         highlight: this.properties.highlight,
         highlightStyles: this.properties.highlightStyles,
         highlightStyleDefault: this.properties.highlightStyleDefault,
+        storageEncryption: this.properties.storageEncryption,
         storageType: this.properties.storageType || StorageType.Database,
         promptAtBottom: this.properties.promptAtBottom,
         unlimitedHistoryLength: this.properties.unlimitedHistoryLength,
@@ -286,6 +288,9 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                   sharing: this.properties.sharing,
                   listType: ListType.CustomList,
                 }),
+                PropertyPaneCheckbox('storageEncryption', {
+                  text: strings.FieldLabelEncryption,
+                }),
                 PropertyPaneCheckbox('sharing', {
                   text: `${strings.FieldLabelSharing}${
                     this.properties.storageType === StorageType.Local ? ` ${strings.FieldLabelDemoOnly}` : ''
@@ -350,6 +355,9 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                 }),
                 PropertyPaneCheckbox('voiceInput', {
                   text: strings.FieldLabelVoiceInput,
+                }),
+                PropertyPaneCheckbox('voiceOutput', {
+                  text: strings.FieldLabelVoiceOutput,
                 }),
                 PropertyPaneCheckbox('highlight', {
                   text: strings.FieldLabelHighlight,

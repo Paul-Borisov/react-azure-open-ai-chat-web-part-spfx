@@ -267,7 +267,12 @@ export default class SharepointService {
     }
   }
 
-  public async createChat(newChatName: string, newChatHistory: IChatHistory[], callback: (newId: string) => void) {
+  public async createChat(
+    newChatName: string,
+    newChatHistory: IChatHistory[] | string,
+    callback: (newId: string) => void,
+    displayName?: string
+  ) {
     const query: IODataQuery = {
       isSiteRelative: false,
       endpoint: `${this.webUrl}/_api/web/lists/getbytitle('${this.listTitle}')/items`,
@@ -275,9 +280,9 @@ export default class SharepointService {
     const payload = {
       [FieldNames.name]: newChatName,
       [FieldNames.userName]: PageContextService.context.pageContext.aadInfo.userId.toString(),
-      [FieldNames.message]: JSON.stringify(newChatHistory),
+      [FieldNames.message]: typeof newChatHistory !== 'string' ? JSON.stringify(newChatHistory) : newChatHistory,
       [FieldNames.enabled]: 'true',
-      [FieldNames.displayName]: PageContextService.context.pageContext.user.displayName,
+      [FieldNames.displayName]: displayName === undefined ? PageContextService.context.pageContext.user.displayName : displayName,
     };
     this.postData(query, payload, 'POST', '*').then((response) => {
       if (response.ok) {
@@ -305,12 +310,12 @@ export default class SharepointService {
     });
   }
 
-  public async updateChatHistory(id: string, newChatHistory: IChatHistory[], callback: () => void, modified?: string) {
+  public async updateChatHistory(id: string, newChatHistory: IChatHistory[] | string, callback: () => void, modified?: string) {
     const formValues = [
       {
         ErrorMessage: null,
         FieldName: FieldNames.message,
-        FieldValue: JSON.stringify(newChatHistory),
+        FieldValue: typeof newChatHistory !== 'string' ? JSON.stringify(newChatHistory) : newChatHistory,
         HasException: false,
       },
     ];
@@ -345,6 +350,18 @@ export default class SharepointService {
       },
     ];
     return this.systemUpdate(id, formValues, modified, callback);
+  }
+
+  public async clearDisplayName(id: string) {
+    const formValues = [
+      {
+        ErrorMessage: null,
+        FieldName: FieldNames.displayName,
+        FieldValue: null,
+        HasException: false,
+      },
+    ];
+    this.systemUpdate(id, formValues, undefined, undefined);
   }
 
   public async createImageLibrary(

@@ -10,6 +10,7 @@ define([], function () {
     FieldLabelBing: 'Поиск Bing',
     FieldLabelBingApiKey: 'Опциональный API-ключ для Bing',
     FieldLabelBingApiKeyPlaceholder: 'Если URL-адрес в APIM не настроен',
+    FieldLabelEncryption: 'Включить шифрование хранилища',
     FieldLabelExamples: 'Включить примеры для текста подсказки',
     FieldLabelGoogle: 'Поиск Google',
     FieldLabelGoogleApiKey: 'Опциональный ключ для Google: key=API_KEY&cx=SEARCH_ENGINE_ID',
@@ -36,6 +37,7 @@ define([], function () {
     FieldLabelVision: 'Анализ изображения (Vision)',
     FieldLabelVisionApim: 'Анализ изображения: настройте URL-адрес /vision (docs)',
     FieldLabelVoiceInput: 'Включить голосовой ввод',
+    FieldLabelVoiceOutput: 'Включить голосовой вывод (текст в речь)',
 
     PlaceholderDescription: 'Пожалуйста, настройте эту веб-часть.',
     PlaceholderText: 'Настройте Вашу веб-часть',
@@ -48,7 +50,7 @@ define([], function () {
     TextClose: 'Закрыть',
     TextCodeStyle: 'Стиль кода',
     TextCollapse: 'Свернуть',
-    TextCommands: 'команды',
+    TextCommands: 'результат',
     TextConfigure: 'Настроить',
     TextCopy: 'Копировать',
     TextCreate: 'Создать',
@@ -57,6 +59,7 @@ define([], function () {
     TextDeleteMessage: 'Вы хотите удалить',
     TextDescribeImage: 'Что находится на этом изображении?',
     TextDescribeImages: 'Что находится на этих изображениях?',
+    TextDeviceUnavailable: 'Устройство недоступно',
     TextEdit: 'Редактировать',
     TextError: 'Произошла ошибка',
     TextExamples: 'Примеры',
@@ -108,5 +111,6 @@ define([], function () {
     TextUploadImage: 'Загрузить картинки',
     TextUploadPdf: 'Загрузить PDF',
     TextVoiceInput: 'Голосовой ввод',
+    TextVoiceOutput: 'Прочитать',
   };
 });

@@ -10,6 +10,7 @@ define([], function () {
     FieldLabelBing: 'Bing search',
     FieldLabelBingApiKey: 'Optional api-key for Bing',
     FieldLabelBingApiKeyPlaceholder: 'Add if APIM endpoint is not configured',
+    FieldLabelEncryption: 'Enable storage encryption',
     FieldLabelExamples: 'Enable examples for the prompt text',
     FieldLabelGoogle: 'Google search',
     FieldLabelGoogleApiKey: 'Optional key for Google: key=API_KEY&cx=SEARCH_ENGINE_ID',
@@ -36,6 +37,7 @@ define([], function () {
     FieldLabelVision: 'Image analysis (Vision)',
     FieldLabelVisionApim: 'Image analysis: configure /vision (docs)',
     FieldLabelVoiceInput: 'Enable voice input',
+    FieldLabelVoiceOutput: 'Enable voice output (text to speech)',
 
     PlaceholderDescription: 'Please configure this web part.',
     PlaceholderText: 'Configure your web part',
@@ -48,7 +50,7 @@ define([], function () {
     TextClose: 'Close',
     TextCodeStyle: 'Code style',
     TextCollapse: 'Collapse',
-    TextCommands: 'commands',
+    TextCommands: 'output',
     TextConfigure: 'Configure',
     TextCopy: 'Copy',
     TextCreate: 'Create',
@@ -57,6 +59,7 @@ define([], function () {
     TextDeleteMessage: 'Do you want to delete',
     TextDescribeImage: 'What is in this image?',
     TextDescribeImages: 'What is in these images?',
+    TextDeviceUnavailable: 'Deice unavailable',
     TextEdit: 'Edit',
     TextError: 'Error occurred',
     TextExamples: 'Examples',
@@ -108,5 +111,6 @@ define([], function () {
     TextUploadImage: 'Upload images',
     TextUploadPdf: 'Upload PDF',
     TextVoiceInput: 'Voice input',
+    TextVoiceOutput: 'Read out',
   };
 });

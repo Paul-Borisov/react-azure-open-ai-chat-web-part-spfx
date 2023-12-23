@@ -25,6 +25,7 @@ const CheckboxGroup: React.FunctionComponent<ICheckboxGroupProps> = (props) => {
       React.createElement(Checkbox, {
         label: o.text,
         key: o.key,
+        title: o.key.toString(),
         checked: o.selected,
         onChange: (e, checked) => {
           o.selected = checked;

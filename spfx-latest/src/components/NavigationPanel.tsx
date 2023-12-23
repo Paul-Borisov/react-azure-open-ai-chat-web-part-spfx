@@ -1,4 +1,4 @@
-import { Checkbox, Dropdown, FontIcon, IDropdownOption, ResponsiveMode, TooltipHost } from '@fluentui/react';
+import { Checkbox, Dropdown, FontIcon, IDropdownOption, ResponsiveMode, TooltipHost, appendFunction } from '@fluentui/react';
 import * as strings from 'AzureOpenAiChatWebPartStrings';
 import ChatHelper from 'helpers/ChatHelper';
 import { FunctionComponent } from 'react';
@@ -6,9 +6,11 @@ import * as React from 'react';
 import { getStylesSelector } from 'shared/components/CodeHighlighter/CodeHighlighter';
 import { getConfirmationDialog } from 'shared/components/CustomDialog';
 import { PeoplePicker } from 'shared/components/PeoplePicker';
+import Application from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
 import MarkdownHelper from 'shared/helpers/MarkdownHelper';
 import { IChatHistory, IChatMessage, IUser } from 'shared/model/IChat';
+import EncryptionService from 'shared/services/EncryptionService';
 import LogService from 'shared/services/LogService';
 import PageContextService from 'shared/services/PageContextService';
 import SessionStorageService from 'shared/services/SessionStorageService';
@@ -20,6 +22,7 @@ interface INavigationPanel {
   chatHistoryId: string;
   chatName: string;
   isCustomPanelOpen: boolean;
+  encService: EncryptionService;
   firstLoad: boolean;
   myChats: IChatMessage[];
   props: IChatProps;
@@ -32,7 +35,7 @@ interface INavigationPanel {
   wpId: string;
   clearChatMessages: () => void;
   loadChats: (callback: () => void) => void;
-  reloadChatHistory: (id: string, name: string, newChatHistory: IChatHistory[]) => void;
+  reloadChatHistory: (id: string, name: string, newChatHistory: IChatHistory[], e?: any) => void;
   scrollContentToBottom: () => void;
   setChatHistory: (history: IChatHistory[]) => void;
   setChatName: (name: string) => void;
@@ -51,6 +54,7 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
   chatHistoryId,
   chatName,
   isCustomPanelOpen,
+  encService,
   firstLoad,
   myChats,
   props,
@@ -272,10 +276,11 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
       if (index === 0 && firstLoad) {
         try {
           reloadChatHistory(id, name, JSON.parse(r.message));
-          setFirstLoad(false);
         } catch (e) {
-          LogService.error('getChatNavigation', e);
-          clearChatMessages();
+          LogService.error(e);
+          reloadChatHistory(id, name, [], e);
+        } finally {
+          setFirstLoad(false);
         }
       }
 
@@ -302,9 +307,11 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
                 }
                 const storedChatMessages = JSON.parse(message);
                 reloadChatHistory(id, name, storedChatMessages);
-                setSelectedSharedChat(undefined);
               } catch (e) {
-                LogService.error('getChatNavigation', e);
+                LogService.error(e);
+                reloadChatHistory(id, name, []);
+              } finally {
+                setSelectedSharedChat(undefined);
               }
             }}
           >
@@ -464,7 +471,12 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
       //}
       setMyChats([...newMyChats]);
       //setReloadNavigation(true);
-      storageService.loadChatHistory(setSharedChats, true);
+      storageService.loadChatHistory((data) => {
+        if (data) {
+          ChatHelper.decrypt(data, encService, true);
+          setSharedChats(data);
+        }
+      }, true);
     });
   }
 
@@ -473,14 +485,20 @@ const NavigationPanel: FunctionComponent<INavigationPanel> = ({
   }
   function saveEditedChatName(id: string, newName: string) {
     if (!newName?.trim()) return;
-    if (newName.length > 255) newName = newName.substring(0, 255);
+    if (props.storageEncryption && newName.length > Application.MaxChatNameLengthEncrypted) {
+      newName = newName.substring(0, Application.MaxChatNameLengthEncrypted);
+    } else if (newName.length > Application.MaxChatNameLength) {
+      newName = newName.substring(0, Application.MaxChatNameLength);
+    }
     if (/\n+$/.test(newName)) newName = newName.replace(/\n+$/, '');
     if (chatName === newName) {
       setEditingChatId(undefined);
+      setReloadNavigation(true);
       return;
     }
     const modified = myChats.find((r) => r.id === id)?.modified;
-    storageService.updateChatName(id, newName, modified, () => {
+    const name: string = props.storageEncryption ? ChatHelper.encrypt(newName) : newName;
+    storageService.updateChatName(id, name, modified, () => {
       setEditingChatId(undefined);
       setChatName(newName);
       const newMyChats = [...myChats];

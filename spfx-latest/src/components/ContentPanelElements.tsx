@@ -8,7 +8,7 @@ import { getSimpleDialog } from 'shared/components/CustomDialog';
 import { CustomShimmer } from 'shared/components/CustomShimmer/CustomShimmer';
 import LinkButton from 'shared/components/LinkButton/LinkButton';
 import MessageBar, { MessageType } from 'shared/components/MessageBar/MessageBar';
-import VoiceInput from 'shared/components/VoiceInput/VoiceInput';
+import VoiceInput from 'shared/components/Speech/VoiceInput';
 import { IChatHistory } from 'shared/model/IChat';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import { IChatProps } from './Chat';

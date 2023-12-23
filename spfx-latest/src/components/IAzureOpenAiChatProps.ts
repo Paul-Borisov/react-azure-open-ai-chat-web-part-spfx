@@ -52,12 +52,16 @@ export interface IAzureOpenAiChatProps {
   examples: boolean;
   // Option to enable voice input to the pronpt text
   voiceInput: boolean;
+  // Option to enable voice output for AI-generated text
+  voiceOutput: boolean;
   // Option to enable code highlighting
   highlight: boolean;
   // Option to show code highlighting styles (requires highlight == true)
   highlightStyles: boolean;
   // Option for default code highlighting style (requires highlight == true)
   highlightStyleDefault: string;
+  // Option to enable storage encryption
+  storageEncryption: boolean;
   // Option for various storage types. Default is Database (when empty)
   storageType: StorageType;
   // Option to choose desired location of prompt texarea above or below content panel
