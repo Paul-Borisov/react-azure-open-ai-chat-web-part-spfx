@@ -35,13 +35,13 @@ The integrations available in this release include:
 - Local Date and Time
 - Analysis of an uploaded PDF and summarization of its content
 - Analysis of uploaded images and description of their content
-- Version 1.1 includes additional features:
-  - Search on the Internet: Bing and Google (+ Reddit). Added on Dec 2, 2023.
+- Version 1.1 released on Dec 13, 2023. It includes the following additional options:
+  - Search on the Internet: Bing and Google (+ Reddit).
     - The configuration is supported in two alternatives:
       - 1. Using the additional APIM-endpoints https://**tenant**.azure-api.net/**bing** and/or https://**tenant**.azure-api.net/**google**
       - 2. Using the direct Bing and Google endpoints with own **api-key** values stored in the web part settings (less secure).
 
-  - Image generation from the prompt text. This option supports Dalle 3. Added on Dec 5, 2023.
+  - Image generation from the prompt text. This option supports Dalle 3.
 
     - The configuration is supported in three alternatives:
       - 1. Using the additional APIM-endpoint https://**tenant**.azure-api.net/openai/**dalle**
@@ -49,9 +49,9 @@ The integrations available in this release include:
         - The model Dalle3 is available for the deployment in Swedish Central zone (as of December 2023).
       - 3. Using the Native OpenAI endpoint https://**api.openai.com**/v1/images/generations with **api-key** stored in the web part settings (less secure).
 
-  - The option to use voice input to prompt text is available. Added on Dec 8, 2023.
+  - The option to use voice input to prompt text is available.
 
-- Version 1.2 released on Dec 23, 2023. It includes the optional support for:
+- Version 1.2 released on Dec 23, 2023. It includes the following additional options:
   - Data encryption for all storage types.
     - SharePoint list
     - Database
