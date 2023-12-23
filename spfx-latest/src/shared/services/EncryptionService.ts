@@ -12,8 +12,6 @@ export default class EncryptionService {
 
   constructor(key?: string) {
     this.key = key ? key : PageContextService.context.pageContext.aadInfo.userId.toString().split('').reverse().join('');
-    //: `${PageContextService.context.pageContext.aadInfo.userId.toString().split('').reverse().join('')}@
-    //${PageContextService.context.pageContext.aadInfo.tenantId.toString().split('').reverse().join('')}`;
   }
 
   public encrypt(value: string, addPrefix: boolean = true): string {
