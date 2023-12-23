@@ -35,7 +35,7 @@ The integrations available in this release include:
 - Local Date and Time
 - Analysis of an uploaded PDF and summarization of its content
 - Analysis of uploaded images and description of their content
-- Version 1.1 released on Dec 13, 2023. It includes the following additional options:
+- Version 1.1 released on Dec 09, 2023. It includes the following additional options:
   - Search on the Internet: Bing and Google (+ Reddit).
     - The configuration is supported in two alternatives:
       - 1. Using the additional APIM-endpoints https://**tenant**.azure-api.net/**bing** and/or https://**tenant**.azure-api.net/**google**
