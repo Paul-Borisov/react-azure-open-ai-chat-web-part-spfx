@@ -1,6 +1,7 @@
-# Azure OpenAI Chat Web Part (SPFx)
+# Azure OpenAI Chat Web Part
 
-This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user experience that is familiar to users of ChatGPT.
+This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user experience that is familiar to users of ChatGPT. 
+- SPFx 1.18, React
 
 **Data Privacy**
 
