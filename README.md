@@ -5,7 +5,7 @@ This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user exp
 
 **Data Privacy**
 
-Azure OpenAI is the private GDPR-compliant service developed by Microsoft and deployable to your Azure tenant. Data provided to endpoints of Azure OpenAI is kept inside the boundaries of your tenant.
+Azure OpenAI is the private GDPR-compliant service developed by Microsoft and deployable to your Azure tenant. Data provided to endpoints of Azure OpenAI is kept inside the boundaries of your tenant. Data storage locations can be selected explicitly.
 
 Native OpenAI is a public service, which provides access to its optional API by paid subscriptions. Any data provided to endpoints of Native OpenAI goes outside the boundaries of your tenant. As of December 2023, Native OpenAI is [GDPR-compliant](https://openai.com/security), but this may require additional agreements related to data storage locations for companies in EU.
 
