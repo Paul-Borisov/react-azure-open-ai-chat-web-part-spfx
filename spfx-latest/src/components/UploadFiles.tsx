@@ -33,11 +33,14 @@ const UploadFiles: FunctionComponent<IUploadFiles> = (props) => {
   ): JSX.Element => {
     const handleImage = async (e) => {
       let newFileUrls = [];
+      const re = /data:image\/[^;]+;base64,/i;
+      const re2 = /data:[^/]+\/[^;]+;base64,/i;
       for (let i = 0; i < e.target.files.length; i++) {
         const reader = new FileReader();
         reader.onload = async (event) => {
           try {
-            newFileUrls = [...newFileUrls, event.target.result];
+            const fileUrl = event.target.result?.toString();
+            newFileUrls = [...newFileUrls, re.test(fileUrl) ? fileUrl : fileUrl.replace(re2, 'data:image/png;base64,')];
             props.setImageUrls(newFileUrls);
             props.setIsOpen(false);
           } catch (exc) {
