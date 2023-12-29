@@ -33,10 +33,23 @@ const VoiceOutput: React.FunctionComponent<IVoiceOutput> = (props) => {
         const firstNatural = voices.find((v) => /natural/i.test(v.voiceURI) || /natural/i.test(v.name));
         utterance.voice = firstNatural ?? voices[0];
       }
-      utterance.onend = () => setStarted(false);
-      utterance.onerror = () => setStarted(false);
+      const cleanup = () => setStarted(false);
+      utterance.onend = () => cleanup();
+      utterance.onerror = () => cleanup();
       const synth = speechSynthesis;
       synth.speak(utterance);
+
+      const isAndroid = navigator.userAgent.toLowerCase().indexOf('android') > -1;
+      if (!isAndroid) {
+        const i = setInterval(() => {
+          if (synth.speaking) {
+            synth.pause();
+            synth.resume();
+          } else {
+            clearInterval(i);
+          }
+        }, 5000);
+      }
     } else {
       setStarted(false);
       const synth = speechSynthesis;
