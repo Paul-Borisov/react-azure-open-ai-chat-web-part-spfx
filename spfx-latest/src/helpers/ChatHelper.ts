@@ -143,7 +143,7 @@ export default class ChatHelper {
       ? new Intl.DateTimeFormat(locale, {
           day: '2-digit',
           month: '2-digit',
-          year: 'numeric',
+          /*year: 'numeric',*/
         }).format(date) + ':'
       : new Intl.DateTimeFormat(locale, {
           day: '2-digit',
