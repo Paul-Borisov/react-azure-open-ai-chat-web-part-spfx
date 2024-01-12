@@ -23,6 +23,7 @@
 .languages {
   z-index: 0;
   width: 0px;
+  position: absolute;
   :global .ms-Dropdown-title {
     border: 0px;
     height: 10px;
