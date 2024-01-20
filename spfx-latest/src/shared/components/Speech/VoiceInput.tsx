@@ -10,6 +10,7 @@ import styles from './Speech.module.scss';
 
 interface IVoiceInput extends IVoice {
   setText?: (text: string) => void;
+  shortLeftMargin?: boolean;
 }
 
 const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
@@ -41,17 +42,19 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
   return isAvailable ? (
     <>
       {!started ? (
-        <TooltipHost content={props.tooltip ?? strings.TextVoiceInput}>
-          <FontIcon iconName={'Microphone'} className={styles.microphone} onClick={() => setShowLocales(true)} />
-        </TooltipHost>
+        <FontIcon
+          iconName={'Microphone'}
+          className={[styles.microphone, props.shortLeftMargin ? styles.shortLeftMargin : undefined].join(' ')}
+          onClick={() => setShowLocales(true)}
+          title={props.tooltip ?? strings.TextVoiceInput}
+        />
       ) : (
-        <TooltipHost content={strings.TextStop}>
-          <FontIcon
-            iconName={'CircleStopSolid'}
-            className={[styles.microphone, styles.stop].join(' ')}
-            onClick={() => handleSpeechRecognition()}
-          />
-        </TooltipHost>
+        <FontIcon
+          iconName={'CircleStopSolid'}
+          className={[styles.microphone, styles.stop, props.shortLeftMargin ? styles.shortLeftMargin : undefined].join(' ')}
+          onClick={() => handleSpeechRecognition()}
+          title={strings.TextStop}
+        />
       )}
       {showLocales ? (
         <Languages handleSelection={handleSpeechRecognition} isOpen={showLocales} setIsOpen={setShowLocales} />
@@ -59,7 +62,10 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
     </>
   ) : (
     <TooltipHost content={strings.TextDeviceUnavailable}>
-      <FontIcon iconName={'Microphone'} className={[styles.microphone, styles.unavailable].join(' ')} />
+      <FontIcon
+        iconName={'Microphone'}
+        className={[styles.microphone, styles.unavailable, props.shortLeftMargin ? styles.shortLeftMargin : undefined].join(' ')}
+      />
     </TooltipHost>
   );
 };

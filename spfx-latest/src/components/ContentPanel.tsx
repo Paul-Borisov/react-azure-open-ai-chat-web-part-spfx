@@ -297,7 +297,6 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       signalReload,
       isCustomPanelOpen,
       isStreamProgress,
-      fileUpload,
       setIsStreamProgress,
       setSignalReload,
       setModel
@@ -316,7 +315,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       resizePrompt,
       setPrompt,
       submitPayload,
-      panelLanguageModels
+      panelLanguageModels,
+      fileUpload
     );
 
     const contentArea = elements.getContentArea(responseContentError, panelContentPane, promptContainer);

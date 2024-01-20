@@ -65,7 +65,7 @@ const VoiceOutput: React.FunctionComponent<IVoiceOutput> = (props) => {
         <TooltipHost content={props.tooltip ?? strings.TextVoiceOutput}>
           <FontIcon
             iconName={'InternetSharing'}
-            className={styles.microphone}
+            className={[styles.microphone, styles.speech].join(' ')}
             onClick={() => {
               if (!props.getAudio) {
                 if (speechSynthesis.speaking) return;
@@ -97,7 +97,7 @@ const VoiceOutput: React.FunctionComponent<IVoiceOutput> = (props) => {
         <TooltipHost content={strings.TextStop}>
           <FontIcon
             iconName={!!props.getAudio && !player ? 'ProgressLoopInner' : 'CircleStopSolid'}
-            className={[styles.microphone, styles.stop].join(' ')}
+            className={[styles.microphone, styles.stop, styles.speech, styles.bgwhite].join(' ')}
             onClick={() => {
               if (!props.getAudio) {
                 handleSpeechOutput();
