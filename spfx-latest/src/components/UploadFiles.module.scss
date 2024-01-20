@@ -19,7 +19,7 @@
   cursor: pointer;
   font-size: 150%;
   i {
-    rotate: 100grad;
+    rotate: 150grad;
   }
   .fileCounter {
     margin-left: 5px;
@@ -32,4 +32,8 @@
   &.selected {
     margin-right: 0px;
   }
+  position: absolute;
+  z-index: 65535;
+  margin-top: 12px;
+  margin-left: 10px;
 }

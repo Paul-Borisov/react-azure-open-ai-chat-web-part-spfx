@@ -267,9 +267,15 @@ $selection: $ms-color-gray150;
     border: 1px #ccc solid;
     border-radius: 8px;
     height: 34px;
-    padding: 15px 15px 0 15px;
+    padding: 15px 15px 0 60px;
     @include scrollbars(1.4ex, $ms-color-gray120, rgba(0, 0, 0, 0.2));
     z-index: 10;
+    &.noLeftMargin {
+      padding-left: 15px;
+    }
+    &.shortLeftMargin {
+      padding-left: 35px;
+    }
   }
   .linkButton {
     flex: 0 0 35px;
@@ -291,6 +297,9 @@ $selection: $ms-color-gray150;
     &:focus {
       background-color: $hover-color;
     }
+  }
+  i {
+    color: #000;
   }
 }
 .requestCharsCount {

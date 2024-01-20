@@ -87,7 +87,7 @@ export default class ContentPanelElements {
     const isPdfSupported = true;
     // Upload button should be visible only if Enable integrations is turned on in web part settings.
     return props.functions && (isVisionSupported || isPdfSupported) ? (
-      <TooltipHost content={strings.TextUploadFiles}>
+      <>
         {getSimpleDialog(strings.TextUpload, strings.TextUploadFiles, showUploadDialog, setShowUploadDialog, [
           <UploadFiles
             setImageUrls={isVisionSupported ? setImageUrls : undefined}
@@ -96,12 +96,12 @@ export default class ContentPanelElements {
           />,
         ])}
         <span className={[styles.fileUploadIcon, imageUrls?.length > 0 ? styles.selected : undefined].join(' ').trim()}>
-          <FontIcon iconName="SkypeCircleArrow" onClick={() => setShowUploadDialog(true)} />
+          <FontIcon iconName="Attach" onClick={() => setShowUploadDialog(true)} title={strings.TextUploadFiles} />
           <span className={[styles.fileCounter, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
             {imageUrls?.length ? `(${imageUrls?.length})` : pdfFileContent ? `(${Object.keys(pdfFileContent).length})` : ''}
           </span>
         </span>
-      </TooltipHost>
+      </>
     ) : null;
   }
 
@@ -145,7 +145,6 @@ export default class ContentPanelElements {
     signalReload: boolean,
     isCustomPanelOpen: boolean,
     isStreamProgress: boolean,
-    fileUpload: JSX.Element,
     setIsStreamProgress: (state: boolean) => void,
     setSignalReload: (state: boolean) => void,
     setModel: (newModel: string) => void
@@ -186,7 +185,6 @@ export default class ContentPanelElements {
               );
             }
           )}
-        {fileUpload}
       </div>
     );
   }
@@ -232,7 +230,8 @@ export default class ContentPanelElements {
     resizePrompt: (e: any) => void,
     setPrompt: (text: string) => void,
     submitPayload: () => void,
-    panelLanguageModels: JSX.Element
+    panelLanguageModels: JSX.Element,
+    fileUpload: JSX.Element
   ): JSX.Element {
     const props = this.props;
 
@@ -260,6 +259,8 @@ export default class ContentPanelElements {
               }}
             />
           ) : null}
+          {fileUpload}
+          {props.voiceInput ? <VoiceInput setText={setPrompt} shortLeftMargin={!props.functions} /> : null}
           <textarea
             ref={refPromptArea}
             placeholder={strings.TextSendMessage}
@@ -277,9 +278,15 @@ export default class ContentPanelElements {
             disabled={
               isProgress || isStreamProgress || (chatHistoryParams.maxContentLengthExceeded && !props.unlimitedHistoryLength)
             }
+            className={
+              !props.functions && !props.voiceInput
+                ? styles.noLeftMargin
+                : !(props.functions && props.voiceInput)
+                ? styles.shortLeftMargin
+                : undefined
+            }
           />
           {(!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength) && submitButton}
-          {props.voiceInput ? <VoiceInput setText={setPrompt} /> : null}
         </div>
         <div className={styles.requestCharsCount}>
           {!chatHistoryParams.maxContentLengthExceeded || props.unlimitedHistoryLength
