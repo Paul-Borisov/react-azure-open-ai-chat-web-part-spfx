@@ -97,9 +97,9 @@ export default class ContentPanelElements {
         ])}
         <span className={[styles.fileUploadIcon, imageUrls?.length > 0 ? styles.selected : undefined].join(' ').trim()}>
           <FontIcon iconName="Attach" onClick={() => setShowUploadDialog(true)} title={strings.TextUploadFiles} />
-          <span className={[styles.fileCounter, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
+          <div className={[styles.fileCounter, props.promptAtBottom ? styles.promptAtBottom : undefined].join(' ').trim()}>
             {imageUrls?.length ? `(${imageUrls?.length})` : pdfFileContent ? `(${Object.keys(pdfFileContent).length})` : ''}
-          </span>
+          </div>
         </span>
       </>
     ) : null;

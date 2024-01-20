@@ -22,9 +22,10 @@
     rotate: 150grad;
   }
   .fileCounter {
-    margin-left: 5px;
-    font-size: initial;
-    vertical-align: text-top;
+    margin-left: 4px;
+    margin-top: -6px;
+    font-size: 12px;
+    color: #000;
     &.promptAtBottom {
       vertical-align: top;
     }
