@@ -11,9 +11,9 @@
     "developer": {
       "name": "Paul Borisov",
       "websiteUrl": "https://www.linkedin.com/in/paul-borisov-b412a8171/",
-      "privacyUrl": "",
-      "termsOfUseUrl": "",
-      "mpnId": ""
+      "privacyUrl": "https://github.com/Paul-Borisov/react-azure-open-ai-chat-web-part-spfx",
+      "termsOfUseUrl": "https://github.com/Paul-Borisov/react-azure-open-ai-chat-web-part-spfx?tab=MIT-1-ov-file",
+      "mpnId": "1848586"
     },
     "webApiPermissionRequests": [
       {

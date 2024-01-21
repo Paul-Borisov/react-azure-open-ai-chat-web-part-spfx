@@ -61,12 +61,11 @@ const VoiceInput: React.FunctionComponent<IVoiceInput> = (props) => {
       ) : null}
     </>
   ) : (
-    <TooltipHost content={strings.TextDeviceUnavailable}>
-      <FontIcon
-        iconName={'Microphone'}
-        className={[styles.microphone, styles.unavailable, props.shortLeftMargin ? styles.shortLeftMargin : undefined].join(' ')}
-      />
-    </TooltipHost>
+    <FontIcon
+      iconName={'Microphone'}
+      className={[styles.microphone, styles.unavailable, props.shortLeftMargin ? styles.shortLeftMargin : undefined].join(' ')}
+      title={strings.TextDeviceUnavailable}
+    />
   );
 };
 

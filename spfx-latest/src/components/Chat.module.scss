@@ -301,6 +301,9 @@ $selection: $ms-color-gray150;
   i {
     color: #000;
   }
+  :global .ms-Dropdown-caretDown {
+    color: $ms-color-black !important;
+  }
 }
 .requestCharsCount {
   font-size: 12px;
