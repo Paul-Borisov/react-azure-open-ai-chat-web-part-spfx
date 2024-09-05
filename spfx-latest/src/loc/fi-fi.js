@@ -109,7 +109,7 @@ define([], function () {
     TextUpload: 'Lataa',
     TextUploadFiles: 'Lataa tiedostoja',
     TextUploadImage: 'Lataa kuvia',
-    TextUpload: 'Lataa PDF',
+    TextUploadPdf: 'Lataa PDF',
     TextVoiceInput: 'Äänisyöttö',
     TextVoiceOutput: 'Lue ulos',
   };

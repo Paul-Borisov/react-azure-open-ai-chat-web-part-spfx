@@ -60,6 +60,7 @@ define([], function () {
     TextDescribeImage: 'What is in this image?',
     TextDescribeImages: 'What is in these images?',
     TextDeviceUnavailable: 'Device unavailable',
+    TextDemoOnly: '(demo only)',
     TextEdit: 'Edit',
     TextError: 'Error occurred',
     TextExamples: 'Examples',
