@@ -70,6 +70,8 @@ define([], function () {
     TextFullScreen: 'Til fullskjerm',
     TextGpt35: 'GPT-3.5',
     TextGpt4: 'GPT-4',
+    TextGpt4o: 'GPT-4o',
+    TextGpt4oMini: 'GPT-4o Mini',
     TextGpt4Turbo: 'GPT-4 Turbo',
     TextHideMySharedChats: 'Skjul chattene mine',
     TextInvalidListUrl: 'Ugyldig liste-URL. Liste med samme navn finnes allerede på nettstedet',

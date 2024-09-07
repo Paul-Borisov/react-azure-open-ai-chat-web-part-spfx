@@ -133,6 +133,11 @@ export default class ContentPanelElements {
     } else if (isGpt4Turbo) {
       return strings.TextGpt4Turbo;
     } else if (isGpt4) {
+      if (languageModel.toLocaleLowerCase().endsWith('4o')) {
+        return strings.TextGpt4o;
+      } else if (languageModel.toLocaleLowerCase().endsWith('4o-mini')) {
+        return strings.TextGpt4oMini;
+      }
       return strings.TextGpt4;
     } else {
       return languageModel;

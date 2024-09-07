@@ -28,7 +28,10 @@ enum Operations {
   ChatMessageUpdate = ChatMessageCreate,
   ChatMessageDelete = ChatMessageCreate,
 }
-
+enum Operations4o {
+  ChatMain = '/chat4o', // gpt-4o (URL reads as https://customer.azure-api.net/openai4/chat4o)
+  ChatMini = '/chat4omini', // gpt-4o-mini (URL reads as https://customer.azure-api.net/openai4/chat4omini)
+}
 export default class AzureApiService {
   private config: IAzureApiServiceConfig = undefined;
   private aadClient: AadHttpClient = undefined;
@@ -184,6 +187,8 @@ export default class AzureApiService {
             } else {
               targetUrl += Operations.StandardTextModelPreview;
             }
+          } else if (/gpt-4o/i.test(payload.model)) {
+            targetUrl += /mini/i.test(payload.model) ? Operations4o.ChatMini : Operations4o.ChatMain;
           } else {
             targetUrl += Operations.StandardTextModel;
           }

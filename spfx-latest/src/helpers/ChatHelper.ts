@@ -34,7 +34,7 @@ export default class ChatHelper {
     const largeContentDeduction = 1500;
 
     let returnValue = Math.floor((4 * 1024 - responseTokens) * averageCharsPerToken);
-    if (/4-(1106|turbo|vision)/i.test(model)) {
+    if (/4o/i.test(model) || /4-(1106|turbo|vision)/i.test(model)) {
       returnValue = Math.floor((128 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/32k/i.test(model)) {
       returnValue = Math.floor((32 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
@@ -49,7 +49,7 @@ export default class ChatHelper {
   public static maxRequestLength(model: string, responseTokens: number, chatHistoryLength: number): number {
     // maxRequestLength = max allowed number of characters in the prompt.
     let maxCharacters = 4000; // GPT-35-turbo, 4k
-    if (/4-(1106|turbo|vision)/i.test(model)) {
+    if (/4o/i.test(model) || /4-(1106|turbo|vision)/i.test(model)) {
       maxCharacters = 125000; // ~ (128 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/32k/i.test(model)) {
       maxCharacters = 30000; // ~ (32 * 1024 * 3.6) / 3.75 long questions - answers.
@@ -106,7 +106,7 @@ export default class ChatHelper {
       // https://platform.openai.com/docs/guides/function-calling
       if (/(0613|16k|32k)/i.test(model) || /^gpt-4$|^gpt-3\.?5-turbo/i.test(model)) {
         payload.functions = FunctionCallingOptions.single;
-      } else if (/1106/i.test(model)) {
+      } else if (/1106/i.test(model) || /4o/i.test(model)) {
         payload.functions = FunctionCallingOptions.multiple;
       } else {
         payload.functions = FunctionCallingOptions.none;

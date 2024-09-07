@@ -69,6 +69,8 @@ define([], function () {
     TextFullScreen: 'На полный экран',
     TextGpt35: 'GPT-3.5',
     TextGpt4: 'GPT-4',
+    TextGpt4o: 'GPT-4o',
+    TextGpt4oMini: 'GPT-4o Мини',
     TextGpt4Turbo: 'GPT-4 Турбо',
     TextHideMySharedChats: 'Скрыть мои чаты',
     TextInvalidListUrl: 'Неверный URL-адрес списка. Список с таким названием уже существует на сайте',

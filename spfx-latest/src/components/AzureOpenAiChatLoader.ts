@@ -272,6 +272,8 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                         { key: 'gpt-35-turbo-16k', text: strings.TextGpt35 },
                         { key: 'gpt-4-32k', text: strings.TextGpt4 },
                         { key: 'gpt-4-1106-preview', text: `${strings.TextGpt4Turbo} (${strings.TextPreview})` },
+                        { key: 'gpt-4o-mini', text: strings.TextGpt4oMini },
+                        { key: 'gpt-4o', text: strings.TextGpt4o },
                       ],
                       properties: this.properties,
                     }),

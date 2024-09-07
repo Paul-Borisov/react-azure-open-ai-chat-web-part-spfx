@@ -1,6 +1,7 @@
 # Azure OpenAI Chat Web Part
 
-This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user experience that is familiar to users of ChatGPT. 
+This is an Azure OpenAI Chat Web Part for SharePoint Online, offering a user experience that is familiar to users of ChatGPT.
+
 - SPFx 1.18, React
 
 **Data Privacy**
@@ -37,7 +38,9 @@ The integrations available in this release include:
 - Analysis of an uploaded PDF and summarization of its content
 - Analysis of uploaded images and description of their content
 - Version 1.1 released on Dec 11, 2023. It includes the following additional options:
+
   - Search on the Internet: Bing and Google (+ Reddit).
+
     - The configuration is supported in two alternatives:
       - 1. Using the additional APIM-endpoints https://**tenant**.azure-api.net/**bing** and/or https://**tenant**.azure-api.net/**google**
       - 2. Using the direct Bing and Google endpoints with own **api-key** values stored in the web part settings (less secure).
@@ -53,21 +56,27 @@ The integrations available in this release include:
   - The option to use voice input to prompt text is available.
 
 - Version 1.2 released on Dec 23, 2023. It includes the following additional options:
+
   - Data encryption for all storage types.
+
     - SharePoint list
     - Database
     - Local Storage
     - Seamless support of the Chat Sharing option for all storage types
- 
+
   - GPT-4 Vision APIM endpoint (/openai4/vision).
-    
   - Speech synthesis to read out AI-generated texts by default
     - The standard Web Speech API requires selecting the preferred language; using default page language is not always optimal. This default option is used when Native OpenAI text-to-speech model is not available.
     - Azure OpenAI does not yet have support for text-to-speech models (as of Dec 2023).
-      
   - /tts APIM endpoint (/openainative/tts) and Native OpenAI text-to-speech model for AI-generated texts.
     - In case of using Native OpenAI endpoints - direct URL or APIM-based operation - the native text-to-speech model automatically handles text that contains mixed languages.
-      
+
+- Version 1.3 released on Sep 7, 2024. I added support for two newer language models, GPT-4o and GPT-4o Mini.
+
+  - In order to upgrade, GPT-4o APIM endpoints should be added under the existing root API OpenAI4: /openai4/chat4o and /openai4/chat4omini
+  - Parallel function calling, image generation and recognition are seamlessly supported for new models.
+  - Updated documentation with these new models.
+
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
