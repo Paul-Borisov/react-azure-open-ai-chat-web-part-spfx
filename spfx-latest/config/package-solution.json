@@ -4,16 +4,16 @@
     "name": "azure-openai-chat",
     "title": "Azure OpenAI Chat Web Part",
     "id": "64e358ba-f88c-4fee-9a8a-6db06299d90a",
-    "version": "1.3.0.0",
+    "version": "1.3.1.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
       "name": "Paul Borisov",
-      "websiteUrl": "https://www.linkedin.com/in/paul-borisov-b412a8171/",
+      "websiteUrl": "https://www.linkedin.com/in/paul-borisov/",
       "privacyUrl": "https://github.com/Paul-Borisov/react-azure-open-ai-chat-web-part-spfx",
       "termsOfUseUrl": "https://github.com/Paul-Borisov/react-azure-open-ai-chat-web-part-spfx?tab=MIT-1-ov-file",
-      "mpnId": "1848586"
+      "mpnId": ""
     },
     "webApiPermissionRequests": [
       {

@@ -5,6 +5,7 @@ import useChatHistory from 'hooks/useChatHistory';
 import useStorageService from 'hooks/useStorageService';
 import { FunctionComponent } from 'react';
 import * as React from 'react';
+import { unstable_batchedUpdates } from 'react-dom';
 import VoiceOutput from 'shared/components/Speech/VoiceOutput';
 import Application, { GptModels } from 'shared/constants/Application';
 import HtmlHelper from 'shared/helpers/HtmlHelper';
@@ -164,6 +165,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   }, [model]);
 
   const elements: ContentPanelElements = React.useMemo(() => new ContentPanelElements(props), []);
+  const refLatestResponseFromAi = React.useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -534,12 +536,18 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
         } else {
           const assistantResponses = newChatHistory.filter((r) => r.role === 'assistant');
           assistantResponses[assistantResponses.length - 1].content += ChatHelper.cleanupResponseContent(response);
-          const messageSelector = isCustomPanelOpen
-            ? `.${styles.customPanel} .${styles.message}`
-            : `div[id="${wpId}"] .${styles.message}`;
-          const allMessages = document.querySelectorAll(messageSelector);
-          const lastMessage = allMessages[allMessages.length - 1];
-          lastMessage.innerHTML += response;
+          const queryParameters = new URLSearchParams(window.location.search);
+          const prev = queryParameters.get('prev');
+          if (!prev && refLatestResponseFromAi.current) {
+            refLatestResponseFromAi.current.innerHTML += response;
+          } else {
+            const messageSelector = isCustomPanelOpen
+              ? `.${styles.customPanel} .${styles.message}`
+              : `div[id="${wpId}"] .${styles.message}`;
+            const allMessages = document.querySelectorAll(messageSelector);
+            const lastMessage = allMessages[allMessages.length - 1];
+            lastMessage.innerHTML += response;
+          }
         }
         // Bug fix: the following line caused to heavy rerendering. Replaced with a lighter code above.
         //setChatHistory(newChatHistory); // Sets the updated array with new memory address.
@@ -549,36 +557,42 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
 
     if (props.apiService.isConfigured()) {
       if (!props.streaming) {
-        props.apiService.callQueryText(payload).then((response) => handleResponse(response));
+        props.apiService.callQueryText(payload).then((response) => {
+          unstable_batchedUpdates(() => {
+            handleResponse(response);
+          });
+        });
       } else {
         let firstResponse = true;
         props.apiService.callQueryText(payload, true, stopSignal, (message: string, done?: boolean, isError?: boolean) => {
-          setIsProgress(false);
-          setIsStreamProgress(true);
-          if (isError) {
-            setResponseContentError(strings.TextUndeterminedError);
-            setIsStreamProgress(false);
-            setFormattedContent([]);
-          } else if (!done) {
-            if (message) {
-              handleResponseStream(message, firstResponse);
-              firstResponse = false;
-              setResponseContentError(undefined);
-            }
-          } else {
-            setIsStreamProgress(false);
-            setFormattedContent([]);
-            if (!firstResponse) {
-              setResponseContentError(undefined);
-              //const chatMessageId = `${styles.message}_${newChatHistory.length - 1}`;
-              const chatMessageId = `${styles.message}_${wpId}_${newChatHistory.length - 1}`;
-              setDisabledHighlights([...disabledHighlights.filter((id) => id !== chatMessageId)]);
-              saveChatHistory(newChatHistory);
-            } else {
-              // Authentication error?
+          unstable_batchedUpdates(() => {
+            setIsProgress(false);
+            setIsStreamProgress(true);
+            if (isError) {
               setResponseContentError(strings.TextUndeterminedError);
+              setIsStreamProgress(false);
+              setFormattedContent([]);
+            } else if (!done) {
+              if (message) {
+                handleResponseStream(message, firstResponse);
+                firstResponse = false;
+                setResponseContentError(undefined);
+              }
+            } else {
+              setIsStreamProgress(false);
+              setFormattedContent([]);
+              if (!firstResponse) {
+                setResponseContentError(undefined);
+                //const chatMessageId = `${styles.message}_${newChatHistory.length - 1}`;
+                const chatMessageId = `${styles.message}_${wpId}_${newChatHistory.length - 1}`;
+                setDisabledHighlights([...disabledHighlights.filter((id) => id !== chatMessageId)]);
+                saveChatHistory(newChatHistory);
+              } else {
+                // Authentication error?
+                setResponseContentError(strings.TextUndeterminedError);
+              }
             }
-          }
+          });
         });
       }
     } else {
@@ -703,6 +717,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                 <div
                   id={chatMessageId}
                   className={['ai', styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}
+                  ref={refLatestResponseFromAi}
                 >
                   {!disabledHighlights?.find((id) => id === chatMessageId) ? formattedRows[index] : content}
                 </div>
@@ -711,6 +726,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                   id={chatMessageId}
                   className={['ai', styles.message].join(' ')}
                   dangerouslySetInnerHTML={{ __html: r.content }}
+                  ref={refLatestResponseFromAi}
                 />
               )
             ) : (
