@@ -166,10 +166,11 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
 
   const elements: ContentPanelElements = React.useMemo(() => new ContentPanelElements(props), []);
   const refLatestResponseFromAi = React.useRef<HTMLDivElement>(null);
+  const refLatestResponseFromAiInCustomPanel = React.useRef<HTMLDivElement>(null);
 
   return (
     <>
-      {getContentPanel(refPanelContentPane, refPrompt, refConversationContainer)}
+      {getContentPanel(refPanelContentPane, refPrompt, refConversationContainer, refLatestResponseFromAi)}
       {isCustomPanelOpen !== undefined && (
         <Panel
           className={styles.customPanel}
@@ -185,7 +186,12 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
           type={PanelType.custom}
         >
           <span className={styles.container}>
-            {getContentPanel(refPanelContentPaneInCustomPanel, refPromptInCustomPanel, refConversationContainerInCustomPanel)}
+            {getContentPanel(
+              refPanelContentPaneInCustomPanel,
+              refPromptInCustomPanel,
+              refConversationContainerInCustomPanel,
+              refLatestResponseFromAiInCustomPanel
+            )}
             <TooltipHost content={strings.TextClose}>
               <FontIcon className={styles.closepanel} iconName={'ChromeClose'} onClick={() => setIsCustomPanelOpen(false)} />
             </TooltipHost>
@@ -275,12 +281,16 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
   function getContentPanel(
     refContentPane: React.LegacyRef<HTMLDivElement>,
     refPromptArea: React.LegacyRef<HTMLTextAreaElement>,
-    refNavigation: React.LegacyRef<HTMLDivElement>
+    refNavigation: React.LegacyRef<HTMLDivElement>,
+    refLatestResponse: React.LegacyRef<HTMLDivElement>
   ): JSX.Element {
     if (!Array.isArray(chatHistory)) LogService.error('Invalid data format: chatHistory is not an array');
     const rows =
       Array.isArray(chatHistory) && chatHistory?.length > 0
-        ? getChatHistoryContent(chatHistory.filter((r) => typeof r.content === 'string'))
+        ? getChatHistoryContent(
+            chatHistory.filter((r) => typeof r.content === 'string'),
+            refLatestResponse
+          )
         : [];
 
     const fileUpload = elements.getFileUpload(
@@ -520,6 +530,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     };
 
     const handleResponseStream = (response, firstResponse: boolean) => {
+      const isRefLatestResponse =
+        refLatestResponseFromAi.current !== null || refLatestResponseFromAiInCustomPanel.current !== null;
       if (response) {
         // The next line is important. It enforces the correct state change by changing array's memory address to new one.
         newChatHistory = [...newChatHistory];
@@ -538,8 +550,9 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
           assistantResponses[assistantResponses.length - 1].content += ChatHelper.cleanupResponseContent(response);
           const queryParameters = new URLSearchParams(window.location.search);
           const prev = queryParameters.get('prev');
-          if (!prev && refLatestResponseFromAi.current) {
-            refLatestResponseFromAi.current.innerHTML += response;
+          if (!prev && isRefLatestResponse) {
+            if (refLatestResponseFromAi.current) refLatestResponseFromAi.current.innerHTML += response;
+            if (refLatestResponseFromAiInCustomPanel.current) refLatestResponseFromAiInCustomPanel.current.innerHTML += response;
           } else {
             const messageSelector = isCustomPanelOpen
               ? `.${styles.customPanel} .${styles.message}`
@@ -678,7 +691,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     }
   }
 
-  function getChatHistoryContent(rows: IChatHistory[]): JSX.Element[] {
+  function getChatHistoryContent(rows: IChatHistory[], refLatestResponse: React.LegacyRef<HTMLDivElement>): JSX.Element[] {
     // Performance improvement to eliminate delays related to rendering of large chats with many code bocks.
     const formattedRows = props.highlight
       ? rows.map((r, index) => {
@@ -717,7 +730,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                 <div
                   id={chatMessageId}
                   className={['ai', styles.message, isCustomPanelOpen ? styles.insidePanel : undefined].join(' ').trim()}
-                  ref={refLatestResponseFromAi}
+                  ref={refLatestResponse}
                 >
                   {!disabledHighlights?.find((id) => id === chatMessageId) ? formattedRows[index] : content}
                 </div>
@@ -726,7 +739,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
                   id={chatMessageId}
                   className={['ai', styles.message].join(' ')}
                   dangerouslySetInnerHTML={{ __html: r.content }}
-                  ref={refLatestResponseFromAi}
+                  ref={refLatestResponse}
                 />
               )
             ) : (
