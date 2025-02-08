@@ -5,7 +5,8 @@ export enum StorageType {
 }
 
 export enum GptModels {
-  Vision = 'gpt-4-vision-preview',
+  //Vision = 'gpt-4-vision-preview',
+  Vision = 'gpt-4o', // https://platform.openai.com/docs/deprecations, 2024-12-06, recommended replacement gpt-4o
 }
 
 export const GptImageModelTextLimits: { [key: string]: number } = {
@@ -14,7 +15,8 @@ export const GptImageModelTextLimits: { [key: string]: number } = {
 };
 
 export const GptModelTokenLimits: { [key: string]: number } = {
-  [GptModels.Vision]: 4096,
+  //[GptModels.Vision]: 4096,
+  [GptModels.Vision]: 8192,
 };
 
 export default class Application {

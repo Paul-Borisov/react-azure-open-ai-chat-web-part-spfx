@@ -71,6 +71,10 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextGpt4o: string;
   TextGpt4oMini: string;
   TextGpt4Turbo: string;
+  TextO1Mini: string;
+  TextO1Preview: string;
+  TextO1: string;
+  TextO3Mini: string;
   TextHideMySharedChats: string;
   TextInvalidListUrl: string;
   TextLanguage: string;
@@ -100,6 +104,7 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextSharedChats: string;
   TextShareWith: string;
   TextStop: string;
+  TextStreamingUnsupported: string;
   TextSubmit: string;
   TextSummarizePdf: string;
   TextUndeterminedError: string;

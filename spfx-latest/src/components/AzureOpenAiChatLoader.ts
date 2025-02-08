@@ -196,7 +196,7 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('1.0');
+    return Version.parse('1.3.2');
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
@@ -274,6 +274,8 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                         { key: 'gpt-4-1106-preview', text: `${strings.TextGpt4Turbo} (${strings.TextPreview})` },
                         { key: 'gpt-4o-mini', text: strings.TextGpt4oMini },
                         { key: 'gpt-4o', text: strings.TextGpt4o },
+                        { key: 'o1-mini', text: strings.TextO1Mini },
+                        { key: 'o3-mini', text: strings.TextO3Mini },
                       ],
                       properties: this.properties,
                     }),

@@ -34,7 +34,7 @@ export default class ChatHelper {
     const largeContentDeduction = 1500;
 
     let returnValue = Math.floor((4 * 1024 - responseTokens) * averageCharsPerToken);
-    if (/4o/i.test(model) || /4-(1106|turbo|vision)/i.test(model)) {
+    if (/4o/i.test(model) || /4-(1106|turbo|vision)/i.test(model) || /o1-mini|o1-preview/i.test(model)) {
       returnValue = Math.floor((128 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/32k/i.test(model)) {
       returnValue = Math.floor((32 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
@@ -42,21 +42,25 @@ export default class ChatHelper {
       returnValue = Math.floor((16 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
       returnValue = Math.floor((8 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
+    } else if (/o\d/i.test(model)) {
+      returnValue = Math.floor((200 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     }
     return returnValue - 200; // 200 extra chars reserved for service needs (redundancy).
   }
 
   public static maxRequestLength(model: string, responseTokens: number, chatHistoryLength: number): number {
     // maxRequestLength = max allowed number of characters in the prompt.
-    let maxCharacters = 4000; // GPT-35-turbo, 4k
-    if (/4o/i.test(model) || /4-(1106|turbo|vision)/i.test(model)) {
-      maxCharacters = 125000; // ~ (128 * 1024 * 3.6) / 3.75 long questions - answers.
+    let maxCharacters = 4_000; // GPT-35-turbo, 4k
+    if (/4o/i.test(model) || /4-(1106|turbo|vision)/i.test(model) || /o1-mini|o1-preview/i.test(model)) {
+      maxCharacters = 125_000; // ~ (128 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/32k/i.test(model)) {
-      maxCharacters = 30000; // ~ (32 * 1024 * 3.6) / 3.75 long questions - answers.
+      maxCharacters = 30_000; // ~ (32 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/16k|-1106/i.test(model)) {
-      maxCharacters = 15000; // ~ (16 * 1024 * 3.6) / 3.75 long questions - answers.
+      maxCharacters = 15_000; // ~ (16 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
-      maxCharacters = 7500; // ~ (8 * 1024 * 3.6) / 3.75 long questions - answers.
+      maxCharacters = 7_500; // ~ (8 * 1024 * 3.6) / 3.75 long questions - answers.
+    } else if (/o\d/i.test(model)) {
+      maxCharacters = 195_000; // ~ (200 * 1024 * 3.6) / 3.75 long questions - answers.
     }
     const maxLength = this.maxContentLength(model, responseTokens);
     const allowedLength = maxLength - chatHistoryLength;
@@ -74,6 +78,12 @@ export default class ChatHelper {
       returnValue = defaultResponseTokens;
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
       returnValue = defaultResponseTokens;
+    } else if (/o\d-mini/i.test(model)) {
+      returnValue = 65_536;
+    } else if (/o1-preview/i.test(model)) {
+      returnValue = 32_768;
+    } else if (/o\d/i.test(model)) {
+      returnValue = 100_000;
     }
     return returnValue;
   }
@@ -136,6 +146,21 @@ export default class ChatHelper {
       });
     }
   }
+
+  public static isStreamingSupported = (model: string, props: IAzureOpenAiChatProps) => {
+    // As of February 2025, the model o1-mini of Azure OpenAI did not support streaming and function calling.
+    // - At the same time, native OpenAI models o1-mini, o3-mini, o1-preview supported streaming, but did not support function calling.
+    // - The full-scale native OpenAI models o1 and o1-2024-12-17 did not support streaming and function calling.
+    // On attempts to use streaming outputs, they have thrown errors. Note that this behaviour might change later.
+    if (/^o\d$|o\d-\d{4}-\d{2}-\d{2}/i.test(model?.toLocaleLowerCase())) return false;
+
+    return (
+      props.streaming &&
+      (!/o\d/.test(model) ||
+        props.apiService?.isNative(props.endpointBaseUrlForOpenAi) ||
+        props.apiService?.isOpenAiNativeUrl(props.endpointBaseUrlForOpenAi))
+    );
+  };
 
   public static formatDate(date: string | Date, locale: string): string {
     if (typeof date === 'string') date = new Date(date);

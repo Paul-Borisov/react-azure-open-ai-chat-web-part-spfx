@@ -9,7 +9,7 @@ import Languages from './Languages';
 import styles from './Speech.module.scss';
 
 interface IVoiceOutput extends IVoice {
-  querySelector?: string;
+  //querySelector?: string;
   text?: string;
   getAudio?: (text: string) => Promise<ArrayBuffer>;
 }
@@ -18,9 +18,10 @@ const VoiceOutput: React.FunctionComponent<IVoiceOutput> = (props) => {
   const { showLocales, setShowLocales, started, setStarted } = useSpeech();
   const [player, setPlayer] = React.useState<AudioBufferSourceNode>();
 
-  const text = props.querySelector
-    ? HtmlHelper.stripHtml(document.querySelector(props.querySelector)?.innerHTML ?? props.text)
-    : HtmlHelper.stripHtml(props.text);
+  const text = props.text;
+  // const text = props.querySelector
+  //   ? HtmlHelper.stripHtml(document.querySelector(props.querySelector)?.innerHTML ?? props.text)
+  //   : HtmlHelper.stripHtml(props.text);
 
   const handleSpeechOutput = (locale: string = 'en-US') => {
     if (!started) {

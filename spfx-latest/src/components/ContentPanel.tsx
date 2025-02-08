@@ -314,7 +314,15 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
       setModel
     );
 
-    const panelContentPane = elements.getPanelContentPane(refContentPane, chatHistory, isCustomPanelOpen, rows, isProgress);
+    const panelContentPane = elements.getPanelContentPane(
+      refContentPane,
+      chatHistory,
+      isCustomPanelOpen,
+      rows,
+      isProgress,
+      props,
+      model
+    );
 
     const promptContainer = elements.getPromptContainer(
       refPromptArea,
@@ -406,6 +414,9 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     const minHeight = 34; // px
     const maxHeight = 100; // px
     const padding = 15; // px
+
+    // Stript trailing new line chars (added on copy-paste)
+    e.target.value = e.target.value.replace(/\n+$/, '');
 
     if (!e.target.value) {
       e.target.style.height = `${minHeight}px`;
@@ -569,7 +580,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
     };
 
     if (props.apiService.isConfigured()) {
-      if (!props.streaming) {
+      if (!ChatHelper.isStreamingSupported(payload.model, props)) {
         props.apiService.callQueryText(payload).then((response) => {
           unstable_batchedUpdates(() => {
             handleResponse(response);
@@ -714,8 +725,9 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
         ? `.${styles.customPanel} div[id='${chatMessageId}']`
         : `div[id='${chatMessageId}']`;
 
+      const inputText = HtmlHelper.stripHtml(r.content);
       const getAudio =
-        isAi && props.voiceOutput && ChatHelper.supportsTextToSpeech(props)
+        isAi && props.voiceOutput && ChatHelper.supportsTextToSpeech(props) //&& inputText.length <= 4096 // tts input supports max 4096 chars
           ? (text: string) => new SpeechService(props.apiService).callTextToSpeech(text)
           : undefined;
 
@@ -804,8 +816,8 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
               <>
                 {isAi && props.voiceOutput ? (
                   <VoiceOutput
-                    querySelector={chatMessageIdSelector}
-                    text={HtmlHelper.stripHtml(r.content)}
+                    //querySelector={chatMessageIdSelector}
+                    text={inputText}
                     tooltip={strings.TextVoiceOutput}
                     getAudio={getAudio}
                   />

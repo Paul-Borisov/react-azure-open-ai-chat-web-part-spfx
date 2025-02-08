@@ -77,6 +77,14 @@ The integrations available in this release include:
   - Parallel function calling, image generation and recognition are seamlessly supported for new models.
   - Updated documentation with these new models.
 
+- Version 1.3.2 released on Feb 08, 2025.
+  - I added support for two newer language models, o1-mini and o3-mini that became available in Azure OpenAI.
+    - These Azure OpenAI models did not support streaming options; I added the exemption logic for them.
+  - I added support for regular OpenAI language models: o1-mini, o1-preview, o1, o1-2024-12-17, o3-mini.
+    - The full-scale models o1 and o1-2024-12-17 did not support streaming options; I added the exemption logic for them.
+  - Added informational messages to the progress shimmer. It displays the header if streaming options were enabled but unsupported by the model.
+  - Bug fix: incorrect voice out on the first entry instead of selected one.
+
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")

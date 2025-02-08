@@ -32,6 +32,11 @@ enum Operations4o {
   ChatMain = '/chat4o', // gpt-4o (URL reads as https://customer.azure-api.net/openai4/chat4o)
   ChatMini = '/chat4omini', // gpt-4o-mini (URL reads as https://customer.azure-api.net/openai4/chat4omini)
 }
+enum OperationsOx {
+  ChatO1Mini = '/o1mini', // o1-mini (URL reads as https://customer.azure-api.net/openai/o1mini)
+  ChatO3Mini = '/o3mini', // o3-mini (URL reads as https://customer.azure-api.net/openai/o3mini)
+}
+
 export default class AzureApiService {
   private config: IAzureApiServiceConfig = undefined;
   private aadClient: AadHttpClient = undefined;
@@ -155,7 +160,14 @@ export default class AzureApiService {
     const isOpenAiNative: boolean = this.isOpenAiNativeUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isNative: boolean = this.isNative(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isApimPreview: boolean = /-preview/i.test(commonParameters.model) && !(isOpenAiService || isOpenAiNative || isNative);
-
+    const isOx = /^o\d/i.test(commonParameters.model);
+    const isChat = isGpt || isOx;
+    if (isOx) {
+      commonParameters['max_completion_tokens'] = commonParameters.max_tokens;
+      commonParameters['temperature'] = 1;
+      delete commonParameters.max_tokens;
+      delete commonParameters.stop;
+    }
     //const isVision: boolean = (isNative || isOpenAiNative) && payload.images?.length > 0;
     const isVision: boolean = payload.images?.length > 0;
     if (isVision && commonParameters.max_tokens > GptModelTokenLimits[GptModels.Vision]) {
@@ -180,22 +192,25 @@ export default class AzureApiService {
           targetUrl = baseUrl;
         }
 
-        if (isGpt) {
+        if (isChat) {
           if (isGpt4 && isApimPreview) {
             if (isVision) {
               targetUrl += Operations.StandardTextModelVision;
             } else {
               targetUrl += Operations.StandardTextModelPreview;
             }
-          } else if (/gpt-4o/i.test(payload.model)) {
+          } else if (/gpt-4o/i.test(payload.model) && !(isNative || isOpenAiNative)) {
             targetUrl += /mini/i.test(payload.model) ? Operations4o.ChatMini : Operations4o.ChatMain;
+          } else if (/o\d/i.test(payload.model) && !(isNative || isOpenAiNative)) {
+            // To be updated after new models have appeared.
+            targetUrl += /3/i.test(payload.model) ? OperationsOx.ChatO3Mini : OperationsOx.ChatO1Mini;
           } else {
             targetUrl += Operations.StandardTextModel;
           }
         } else {
           targetUrl += Operations.AdvancedTextModel;
         }
-        /*targetUrl += isGpt
+        /*targetUrl += isChat
           ? !(isGpt4 && isApimPreview)
             ? Operations.StandardTextModel
             : Operations.StandardTextModelPreview
@@ -211,7 +226,7 @@ export default class AzureApiService {
     if (!messages.length) {
       if (!isVision) {
         messages.push({
-          role: 'system',
+          role: isOx ? 'assistant' : 'system',
           content: `You are an AI assistant that helps people find information.${sanitize}`,
         });
         if (payload.chatHistory?.length > 0) messages.push(...payload.chatHistory);
@@ -243,7 +258,7 @@ export default class AzureApiService {
       : undefined;
 
     const body = JSON.stringify(
-      isGpt
+      isChat
         ? {
             messages: messages,
             ...(isVision

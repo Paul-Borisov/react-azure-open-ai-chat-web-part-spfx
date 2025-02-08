@@ -52,9 +52,11 @@ export default class SpeechService {
       requestHeaders.append('Authorization', `Bearer ${config.apiKey}`);
     }
 
+    let inputText = HtmlHelper.stripHtml(queryText);
+    if (inputText.length > 4096) inputText = inputText.substring(0, 4096);
     const requestParameters = {
       model: `tts-1${highDefinition ? '-hd' : ''}`,
-      input: HtmlHelper.stripHtml(queryText),
+      input: inputText,
       voice: voice,
     };
 

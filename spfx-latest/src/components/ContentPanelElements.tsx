@@ -13,6 +13,7 @@ import { IChatHistory } from 'shared/model/IChat';
 import SessionStorageService from 'shared/services/SessionStorageService';
 import { IChatProps } from './Chat';
 import styles from './Chat.module.scss';
+import { IAzureOpenAiChatProps } from './IAzureOpenAiChatProps';
 import * as Icons from './Icons';
 import Prompts from './Prompts';
 import UploadFiles from './UploadFiles';
@@ -86,7 +87,7 @@ export default class ContentPanelElements {
     const isVisionSupported = props.vision;
     const isPdfSupported = true;
     // Upload button should be visible only if Enable integrations is turned on in web part settings.
-    return props.functions && (isVisionSupported || isPdfSupported) ? (
+    return isVisionSupported || isPdfSupported ? (
       <>
         {getSimpleDialog(strings.TextUpload, strings.TextUploadFiles, showUploadDialog, setShowUploadDialog, [
           <UploadFiles
@@ -127,20 +128,31 @@ export default class ContentPanelElements {
     return star ? Icons.getStarIcon() : Icons.getLighteningIcon();
   }
 
+  private getModelText(languageModel: string, defaultModelText?: string) {
+    const lcLanguageModel = languageModel.toLocaleLowerCase();
+    const modelTexts = {
+      '4o': strings.TextGpt4o,
+      '4o-mini': strings.TextGpt4oMini,
+      'o1-mini': strings.TextO1Mini,
+      'o1-preview': strings.TextO1Preview,
+      o1: strings.TextO1,
+      'o3-mini': strings.TextO3Mini,
+    };
+    for (const key of Object.keys(modelTexts)) {
+      if (lcLanguageModel.endsWith(key)) return modelTexts[key];
+    }
+    return defaultModelText ?? languageModel;
+  }
+
   private getLanguageModelText(languageModel: string, isGpt3: boolean, isGpt4: boolean, isGpt4Turbo: boolean): string {
     if (isGpt3) {
       return strings.TextGpt35;
     } else if (isGpt4Turbo) {
       return strings.TextGpt4Turbo;
     } else if (isGpt4) {
-      if (languageModel.toLocaleLowerCase().endsWith('4o')) {
-        return strings.TextGpt4o;
-      } else if (languageModel.toLocaleLowerCase().endsWith('4o-mini')) {
-        return strings.TextGpt4oMini;
-      }
-      return strings.TextGpt4;
+      return this.getModelText(languageModel, strings.TextGpt4);
     } else {
-      return languageModel;
+      return this.getModelText(languageModel);
     }
   }
 
@@ -199,11 +211,23 @@ export default class ContentPanelElements {
     chatHistory: IChatHistory[],
     isCustomPanelOpen: boolean,
     rows: JSX.Element[],
-    isProgress: boolean
+    isProgress: boolean,
+    contentProps: IAzureOpenAiChatProps,
+    model: string
   ): JSX.Element {
     const props = this.props;
 
     const noUpperLanguageSelector = !props.promptAtBottom && !(props.languageModels?.length > 1);
+    let shimmerInformationalHeader: React.ReactNode;
+    if (contentProps.streaming && !ChatHelper.isStreamingSupported(model, contentProps)) {
+      shimmerInformationalHeader = (
+        <div>
+          <strong>
+            {model}: {strings.TextStreamingUnsupported}
+          </strong>
+        </div>
+      );
+    }
     return (
       <div
         ref={refContentPane}
@@ -218,7 +242,7 @@ export default class ContentPanelElements {
       >
         <div className={styles.responseRowsContainer}>
           {rows}
-          {isProgress && <CustomShimmer />}
+          {isProgress && <CustomShimmer header={shimmerInformationalHeader} />}
         </div>
       </div>
     );
