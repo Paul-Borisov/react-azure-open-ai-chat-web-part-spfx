@@ -16,7 +16,8 @@ const AzureOpenAiChat: React.FunctionComponent<IAzureOpenAiChatProps> = (props) 
     const config: IItemConfig = {
       name: appNameChatGpt,
       description: strings.TextChat,
-      model: props.languageModels?.length > 0 ? props.languageModels[0] : 'gpt-35-turbo',
+      //model: props.languageModels?.length > 0 ? props.languageModels[0] : 'gpt-35-turbo',
+      model: props.languageModels?.length > 0 ? props.languageModels[props.languageModels.length - 1] : 'gpt-35-turbo',
     };
     setItemConfig(config);
     setIsChatOpen(true);

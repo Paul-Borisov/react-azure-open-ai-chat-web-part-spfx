@@ -78,6 +78,7 @@ The integrations available in this release include:
   - Updated documentation with these new models.
 
 - Version 1.3.2 released on Feb 08, 2025.
+
   - I added support for two newer language models, o1-mini and o3-mini that became available in Azure OpenAI.
     - These Azure OpenAI models did not support streaming options; I added the exemption logic for them.
   - I added support for regular OpenAI language models: o1-mini, o1-preview, o1, o1-2024-12-17, o3-mini.
@@ -85,15 +86,14 @@ The integrations available in this release include:
   - Added informational messages to the progress shimmer. It displays the header if streaming options were enabled but unsupported by the model.
   - Bug fix: incorrect voice out on the first entry instead of selected one.
 
+- Version 1.3.3 released on Match 22, 2025. It had two minor changes.
+
+  - Microsoft enabled streaming support for the Azure OpenAI **o1-mini** and **o3-mini** models so did I.
+  - Changed default model to the last selection.
+
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
-
-### Credits
-
-I would like to express my deep respect and admiration for Microsoft, the creators of the groundbreaking Azure OpenAI service.
-
-I am immensely grateful to Advania Finland for providing me with the opportunity and resources to develop this project.
 
 # Table of Content
 

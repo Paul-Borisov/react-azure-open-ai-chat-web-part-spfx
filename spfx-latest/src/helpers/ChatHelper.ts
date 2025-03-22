@@ -153,6 +153,8 @@ export default class ChatHelper {
     // - The full-scale native OpenAI models o1 and o1-2024-12-17 did not support streaming and function calling.
     // On attempts to use streaming outputs, they have thrown errors. Note that this behaviour might change later.
     if (/^o\d$|o\d-\d{4}-\d{2}-\d{2}/i.test(model?.toLocaleLowerCase())) return false;
+    // Match 22, 2025: streaming was enabled for Azure OpenAI o1-mini
+    if (/^o\d-mini/i.test(model?.toLocaleLowerCase())) return true;
 
     return (
       props.streaming &&
