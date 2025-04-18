@@ -91,6 +91,13 @@ The integrations available in this release include:
   - Microsoft enabled streaming support for the Azure OpenAI **o1-mini** and **o3-mini** models so did I.
   - Changed default model to the last selection.
 
+- Version 1.3.4 released on April 18, 2025.
+
+  - Added support for new models: **gpt-4.1**, **gpt-4.1-mini**, **gpt-4.1-nano**, **o1**, **o4-mini**.
+  - Enabled function calling for o1, o3-mini and o4-mini.
+  - Changed default model to the be automatically selectable in a preferred order .
+    - ['gpt-4.1-nano', 'gpt-4.1-mini', 'gpt-4.1', 'gpt-4o-mini', 'gpt-4o', 'o1-mini', 'gpt-35-turbo']
+
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")

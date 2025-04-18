@@ -33,8 +33,15 @@ enum Operations4o {
   ChatMini = '/chat4omini', // gpt-4o-mini (URL reads as https://customer.azure-api.net/openai4/chat4omini)
 }
 enum OperationsOx {
+  ChatO1 = '/o1', // o1 (URL reads as https://customer.azure-api.net/openai/o1)
   ChatO1Mini = '/o1mini', // o1-mini (URL reads as https://customer.azure-api.net/openai/o1mini)
   ChatO3Mini = '/o3mini', // o3-mini (URL reads as https://customer.azure-api.net/openai/o3mini)
+  ChatO4Mini = '/o4mini', // o4-mini (URL reads as https://customer.azure-api.net/openai/o4mini)
+}
+enum Operations41 {
+  ChatMain = '/chat41', // gpt-4.1 (URL reads as https://customer.azure-api.net/openai4/chat41)
+  ChatMini = '/chat41mini', // gpt-4.1-mini (URL reads as https://customer.azure-api.net/openai4/chat41mini)
+  ChatNano = '/chat41nano', // gpt-4.1-nano (URL reads as https://customer.azure-api.net/openai4/chat41nano)
 }
 
 export default class AzureApiService {
@@ -201,9 +208,28 @@ export default class AzureApiService {
             }
           } else if (/gpt-4o/i.test(payload.model) && !(isNative || isOpenAiNative)) {
             targetUrl += /mini/i.test(payload.model) ? Operations4o.ChatMini : Operations4o.ChatMain;
+          } else if (/gpt-4\.1/i.test(payload.model) && !(isNative || isOpenAiNative)) {
+            if (/mini/i.test(payload.model)) {
+              targetUrl += Operations41.ChatMini;
+            } else if (/nano/i.test(payload.model)) {
+              targetUrl += Operations41.ChatNano;
+            } else {
+              targetUrl += Operations41.ChatMain;
+            }
           } else if (/o\d/i.test(payload.model) && !(isNative || isOpenAiNative)) {
-            // To be updated after new models have appeared.
-            targetUrl += /3/i.test(payload.model) ? OperationsOx.ChatO3Mini : OperationsOx.ChatO1Mini;
+            if (/o1-mini/i.test(payload.model)) {
+              targetUrl += OperationsOx.ChatO1Mini;
+            } else if (/o3-mini/i.test(payload.model)) {
+              targetUrl += OperationsOx.ChatO3Mini;
+            } else if (/o4-mini/i.test(payload.model)) {
+              targetUrl += OperationsOx.ChatO4Mini;
+            } else if (/o1/i.test(payload.model)) {
+              targetUrl += OperationsOx.ChatO1;
+            } else {
+              // Defaults to o1-mini. To be updated after new models have been released.
+              targetUrl += OperationsOx.ChatO1Mini;
+            }
+            //targetUrl += /3/i.test(payload.model) ? OperationsOx.ChatO3Mini : OperationsOx.ChatO1Mini;
           } else {
             targetUrl += Operations.StandardTextModel;
           }

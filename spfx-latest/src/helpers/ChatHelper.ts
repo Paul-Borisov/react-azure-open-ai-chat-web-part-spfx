@@ -40,6 +40,8 @@ export default class ChatHelper {
       returnValue = Math.floor((32 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/16k|-1106/i.test(model)) {
       returnValue = Math.floor((16 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
+    } else if (/gpt-4\.1/i.test(model)) {
+      returnValue = Math.floor((1024 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
       returnValue = Math.floor((8 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/o\d/i.test(model)) {
@@ -57,6 +59,8 @@ export default class ChatHelper {
       maxCharacters = 30_000; // ~ (32 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/16k|-1106/i.test(model)) {
       maxCharacters = 15_000; // ~ (16 * 1024 * 3.6) / 3.75 long questions - answers.
+    } else if (/gpt-4\.1/i.test(model)) {
+      maxCharacters = 1_005_000; // ~ (1047576 * 3.6) / 3.75 long questions - answers.
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
       maxCharacters = 7_500; // ~ (8 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/o\d/i.test(model)) {
@@ -76,9 +80,11 @@ export default class ChatHelper {
       returnValue = defaultResponseTokens * 2; // * 3 and * 4 will also work, * 2 looks safer to avoid errors
     } else if (/16k|-1106/i.test(model)) {
       returnValue = defaultResponseTokens;
+    } else if (/gpt-4\.1/i.test(model)) {
+      returnValue = 32_768;
     } else if (/8k/i.test(model) || /gpt-4/i.test(model)) {
       returnValue = defaultResponseTokens;
-    } else if (/o\d-mini/i.test(model)) {
+    } else if (/o1-mini/i.test(model)) {
       returnValue = 65_536;
     } else if (/o1-preview/i.test(model)) {
       returnValue = 32_768;
@@ -114,10 +120,14 @@ export default class ChatHelper {
 
     if (enableFunctionCalling) {
       // https://platform.openai.com/docs/guides/function-calling
-      if (/(0613|16k|32k)/i.test(model) || /^gpt-4$|^gpt-3\.?5-turbo/i.test(model)) {
-        payload.functions = FunctionCallingOptions.single;
-      } else if (/1106/i.test(model) || /4o/i.test(model)) {
+      if (/1106/i.test(model) || /4o/i.test(model) || /4\.1/i.test(model)) {
         payload.functions = FunctionCallingOptions.multiple;
+      } else if (/o1-mini/i.test(model)) {
+        payload.functions = FunctionCallingOptions.none; // As of April 18, 2025
+      } else if (/o\d/i.test(model)) {
+        payload.functions = FunctionCallingOptions.multiple;
+      } else if (/(0613|16k|32k)/i.test(model) || /^gpt-4$|^gpt-3\.?5-turbo/i.test(model)) {
+        payload.functions = FunctionCallingOptions.single;
       } else {
         payload.functions = FunctionCallingOptions.none;
       }
@@ -150,9 +160,13 @@ export default class ChatHelper {
   public static isStreamingSupported = (model: string, props: IAzureOpenAiChatProps) => {
     // As of February 2025, the model o1-mini of Azure OpenAI did not support streaming and function calling.
     // - At the same time, native OpenAI models o1-mini, o3-mini, o1-preview supported streaming, but did not support function calling.
-    // - The full-scale native OpenAI models o1 and o1-2024-12-17 did not support streaming and function calling.
-    // On attempts to use streaming outputs, they have thrown errors. Note that this behaviour might change later.
-    if (/^o\d$|o\d-\d{4}-\d{2}-\d{2}/i.test(model?.toLocaleLowerCase())) return false;
+
+    // The full-scale native OpenAI models o1 and o1-2024-12-17 did not support streaming and function calling.
+    // - On attempts to use streaming outputs, they have thrown errors. Note that this behaviour might change later.
+    //if (/^o\d$|o\d-\d{4}-\d{2}-\d{2}/i.test(model?.toLocaleLowerCase())) return false;
+    // April 16, 2025: streaming was enabled for Azure OpenAI o1 (full)
+    if (/o\d-\d{4}-\d{2}-\d{2}/i.test(model?.toLocaleLowerCase())) return false;
+    if (/o1/i.test(model?.toLocaleLowerCase())) return true;
     // Match 22, 2025: streaming was enabled for Azure OpenAI o1-mini
     if (/^o\d-mini/i.test(model?.toLocaleLowerCase())) return true;
 

@@ -7,6 +7,7 @@ export enum StorageType {
 export enum GptModels {
   //Vision = 'gpt-4-vision-preview',
   Vision = 'gpt-4o', // https://platform.openai.com/docs/deprecations, 2024-12-06, recommended replacement gpt-4o
+  //Vision = 'gpt-4.1', // This works as well. Perhaps, a better replacement?
 }
 
 export const GptImageModelTextLimits: { [key: string]: number } = {

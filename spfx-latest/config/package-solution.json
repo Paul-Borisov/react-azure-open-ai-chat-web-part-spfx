@@ -4,7 +4,7 @@
     "name": "azure-openai-chat",
     "title": "Azure OpenAI Chat Web Part",
     "id": "64e358ba-f88c-4fee-9a8a-6db06299d90a",
-    "version": "1.3.3.0",
+    "version": "1.3.4.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

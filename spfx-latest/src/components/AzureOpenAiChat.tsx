@@ -6,6 +6,7 @@ import Chat from './Chat';
 import { IAzureOpenAiChatProps } from './IAzureOpenAiChatProps';
 
 const appNameChatGpt: string = 'ChatGPT';
+const preferredDefaultModels = ['gpt-4.1-nano', 'gpt-4.1-mini', 'gpt-4.1', 'gpt-4o-mini', 'gpt-4o', 'o1-mini', 'gpt-35-turbo'];
 
 const AzureOpenAiChat: React.FunctionComponent<IAzureOpenAiChatProps> = (props) => {
   const [isChatOpen, setIsChatOpen] = React.useState(false);
@@ -13,11 +14,21 @@ const AzureOpenAiChat: React.FunctionComponent<IAzureOpenAiChatProps> = (props) 
   const [isAzureApiServiceConfigured, setIsAzureApiServiceConfigured] = React.useState<boolean>(false);
 
   const openChat = () => {
+    const languageModels = new Set(props.languageModels);
+    let selectedModel = '';
+    for (const model of preferredDefaultModels) {
+      if (languageModels.has(model)) {
+        selectedModel = model;
+        break;
+      }
+    }
+    if (!selectedModel) {
+      selectedModel = props.languageModels?.length > 0 ? props.languageModels[props.languageModels.length - 1] : '';
+    }
     const config: IItemConfig = {
       name: appNameChatGpt,
       description: strings.TextChat,
-      //model: props.languageModels?.length > 0 ? props.languageModels[0] : 'gpt-35-turbo',
-      model: props.languageModels?.length > 0 ? props.languageModels[props.languageModels.length - 1] : 'gpt-35-turbo',
+      model: selectedModel,
     };
     setItemConfig(config);
     setIsChatOpen(true);

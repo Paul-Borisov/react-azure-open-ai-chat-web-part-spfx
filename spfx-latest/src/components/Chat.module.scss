@@ -90,6 +90,7 @@ $selection: $ms-color-gray150;
   flex-direction: column;
   justify-content: space-between;
   height: fit-content;
+  padding-right: 5px;
   .topbar {
     height: fit-content;
     display: flex;
@@ -108,6 +109,9 @@ $selection: $ms-color-gray150;
     }
     /*border-bottom: 1px solid #ccc;*/
   }
+}
+.norightpadding {
+  padding-right: 0;
 }
 .customPanel {
   .container {

@@ -379,6 +379,7 @@ const ContentPanel: FunctionComponent<IContentPanelProps> = ({ props }) => {
             className={[
               styles.panelContentCanvas,
               props.isFullWidthColumn && !isCustomPanelOpen ? styles.widecontent : undefined,
+              isCustomPanelOpen ? styles.norightpadding : undefined,
               props.promptAtBottom ? styles.clearheight : undefined,
             ]
               .join(' ')

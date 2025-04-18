@@ -133,10 +133,14 @@ export default class ContentPanelElements {
     const modelTexts = {
       '4o': strings.TextGpt4o,
       '4o-mini': strings.TextGpt4oMini,
+      '4.1-mini': strings.TextGpt41Mini,
+      '4.1-nano': strings.TextGpt41Nano,
+      '4.1': strings.TextGpt41,
       'o1-mini': strings.TextO1Mini,
       'o1-preview': strings.TextO1Preview,
       o1: strings.TextO1,
       'o3-mini': strings.TextO3Mini,
+      'o4-mini': strings.TextO4Mini,
     };
     for (const key of Object.keys(modelTexts)) {
       if (lcLanguageModel.endsWith(key)) return modelTexts[key];
