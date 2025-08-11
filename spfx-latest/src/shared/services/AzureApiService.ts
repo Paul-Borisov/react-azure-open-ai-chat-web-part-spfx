@@ -43,6 +43,12 @@ enum Operations41 {
   ChatMini = '/chat41mini', // gpt-4.1-mini (URL reads as https://customer.azure-api.net/openai4/chat41mini)
   ChatNano = '/chat41nano', // gpt-4.1-nano (URL reads as https://customer.azure-api.net/openai4/chat41nano)
 }
+enum Operations5 {
+  ChatMain = '/chat5', // gpt-5-chat (URL reads as https://customer.azure-api.net/openai4/chat5)
+  ChatLatest = '/chat5chat', // gpt-5-chat (URL reads as https://customer.azure-api.net/openai4/chat5chat)
+  ChatMini = '/chat5mini', // gpt-5-mini (URL reads as https://customer.azure-api.net/openai4/chat5mini)
+  ChatNano = '/chat5nano', // gpt-5-nano (URL reads as https://customer.azure-api.net/openai4/chat5nano)
+}
 
 export default class AzureApiService {
   private config: IAzureApiServiceConfig = undefined;
@@ -162,14 +168,15 @@ export default class AzureApiService {
 
     // You can use direct calls to Azure Open AI instead of APIM
     const isGpt: boolean = /gpt/i.test(commonParameters.model);
-    const isGpt4: boolean = /gpt-4/i.test(commonParameters.model);
+    const isGpt5: boolean = /gpt-5/i.test(commonParameters.model);
+    const isGpt4: boolean = isGpt5 || /gpt-4/i.test(commonParameters.model);
     const isOpenAiService: boolean = this.isOpenAiServiceUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isOpenAiNative: boolean = this.isOpenAiNativeUrl(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isNative: boolean = this.isNative(isGpt4 ? this.config.endpointBaseUrl4 : this.config.endpointBaseUrl);
     const isApimPreview: boolean = /-preview/i.test(commonParameters.model) && !(isOpenAiService || isOpenAiNative || isNative);
     const isOx = /^o\d/i.test(commonParameters.model);
     const isChat = isGpt || isOx;
-    if (isOx) {
+    if (isOx || isGpt5) {
       commonParameters['max_completion_tokens'] = commonParameters.max_tokens;
       commonParameters['temperature'] = 1;
       delete commonParameters.max_tokens;
@@ -215,6 +222,16 @@ export default class AzureApiService {
               targetUrl += Operations41.ChatNano;
             } else {
               targetUrl += Operations41.ChatMain;
+            }
+          } else if (/gpt-5/i.test(payload.model) && !(isNative || isOpenAiNative)) {
+            if (/mini/i.test(payload.model)) {
+              targetUrl += Operations5.ChatMini;
+            } else if (/nano/i.test(payload.model)) {
+              targetUrl += Operations5.ChatNano;
+            } else if (/chat/i.test(payload.model)) {
+              targetUrl += Operations5.ChatLatest;
+            } else {
+              targetUrl += Operations5.ChatMain;
             }
           } else if (/o\d/i.test(payload.model) && !(isNative || isOpenAiNative)) {
             if (/o1-mini/i.test(payload.model)) {

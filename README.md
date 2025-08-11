@@ -98,6 +98,14 @@ The integrations available in this release include:
   - Changed default model to the be automatically selectable in a preferred order .
     - ['gpt-4.1-nano', 'gpt-4.1-mini', 'gpt-4.1', 'gpt-4o-mini', 'gpt-4o', 'o1-mini', 'gpt-35-turbo']
 
+- Version 1.3.5 released on August 11, 2025.
+
+  - Added support for new models: **gpt-5**, **gpt-5-chat-latest**, **gpt-5-mini**, **gpt-5-nano**.
+  - Enabled function calling for the models gpt-5 and gpt-5-chat-latest.
+    - As of today, models gpt-5-mini and gpt-5-nano do not yet support function calling on Azure OpenAI.
+  - Updated default models to the be automatically selectable in the preferred order.
+    - ['gpt-5-chat-latest', 'gpt-5-nano', 'gpt-5-mini', ...]
+
 ### Full-Scale Setup
 
 ![Data access diagram](docs/data-access-diagram.png "Data access diagram")
