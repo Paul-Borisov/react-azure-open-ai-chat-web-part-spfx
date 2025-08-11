@@ -131,6 +131,10 @@ export default class ContentPanelElements {
   private getModelText(languageModel: string, defaultModelText?: string) {
     const lcLanguageModel = languageModel.toLocaleLowerCase();
     const modelTexts = {
+      'gpt-5': strings.TextGpt5,
+      'gpt-5-chat-latest': strings.TextGpt5Chat,
+      'gpt-5-mini': strings.TextGpt5Mini,
+      'gpt-5-nano': strings.TextGpt5Nano,
       '4o': strings.TextGpt4o,
       '4o-mini': strings.TextGpt4oMini,
       '4.1-mini': strings.TextGpt41Mini,
@@ -148,7 +152,17 @@ export default class ContentPanelElements {
     return defaultModelText ?? languageModel;
   }
 
-  private getLanguageModelText(languageModel: string, isGpt3: boolean, isGpt4: boolean, isGpt4Turbo: boolean): string {
+  private getLanguageModelText({
+    languageModel,
+    isGpt3,
+    isGpt4,
+    isGpt4Turbo,
+  }: {
+    languageModel: string;
+    isGpt3: boolean;
+    isGpt4: boolean;
+    isGpt4Turbo: boolean;
+  }): string {
     if (isGpt3) {
       return strings.TextGpt35;
     } else if (isGpt4Turbo) {
@@ -200,7 +214,7 @@ export default class ContentPanelElements {
                     }}
                   >
                     {this.getLanguageModelIcon(isGpt4)}
-                    {this.getLanguageModelText(languageModel, isGpt3, isGpt4, isGpt4Turbo)}
+                    {this.getLanguageModelText({ languageModel, isGpt3, isGpt4, isGpt4Turbo })}
                   </DefaultButton>
                 </TooltipHost>
               );

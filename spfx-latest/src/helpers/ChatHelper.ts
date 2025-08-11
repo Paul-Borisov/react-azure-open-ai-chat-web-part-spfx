@@ -46,6 +46,8 @@ export default class ChatHelper {
       returnValue = Math.floor((8 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     } else if (/o\d/i.test(model)) {
       returnValue = Math.floor((200 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
+    } else if (/gpt-5/i.test(model)) {
+      returnValue = Math.floor((400 * 1024 - responseTokens) * averageCharsPerToken) - largeContentDeduction;
     }
     return returnValue - 200; // 200 extra chars reserved for service needs (redundancy).
   }
@@ -65,6 +67,8 @@ export default class ChatHelper {
       maxCharacters = 7_500; // ~ (8 * 1024 * 3.6) / 3.75 long questions - answers.
     } else if (/o\d/i.test(model)) {
       maxCharacters = 195_000; // ~ (200 * 1024 * 3.6) / 3.75 long questions - answers.
+    } else if (/gpt-5/i.test(model)) {
+      maxCharacters = 395_000; // ~ (400 * 1024 * 3.6) / 3.75 long questions - answers.
     }
     const maxLength = this.maxContentLength(model, responseTokens);
     const allowedLength = maxLength - chatHistoryLength;
@@ -90,6 +94,10 @@ export default class ChatHelper {
       returnValue = 32_768;
     } else if (/o\d/i.test(model)) {
       returnValue = 100_000;
+    } else if (/gpt-5-chat/i.test(model)) {
+      returnValue = 16_384;
+    } else if (/gpt-5/i.test(model)) {
+      returnValue = 128_000;
     }
     return returnValue;
   }
@@ -126,7 +134,12 @@ export default class ChatHelper {
         payload.functions = FunctionCallingOptions.none; // As of April 18, 2025
       } else if (/o\d/i.test(model)) {
         payload.functions = FunctionCallingOptions.multiple;
-      } else if (/(0613|16k|32k)/i.test(model) || /^gpt-4$|^gpt-3\.?5-turbo/i.test(model)) {
+      } else if (
+        /(0613|16k|32k)/i.test(model) ||
+        /^gpt-4$|^gpt-3\.?5-turbo/i.test(model) ||
+        /^gpt-5$|gpt-5-chat/i.test(model) // gpt-5-mini and gpt-5-nano do not support function calling on Azure OpenAI
+        ///^gpt-5$|gpt-5-mini|gpt-5-nano$/i.test(model) // gpt-5-chat does not support function calling on the native OpenAI
+      ) {
         payload.functions = FunctionCallingOptions.single;
       } else {
         payload.functions = FunctionCallingOptions.none;

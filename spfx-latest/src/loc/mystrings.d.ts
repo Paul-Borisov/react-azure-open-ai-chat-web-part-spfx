@@ -74,6 +74,10 @@ declare interface IAzureOpenAiChatWebPartStrings {
   TextGpt41Mini: string;
   TextGpt41Nano: string;
   TextGpt4Turbo: string;
+  TextGpt5: string;
+  TextGpt5Chat: string;
+  TextGpt5Mini: string;
+  TextGpt5Nano: string;
   TextO1Mini: string;
   TextO1Preview: string;
   TextO1: string;

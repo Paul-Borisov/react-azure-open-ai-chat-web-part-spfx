@@ -6,7 +6,18 @@ import Chat from './Chat';
 import { IAzureOpenAiChatProps } from './IAzureOpenAiChatProps';
 
 const appNameChatGpt: string = 'ChatGPT';
-const preferredDefaultModels = ['gpt-4.1-nano', 'gpt-4.1-mini', 'gpt-4.1', 'gpt-4o-mini', 'gpt-4o', 'o1-mini', 'gpt-35-turbo'];
+const preferredDefaultModels = [
+  'gpt-5-chat-latest',
+  'gpt-5-nano',
+  'gpt-5-mini',
+  'gpt-4.1-nano',
+  'gpt-4.1-mini',
+  'gpt-4.1',
+  'gpt-4o-mini',
+  'gpt-4o',
+  'o1-mini',
+  'gpt-35-turbo',
+];
 
 const AzureOpenAiChat: React.FunctionComponent<IAzureOpenAiChatProps> = (props) => {
   const [isChatOpen, setIsChatOpen] = React.useState(false);

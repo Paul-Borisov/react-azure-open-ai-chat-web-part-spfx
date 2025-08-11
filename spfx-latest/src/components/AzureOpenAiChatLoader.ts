@@ -270,6 +270,9 @@ export default class AzureOpenAiChatLoader extends BaseClientSideWebPart<IAzureO
                       label: strings.FieldLabelLanguageModels,
                       options: [
                         { key: 'gpt-35-turbo-16k', text: strings.TextGpt35 },
+                        { key: 'gpt-5-chat-latest', text: strings.TextGpt5Chat },
+                        { key: 'gpt-5-mini', text: strings.TextGpt5Mini },
+                        { key: 'gpt-5-nano', text: strings.TextGpt5Nano },
                         { key: 'gpt-4-32k', text: strings.TextGpt4 },
                         { key: 'gpt-4-1106-preview', text: `${strings.TextGpt4Turbo} (${strings.TextPreview})` },
                         { key: 'gpt-4o-mini', text: strings.TextGpt4oMini },
